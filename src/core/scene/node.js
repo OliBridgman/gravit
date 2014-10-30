@@ -227,8 +227,39 @@
      * @return {Array<GNode>} A new, ordered array
      */
     GNode.order = function (nodes, reverse) {
-        // TODO : Implement this!!
-        return nodes.slice();
+        var nodesAr = nodes ? nodes.slice() : null;
+        if (nodes && nodes.length > 1) {
+            // As we don't have element's indexes inside the tree or any values to compare the nodes between each other,
+            // anyway we will end up with the O(nodes.length * tree.numNodes) sort
+            var topParent = null;
+            for (var parent = nodes[0]; parent !== null; parent = parent.getParent()) {
+                topParent = parent;
+            }
+
+            if (topParent !== null) {
+                var orderedAr = [];
+                topParent.accept(function (node) {
+                    if (!nodesAr.length) {
+                        return false;
+                    }
+                    var idx = 0;
+                    var found = false;
+                    for (var i = 0; i < nodesAr.length && !found; ++i) {
+                        if (nodesAr[i] === node) {
+                            orderedAr.push(node);
+                            idx = i;
+                            found = true;
+                        }
+                    }
+                    if (found) {
+                        nodesAr.splice(idx, 1);
+                    }
+                    return true;
+                }, reverse);
+                return orderedAr;
+            }
+        }
+        return nodesAr;
     };
 
     /**
@@ -1229,13 +1260,22 @@
     /**
      * Accept a visitor on this container's children
      * @param {Function} visitor
+     * @param {Boolean} reverse - walk through children in reverse order
      * @return {Boolean}
      * @version 1.0
      */
-    GNode.Container.prototype.acceptChildren = function (visitor) {
-        for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
-            if (child.accept(visitor) === false) {
-                return false;
+    GNode.Container.prototype.acceptChildren = function (visitor, reverse) {
+        if (reverse) {
+            for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
+                if (child.accept(visitor, reverse) === false) {
+                    return false;
+                }
+            }
+        } else {
+            for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
+                if (child.accept(visitor, reverse) === false) {
+                    return false;
+                }
             }
         }
         return true;
@@ -1457,15 +1497,16 @@
      * node as first parameter. The function may return a boolean value indicating whether to
      * return visiting (true) or whether to cancel visiting (false). Not returning anything or
      * returning anything else than a Boolean will be ignored.
+     * @param {Boolean} reverse - walk through children in reverse order
      * @return {Boolean} result of visiting (false = canceled, true = went through)
      */
-    GNode.prototype.accept = function (visitor) {
+    GNode.prototype.accept = function (visitor, reverse) {
         if (visitor.call(null, this) === false) {
             return false;
         }
 
         if (this.hasMixin(GNode.Container)) {
-            return this.acceptChildren(visitor);
+            return this.acceptChildren(visitor, reverse);
         }
 
         return true;

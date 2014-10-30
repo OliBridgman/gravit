@@ -58,8 +58,8 @@
             var selection = document.getEditor().getSelection();
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
-                    if (selection[i] instanceof GPathBase && !(selection[i] instanceof GPath) ||
-                            selection[i].hasMixin(GVertexSource)) {
+                    if (!(selection[i] instanceof GPath) &&
+                        (selection[i] instanceof GPathBase || selection[i].hasMixin(GVertexSource))) {
 
                         return true;
                     }

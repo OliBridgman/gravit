@@ -920,12 +920,19 @@
 
     /**
      * Serializes all points into a stream array
+     * @param {GTransform} transformation to be applied to the anchor points before serialization
      * @return {Array<*>}
      */
-    GPathBase.AnchorPoints.prototype.serialize = function () {
+    GPathBase.AnchorPoints.prototype.serialize = function (transform) {
+        var trf = transform && !transform.isIdentity() ? transform : null;
+
         var stream = [];
         for (var pt = this.getFirstChild(); pt !== null; pt = pt.getNext()) {
-            stream.push(pt.serialize());
+            if (trf) {
+                stream.push(pt._getTransformedCopy(trf).serialize());
+            } else {
+                stream.push(pt.serialize());
+            }
         }
         return stream;
     };

@@ -41,47 +41,85 @@
         return "structure/modify";
     };
 
-    /**
-     * @param {Array<GElement>} [elements] optional elements, if not given
-     * uses the selection
-     * @override
-     */
-    GJoinPathsAction.prototype.isEnabled = function (elements) {
-        elements = elements || (gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor().getSelection() : null);
-        return elements && elements.length > 0;
-    };
-
-    /**
-     * @param {Array<GElement>} [elements] optional elements, if not given
-     * uses the selection
-     * @override
-     */
-    GJoinPathsAction.prototype.execute = function (elements) {
-        var document = gApp.getActiveDocument();
-        var scene = document.getScene();
-        var selection = null;
-
-        if (!elements) {
-            selection = document.getEditor().getSelection().slice();
-            elements = selection;
-        }
-
-        elements = GNode.order(elements, true/*reverse*/);
-
-        // TODO : I18N
-        GEditor.tryRunTransaction(scene, function () {
-            for (var i = 0; i < elements.length; ++i) {
-                var element = elements[i];
-                var parent = element.getParent();
-                if (element.getNext() !== null) {
-                    parent.removeChild(element);
-                    parent.appendChild(element);
+     /** @override */
+    GJoinPathsAction.prototype.isEnabled = function () {
+        var selection = gApp.getActiveDocument() ? gApp.getActiveDocument().getEditor().getSelection() : null;
+        var enabled = false;
+        if (selection) {
+            for (var i = 0; !enabled && i < selection.length; ++i) {
+                if (selection[i] instanceof GPath && !selection[i].getProperty('closed')) {
+                    enabled = true;
                 }
             }
-        }.bind(this), ifLocale.get(this.getTitle()));
+        }
 
+        return enabled;
+    };
+
+    /** @override */
+    GJoinPathsAction.prototype.execute = function () {
+        var document = gApp.getActiveDocument();
+        var editor = document ? document.getEditor() : null;
+        var selection = editor ? editor.getSelection() : null;
+        var scene = document.getScene();
+        var elementsForJoin = [];
+        var parent = null;
         if (selection) {
-            document.getEditor().updateSelection(false, selection);
+            for (var i = 0; i < selection.length; ++i) {
+                var element = selection[i];
+                if (element instanceof GPath && !element.getProperty('closed')) {
+                    if (!parent) {
+                        parent = element.getParent();
+                        if (parent) {
+                            elementsForJoin.push(element);
+                        }
+                    } else {
+                        if (parent === element.getParent()) {
+                            elementsForJoin.push(element);
+                        }
+                    }
+
+                }
+            }
+        }
+
+        if (elementsForJoin.length) {
+            editor.beginTransaction();
+            try {
+                if (elementsForJoin.length == 1) {
+                    // Make the only selected path closed
+                    elementsForJoin[0].setProperty('closed', true);
+                } else { // elementsForJoin.length > 1
+                    // Join all the open paths into one in the order like they goes in parent, and apply the style of the last path
+                    elementsForJoin = GNode.order(elementsForJoin);
+                    var lastPath = elementsForJoin[elementsForJoin.length - 1];
+                    var trf = lastPath.getProperty('trf');
+                    var invTrf = trf ? trf.inverted() : null;
+                    var next = lastPath.getNext();
+                    var stream = [];
+                    var path;
+                    for (var i = 0; i < elementsForJoin.length -1; ++i) {
+                        path = elementsForJoin[i];
+                        path.removeFlag(GNode.Flag.Selected);
+                        parent.removeChild(path);
+                        // We need to preserve the position of anchor points of all pathes,
+                        // so do the following transformations
+                        trf = path.getProperty('trf');
+                        trf = trf ? (invTrf ? trf.multiplied(invTrf) : trf) : invTrf;
+                        stream = stream.concat(path.getAnchorPoints().serialize(trf));
+                    }
+                    lastPath.removeFlag(GNode.Flag.Selected);
+                    parent.removeChild(lastPath);
+                    stream = stream.concat(lastPath.getAnchorPoints().serialize());
+                    var newPath = new GPath();
+                    newPath.getAnchorPoints().deserialize(stream);
+                    newPath.assignFrom(lastPath);
+                    parent.insertChild(newPath, next);
+                    editor.updateSelection(false, [newPath]);
+                }
+            } finally {
+                editor.commitTransaction(ifLocale.get(this.getTitle()));
+            }
         }
     };
 

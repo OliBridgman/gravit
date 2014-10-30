@@ -98,7 +98,13 @@
             elements = selection;
         }
 
-        elements = GNode.order(elements, true/*reverse*/);
+        if (this._type == GArrangeAction.Type.SendToFront ||
+            this._type == GArrangeAction.Type.SendBackward) {
+
+            elements = GNode.order(elements);
+        } else { // BringForward || SendToBack
+            elements = GNode.order(elements, true/*reverse*/);
+        }
 
         // TODO : I18N
         GEditor.tryRunTransaction(scene, function () {
@@ -114,17 +120,37 @@
                         }
                         break;
                     case GArrangeAction.Type.BringForward:
-                        if (element.getNext() !== null) {
-                            var posElement = element.getNext() ? element.getNext().getNext() : null;
-                            parent.removeChild(element);
-                            parent.insertChild(element, posElement);
+                        var next = element.getNext();
+                        if (next !== null) {
+                            var nextUnselected = null;
+                            while (!nextUnselected && next) {
+                                if (!next.hasFlag(GNode.Flag.Selected)) {
+                                    nextUnselected = next;
+                                }
+                                next = next.getNext();
+                            }
+
+                            if (nextUnselected !== null) {
+                                var posElement = nextUnselected.getNext();
+                                parent.removeChild(element);
+                                parent.insertChild(element, posElement);
+                            }
                         }
                         break;
                     case GArrangeAction.Type.SendBackward:
-                        if (element.getPrevious() !== null) {
-                            var posElement = element.getPrevious() ? element.getPrevious() : parent.getFirstChild();
-                            parent.removeChild(element);
-                            parent.insertChild(element, posElement);
+                        var previous = element.getPrevious();
+                        if (previous !== null) {
+                            var prevUnselected = null;
+                            while (!prevUnselected && previous) {
+                                if (!previous.hasFlag(GNode.Flag.Selected)) {
+                                    prevUnselected = previous;
+                                }
+                                previous = previous.getPrevious();
+                            }
+                            if (prevUnselected !== null) {
+                                parent.removeChild(element);
+                                parent.insertChild(element, prevUnselected);
+                            }
                         }
                         break;
                     case GArrangeAction.Type.SendToBack:
