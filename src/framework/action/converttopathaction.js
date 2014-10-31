@@ -59,7 +59,8 @@
             if (selection) {
                 for (var i = 0; i < selection.length; ++i) {
                     if (!(selection[i] instanceof GPath) &&
-                        (selection[i] instanceof GPathBase || selection[i].hasMixin(GVertexSource))) {
+                        (selection[i] instanceof GPathBase ||
+                            selection[i].hasMixin(GVertexSource) && !(selection[i] instanceof GCompoundPath))) {
 
                         return true;
                     }

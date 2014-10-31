@@ -258,6 +258,7 @@
 
             new GConvertToPathAction(),
             new GJoinPathsAction(),
+            new GReverseOrderAction(),
 
             new GAddPageAction(),
             new GDeletePageAction(),

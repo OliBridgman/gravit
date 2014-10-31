@@ -34,6 +34,7 @@ ifLocale.setValues(GPasteInsideAction, GLocale.Language.English, ["title"], ["Pa
 ifLocale.setValues(GPasteStyleAction, GLocale.Language.English, ["title"], ["Paste Style"]);
 ifLocale.setValues(GPixelPreviewAction, GLocale.Language.English, ["title"], ["Pixel Preview"]);
 ifLocale.setValues(GRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
+ifLocale.setValues(GReverseOrderAction, GLocale.Language.English, ["title"], ["Reverse Order in Path"]);
 ifLocale.setValues(GSaveAction, GLocale.Language.English, ["title"], ["Save"]);
 ifLocale.setValues(GSaveAllAction, GLocale.Language.English, ["title"], ["Save All"]);
 ifLocale.setValues(GSaveAsAction, GLocale.Language.English, ["title"], ["Save As..."]);

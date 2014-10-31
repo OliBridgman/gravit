@@ -474,6 +474,15 @@
         return limitPt;
     };
 
+    /**
+     * Flips the anchor point
+     */
+    GPathBase.AnchorPoint.prototype.flip = function () {
+        this.setProperties(['hlx', 'hly', 'hrx', 'hry', 'cl', 'cr'],
+            [this.$hrx, this.$hry, this.$hlx, this.$hly, this.$cr, this.$cl]);
+
+    };
+
     /** @override */
     GPathBase.AnchorPoint.prototype._handleChange = function (change, args) {
         var path = this.getPath();
@@ -1629,8 +1638,8 @@
         var next = this._anchorPoints.getNext(true);
         this.removeChild(this._anchorPoints);
         this._anchorPoints = new GPathBase.AnchorPoints();
-        this.appendChild(this._anchorPoints);
-
+        this.insertChild(this._anchorPoints, next);
+        this._anchorPoints._removalAllowed = false;
         return anchorPoints;
     };
 

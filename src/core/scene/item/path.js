@@ -284,6 +284,22 @@
         }
     };
 
+    /**
+     * Reverse the order of anchor points in path
+     */
+    GPath.prototype.reverseOrder = function () {
+        this.beginUpdate();
+        var ap;
+        var firstAp = this.getAnchorPoints().getFirstChild();
+        for (ap = this.getAnchorPoints().getLastChild(); ap !== firstAp; ap = this.getAnchorPoints().getLastChild()) {
+            ap.flip();
+            this.getAnchorPoints().removeChild(ap);
+            this.getAnchorPoints().insertChild(ap, firstAp);
+        }
+        firstAp.flip();
+        this.endUpdate();
+    };
+
     /** @override */
     GPath.prototype._handleChange = function (change, args) {
         if (change === GNode._Change.Store) {
