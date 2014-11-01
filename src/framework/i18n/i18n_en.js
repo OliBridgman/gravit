@@ -44,6 +44,7 @@ ifLocale.setValues(GShowAllPagesAction, GLocale.Language.English, ["title"], ["A
 ifLocale.setValues(GShowGridAction, GLocale.Language.English, ["title"], ["Show Grid"]);
 ifLocale.setValues(GSliceFromSelectionAction, GLocale.Language.English, ["title"], ["Create Slice from Selection"]);
 ifLocale.setValues(GSnapUnitAction, GLocale.Language.English, ["title.full", "title.half"], ["Snap to full units", "Snap to half units"]);
+ifLocale.setValues(GSplitPathsAction, GLocale.Language.English, ["title"], ["Split Paths at selected points"]);
 ifLocale.setValues(GTransformAction, GLocale.Language.English, ["title.rotate-45-left", "title.rotate-90-left", "title.rotate-180-left", "title.rotate-45-right", "title.rotate-90-right", "title.rotate-180-right", "title.flip-vertical", "title.flip-horizontal"], ["Rotate 45° Left", "Rotate 90° Left", "Rotate 180° Left", "Rotate 45° Right", "Rotate 90° Right", "Rotate 180° Right", "Flip Vertical", "Flip Horizontal"]);
 ifLocale.setValues(GUndoAction, GLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, GLocale.Language.English, ["title"], ["Ungroup Selection"]);
