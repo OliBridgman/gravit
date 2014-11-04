@@ -10,7 +10,7 @@
         GShape.call(this);
 
         this._setDefaultProperties(GCompoundPath.VisualProperties);
-        if (evenOdd !== null) {
+        if (!!evenOdd) {
             this.$evenodd = evenOdd;
         }
 

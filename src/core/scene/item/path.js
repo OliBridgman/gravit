@@ -300,6 +300,31 @@
         this.endUpdate();
     };
 
+    /**
+     * If a path is actually a closed path with duplicated first/last point
+     * then remove the extra point and set the 'closed' attribute if is not set yet
+     */
+    GPath.prototype.correctClosedAttribute = function () {
+        var firstAp = this.getAnchorPoints().getFirstChild();
+        var lastAp = this.getAnchorPoints().getLastChild();
+        if (firstAp != lastAp &&
+            GMath.isEqualEps(firstAp.getProperty('x'), lastAp.getProperty('x')) &&
+            GMath.isEqualEps(firstAp.getProperty('y'), lastAp.getProperty('y')) &&
+            firstAp.getProperty('tp') === lastAp.getProperty('tp') &&
+            (firstAp.getProperty('hlx') === null || firstAp.getProperty('hly') === null) &&
+            (lastAp.getProperty('hrx') === null || lastAp.getProperty('hry') === null)) {
+
+            // The path is closed, remove duplicating points
+            this.beginUpdate();
+            firstAp.setProperties(['hlx', 'hly'], [lastAp.getProperty('hrx'), lastAp.getProperty('hry')]);
+            this.getAnchorPoints().removeChild(lastAp);
+            if (!this.$closed) {
+                this.setProperty('closed', true);
+            }
+            this.endUpdate();
+        }
+    };
+
     /** @override */
     GPath.prototype._handleChange = function (change, args) {
         if (change === GNode._Change.Store) {

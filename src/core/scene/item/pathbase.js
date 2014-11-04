@@ -10,7 +10,7 @@
         GShape.call(this);
 
         this._setDefaultProperties(GPathBase.VisualProperties);
-        if (evenOdd !== null) {
+        if (!!evenOdd) {
             this.$evenodd = evenOdd;
         }
 
@@ -90,6 +90,7 @@
             switch (vertex.command) {
                 case GVertex.Command.Move:
                     if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
+                        path.correctClosedAttribute();
                         pathes.push(path);
                     }
                     path = new GPath();
@@ -150,6 +151,7 @@
         }
 
         if (path && anchorPoints && anchorPoints.getFirstChild() != anchorPoints.getLastChild()) {
+            path.correctClosedAttribute();
             pathes.push(path);
         }
 

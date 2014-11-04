@@ -260,6 +260,7 @@
             new GJoinPathsAction(),
             new GSplitPathsAction(),
             new GReverseOrderAction(),
+            new GOutlineAction(),
 
             new GAddPageAction(),
             new GDeletePageAction(),

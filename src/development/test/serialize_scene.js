@@ -5,7 +5,7 @@
             var jsonCode = GNode.serialize(gApp.getActiveDocument().getScene());
 
             vex.dialog.prompt({
-                message: 'Serializd JSON String:',
+                message: 'Serialized JSON String:',
                 value: GUtil.replaceAll(jsonCode, '"', '&quot;')
             });
         }
