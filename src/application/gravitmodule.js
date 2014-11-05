@@ -261,6 +261,7 @@
             new GSplitPathsAction(),
             new GReverseOrderAction(),
             new GOutlineAction(),
+            new GOffsetAction(),
 
             new GAddPageAction(),
             new GDeletePageAction(),

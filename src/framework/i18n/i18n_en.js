@@ -26,6 +26,7 @@ ifLocale.setValues(GNewAction, GLocale.Language.English, ["title"], ["New..."]);
 ifLocale.setValues(GNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenAction, GLocale.Language.English, ["title"], ["Open..."]);
 ifLocale.setValues(GArrangeAction, GLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
+ifLocale.setValues(GOffsetAction, GLocale.Language.English, ["title"], ["Create Offset Path"]);
 ifLocale.setValues(GOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);
 ifLocale.setValues(GOutlineAction, GLocale.Language.English, ["title"], ["Create Outline Path"]);
 ifLocale.setValues(GPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);

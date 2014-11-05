@@ -74,47 +74,57 @@
         if (elements.length) {
             vex.dialog.prompt({
                 // TODO : I18N
-                message: 'Enter a positive value for outline:',
+                message: this._dialogPromptMessage(),
                 callback: function (value) {
                     if (value) {
                         var valNum = parseFloat(value);
                         if (!isNaN(valNum) && isFinite(valNum) && !GMath.isEqualEps(valNum, 0)) {
-                            var offset = valNum > 0 ? valNum : -valNum;
-                            if (offset) {
-                                editor.beginTransaction();
-                                try {
-                                    var newSelection = [];
-                                    for (var i = 0; i < elements.length; ++i) {
-                                        var oldElem = elements[i];
-                                        var parent = oldElem.getParent();
-                                        var next = oldElem.getNext();
-                                        var offsetter = new GVertexOffsetter(oldElem, offset, true, true);
-                                        var newPath = GPathBase.createPathFromVertexSource(offsetter);
+                            editor.beginTransaction();
+                            try {
+                                var newSelection = [];
+                                for (var i = 0; i < elements.length; ++i) {
+                                    var oldElem = elements[i];
+                                    var parent = oldElem.getParent();
+                                    var next = oldElem.getNext();
+                                    var offsetter = this._makeOffsetter(valNum, oldElem);
+                                    var newPath = GPathBase.createPathFromVertexSource(offsetter);
 
-                                        if (newPath) {
-                                            newPath.assignFrom(oldElem);
-                                            parent.insertChild(newPath, next);
-                                            newSelection.push(newPath);
-                                        }
-
-                                        parent.removeChild(oldElem);
-                                    } // for i < elements.length
-
-                                    if (newSelection.length) {
-                                        editor.updateSelection(false, newSelection);
+                                    if (newPath) {
+                                        GElement.prototype.assignFrom.call(newPath, oldElem);
+                                        parent.insertChild(newPath, next);
+                                        newSelection.push(newPath);
                                     }
-                                } finally {
-                                    editor.commitTransaction(ifLocale.get(this.getTitle()));
+
+                                    parent.removeChild(oldElem);
+                                } // for i < elements.length
+
+                                if (newSelection.length) {
+                                    editor.updateSelection(false, newSelection);
                                 }
+                            } finally {
+                                editor.commitTransaction(ifLocale.get(this.getTitle()));
                             }
                         } else {
                             // TODO : I18N
-                            vex.dialog.alert('Entered invalid number for outline value.');
+                            vex.dialog.alert(this._dialogAlertMessage());
                         }
                     }
                 }.bind(this)
             });
         }
+    };
+
+    GOutlineAction.prototype._dialogPromptMessage = function () {
+        return "Enter a positive value for outline:";
+    };
+
+    GOutlineAction.prototype._makeOffsetter = function (valNum, elem) {
+        var offset = valNum > 0 ? valNum : -valNum;
+        return new GVertexOffsetter(elem, offset, true, true);
+    };
+
+    GOutlineAction.prototype._dialogAlertMessage = function () {
+        return "Entered invalid number for outline value.";
     };
 
     /** @override */
