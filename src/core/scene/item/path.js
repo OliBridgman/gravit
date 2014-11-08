@@ -316,7 +316,7 @@
 
             // The path is closed, remove duplicating points
             this.beginUpdate();
-            firstAp.setProperties(['hlx', 'hly'], [lastAp.getProperty('hrx'), lastAp.getProperty('hry')]);
+            firstAp.setProperties(['hlx', 'hly'], [lastAp.getProperty('hlx'), lastAp.getProperty('hly')]);
             this.getAnchorPoints().removeChild(lastAp);
             if (!this.$closed) {
                 this.setProperty('closed', true);
