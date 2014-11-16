@@ -29,7 +29,10 @@
         var resY = null;
         var guideX = null;
         var guideY = null;
+        var deltaX = null;
+        var deltaY= null;
         var result = null;
+        var delta;
         if (this._scene.getProperty('singlePage')) {
             var snapDistance = this._scene.getProperty('snapDist');
 
@@ -51,8 +54,12 @@
                     var sides = [GRect.Side.TOP_LEFT, GRect.Side.BOTTOM_RIGHT, GRect.Side.CENTER];
                     for (var i = 0; i < sides.length; ++i) {
                         var pivot = pivots[i];
-                        if (resX === null && Math.abs(x - pivot.getX()) <= snapDistance) {
+                        delta = Math.abs(x - pivot.getX());
+                        if (resX === null && Math.abs(x - pivot.getX()) <= snapDistance ||
+                            resX !== null && delta < Math.abs(x - resX)) {
+
                             resX = pivot.getX();
+                            deltaX = delta;
                             if (y <= tl.getY()) {
                                 guideX = [new GPoint(resX, y - GShapeBoxGuide.GUIDE_MARGIN),
                                     new GPoint(resX, br.getY() + GShapeBoxGuide.GUIDE_MARGIN)];
@@ -64,8 +71,12 @@
                                     new GPoint(resX, y + GShapeBoxGuide.GUIDE_MARGIN)];
                             }
                         }
-                        if (resY === null && Math.abs(y - pivot.getY()) <= snapDistance) {
+                        delta = Math.abs(y - pivot.getY());
+                        if (resY === null && Math.abs(y - pivot.getY()) <= snapDistance ||
+                            resY !== null && delta < Math.abs(y - resY)) {
+
                             resY = pivot.getY();
+                            deltaY = delta;
                             if (x <= tl.getX()) {
                                 guideY = [new GPoint(x - GShapeBoxGuide.GUIDE_MARGIN, resY),
                                     new GPoint(br.getX() + GShapeBoxGuide.GUIDE_MARGIN, resY)];
@@ -92,8 +103,8 @@
 
         if (resX !== null || resY !== null) {
             result = {
-                x: resX !== null ? {value: resX, guide: guideX} : null,
-                y: resY !== null ? {value: resY, guide: guideY} : null};
+                x: resX !== null ? {value: resX, guide: guideX, delta: deltaX} : null,
+                y: resY !== null ? {value: resY, guide: guideY, delta: deltaY} : null};
         }
 
         return result;

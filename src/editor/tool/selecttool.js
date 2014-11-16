@@ -684,7 +684,7 @@
                     this._editor.moveSelection(moveDelta, true,
                         this._editorMovePartInfo ? this._editorMovePartInfo.id : null,
                         this._editorMovePartInfo ? this._editorMovePartInfo.data : null,
-                        this._moveStartTransformed);
+                        this._moveStartTransformed, ifPlatform.modifiers.optionKey);
                 }
             }
         } else if (this._mode == GSelectTool._Mode.Transforming) {
@@ -752,7 +752,7 @@
 
         var bBox = null;
         this._visuals = null;
-        if (!this._mode && !partInfo || this._mode == GSelectTool._Mode.Select) {
+        if ((!this._mode && !partInfo || this._mode == GSelectTool._Mode.Select) && this._editor.hasSelectionDetail()) {
             var selection = this._editor.getSelection();
             var selectableElements = [];
             var item;
@@ -763,18 +763,6 @@
                     stacked, -1, this._scene.getProperty('pickDist'), true);
                 if (hitRes) {
                     item = selection[0];
-                }
-            }
-            if (!item) {
-                var elementHits = this._scene.hitTest(mouse, this._view.getWorldTransform(), null,
-                    stacked, -1, this._scene.getProperty('pickDist'));
-
-                if (elementHits && elementHits.length) {
-                    for (var i = 0; i < elementHits.length && !item; ++i) {
-                        if (elementHits[i].element instanceof GItem && !elementHits[i].element.hasFlag(GNode.Flag.Selected)) {
-                            item = elementHits[i].element;
-                        }
-                    }
                 }
             }
             if (item) {

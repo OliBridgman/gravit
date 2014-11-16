@@ -212,6 +212,118 @@
     };
 
     /**
+     * Map a point to the current snapping options
+     * @param {GRect} point the point to map
+     * @returns {GRect} a mapped point
+     */
+    GGuides.prototype.mapRect = function (rect) {
+        /*
+            The algorithm is the following:
+            1) For the guide with the first priority try to snap top left, top right, bottom right, bottom left, center:
+              - if more than 1 snaps, then select the closest snap point and return
+              - if 1 snap - snap and return
+              - if no snaps, try to snap horizontally: top, bottom, center; vertically: left, right, center
+            2) If on the step 1 no snaps or just horizontal of vertical,
+             try to find the same way missed snap with the guides with next priorities
+         */
+
+        var resRect = null;
+        var tl = rect.getSide(GRect.Side.TOP_LEFT);
+        var br = rect.getSide(GRect.Side.BOTTOM_RIGHT);
+        var cntr = rect.getSide(GRect.Side.CENTER);
+        var pivots = [tl, br, cntr];
+        var sides = [GRect.Side.TOP_LEFT, GRect.Side.BOTTOM_RIGHT, GRect.Side.CENTER];
+
+        var resX = [];
+        var resY = [];
+
+        var guide;
+        var res = null;
+        var targPts = [];
+        var visuals = [];
+        for (var i = 0; i < this._guides.length && (!resX.length || !resY.length); ++i) {
+            guide = this._guides[i];
+            if (guide.isMappingAllowed()) {
+                for (var j = 0; j < sides.length; ++j) {
+                    var pivot = pivots[j];
+                    res = guide.map(pivot.getX(), pivot.getY());
+                    if (res) {
+                        if (res.x) {
+                            if (!resX.length ||
+                                resX[0].idx === i && resX[0].x.delta !== null && res.x.delta !== null &&
+                                resX[0].x.delta === 0 && res.x.delta === 0) {
+
+                                resX.push({x: res.x, idx: i, pivotIdx: j});
+                            } else if (resX[0].idx === i && resX[0].x.delta !== null && res.x.delta !== null &&
+                                res.x.delta < resX[0].x.delta) {
+
+                                resX[0] = {x: res.x, idx: i, pivotIdx: j};
+                            }
+                        }
+                        if (res.y) {
+                            if (!resY.length ||
+                                resY[0].idx === i && resY[0].y.delta !== null && res.y.delta !== null &&
+                                    resY[0].y.delta === 0 && res.y.delta === 0) {
+
+                                resY.push({y: res.y, idx: i, pivotIdx: j});
+                            } else if (resY[0].idx === i && resY[0].y.delta !== null && res.y.delta !== null &&
+                                res.y.delta < resY[0].y.delta) {
+
+                                resY[0] = {y: res.y, idx: i, pivotIdx: j};
+                            }
+                        }
+                    }
+                    res = null;
+                }
+            }
+        }
+
+        var deltaX = 0;
+        var deltaY = 0;
+        if (resX.length) {
+            deltaX = resX[0].x.value - pivots[resX[0].pivotIdx].getX();
+        }
+
+        if (resY.length) {
+            deltaY = resY[0].y.value - pivots[resY[0].pivotIdx].getY();
+        }
+
+        resRect = rect.translated(deltaX, deltaY);
+
+        if (this._visuals) {
+            for (var i = 0; i < resX.length; ++i) {
+                if (this._visuals && resX[i].x.guide) {
+                    if (resX[i].x.guide instanceof GPoint) {
+                        if (Math.abs(resX[i].x.value - resX[i].x.guide.getX()) >= 2 ||
+                            Math.abs(pivots[resX[i].pivotIdx].getY() - resX[i].x.guide.getY()) >= 2) {
+
+                            this._visuals.push([new GPoint(resX[i].x.value, pivots[resX[i].pivotIdx].getY()), resX[i].x.guide]);
+                        }
+                    } else {
+                        this._visuals.push(resX[i].x.guide);
+                    }
+                }
+            }
+
+            for (var i = 0; i < resY.length; ++i) {
+                if (this._visuals && resY[i].y.guide) {
+                    if (resY[i].y.guide instanceof GPoint) {
+                        if (Math.abs(resY[i].y.value - resY[i].y.guide.getY()) >= 2 ||
+                            Math.abs(pivots[resY[i].pivotIdx].getX() - resY[i].y.guide.getX()) >= 2) {
+
+                            this._visuals.push([new GPoint(pivots[resY[i].pivotIdx].getX(), resY[i].y.value), resY[i].y.guide]);
+                        }
+                    } else {
+                        this._visuals.push(resY[i].y.guide);
+                    }
+                }
+            }
+        }
+
+        return resRect;
+    };
+
+    /**
      * Called whenever the guides should paint itself
      * @param {GTransform} transform the transformation of the scene
      * @param {GPaintContext} context

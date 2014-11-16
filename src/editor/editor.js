@@ -739,19 +739,38 @@
      * @param {*} [partId] optional id of part that has started the transformation
      * @param {*} [data] optional data of part that has started the transformation
      * @param {GPoint} startPos - movement start position, needed when align is true only
+     * @paream {Boolean} clone - if true, don't use selection exclusion when snapping, as the selection is clonned
      */
-    GEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos) {
+    GEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos, clone) {
         var translation = delta;
-        if (align && startPos && this._selection.length == 1) {
-            var selBBox = GElement.prototype.getGroupGeometryBBox(this._selection);
-            var side = selBBox.getClosestSideName(startPos);
-            var sidePos = selBBox.getSide(side);
-            var newSidePos = sidePos.add(delta);
-            this._guides.getShapeBoxGuide().useExclusions(this._selection);
-            this._guides.beginMap();
-            newSidePos = this._guides.mapPoint(newSidePos);
-            this._guides.finishMap();
-            translation = newSidePos.subtract(sidePos);
+        if (align) {
+            if (this.hasSelectionDetail() && startPos && this._selection.length == 1) {
+                var selBBox = this._selection[0].getGeometryBBox();
+                var side = selBBox.getClosestSideName(startPos);
+                var sidePos = selBBox.getSide(side);
+                var newSidePos = sidePos.add(delta);
+                if (!clone) {
+                    this._guides.getShapeBoxGuide().useExclusions(this._selection);
+                }
+                this._guides.beginMap();
+                newSidePos = this._guides.mapPoint(newSidePos);
+                this._guides.finishMap();
+                translation = newSidePos.subtract(sidePos);
+            } else {
+                var selBBox = GElement.prototype.getGroupGeometryBBox(this._selection);
+                if (!clone) {
+                    this._guides.getShapeBoxGuide().useExclusions(this._selection);
+                }
+                if (selBBox && !selBBox.isEmpty()) {
+                    var newSelBBox = selBBox.translated(delta.getX(), delta.getY());
+                    this._guides.beginMap();
+                    newSelBBox = this._guides.mapRect(newSelBBox);
+                    this._guides.finishMap();
+                    var tl = selBBox.getSide(GRect.Side.TOP_LEFT);
+                    var newTL = newSelBBox.getSide(GRect.Side.TOP_LEFT);
+                    translation = newTL.subtract(tl);
+                }
+            }
         }
 
         this.transformSelection(new GTransform(1, 0, 0, 1, translation.getX(), translation.getY()), partId, partData);
