@@ -68,9 +68,10 @@
      * Called to let this guide map horizontal and vertical coordinates
      * @param {Number} x
      * @param {Number} y
+     * @param {Boolean} useMargin
      * @return {{x: {value: Number, guide: GPoint|Array<GPoint>}, y: {value: Number, guide: GPoint|Array<GPoint>}}}
      */
-    GGuide.Map.prototype.map = function (x, y) {
+    GGuide.Map.prototype.map = function (x, y, useMargin) {
         // NO-OP
     };
 
