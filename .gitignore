@@ -3,8 +3,8 @@
 .tmp
 node_modules
 node-webkit
-bower_components
 app
 lib
 tmp
 dist
+src/bower_components

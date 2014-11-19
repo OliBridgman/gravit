@@ -60,7 +60,7 @@ module.exports = function (grunt) {
             {
                 expand: true,
                 dot: true,
-                cwd: 'bower_components/font-awesome/fonts',
+                cwd: 'src/bower_components/font-awesome/fonts',
                 dest: dest + 'font',
                 src: '{,*/}*.*'
             }
@@ -139,7 +139,7 @@ module.exports = function (grunt) {
             options: {
                 sassDir: 'style',
                 cssDir: '<%= cfg.tmp %>',
-                importPath: 'bower_components',
+                importPath: 'src/bower_components',
                 generatedImagesDir: '<%= cfg.tmp %>/image/generated',
                 imagesDir: 'assets/image/images',
                 javascriptsDir: 'src/js',
@@ -204,7 +204,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         dot: true,
-                        cwd: 'bower_components/font-awesome/fonts',
+                        cwd: 'src/bower_components/font-awesome/fonts',
                         dest: '<%= cfg.tmp %>/font/',
                         src: '{,*/}*.*'
                     }
@@ -230,7 +230,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         dot: true,
-                        cwd: 'bower_components/jquery/dist/',
+                        cwd: 'src/bower_components/jquery/dist/',
                         dest: '<%= cfg.app %>/chrome/',
                         src: 'jquery.min.js'
                     },
@@ -245,7 +245,7 @@ module.exports = function (grunt) {
                     {
                         expand: true,
                         dot: true,
-                        cwd: 'bower_components/jquery/dist/',
+                        cwd: 'src/bower_components/jquery/dist/',
                         dest: '<%= cfg.tmp %>/__app_system/',
                         src: 'jquery.min.js'
                     },
