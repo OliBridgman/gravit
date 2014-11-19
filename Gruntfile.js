@@ -83,7 +83,7 @@ module.exports = function (grunt) {
                 files: [
                     'src/*.html',
                     '<%= cfg.tmp %>/{,*/}*.css',
-                    '{<%= cfg.tmp %>,src/{,*/}*.js,test/{,*/}*.js',
+                    '{<%= cfg.tmp %>,src/js/{,*/}*.js,test/{,*/}*.js',
                     'assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
@@ -142,7 +142,7 @@ module.exports = function (grunt) {
                 importPath: 'bower_components',
                 generatedImagesDir: '<%= cfg.tmp %>/image/generated',
                 imagesDir: 'assets/image/images',
-                javascriptsDir: 'src',
+                javascriptsDir: 'src/js',
                 fontsDir: '<%= cfg.tmp %>/font',
                 httpImagesPath: '/image',
                 httpGeneratedImagesPath: '/image/generated',
@@ -166,21 +166,19 @@ module.exports = function (grunt) {
                 files: {
                     // Browser
                     '<%= cfg.app %>/browser/app.js': appJSFiles.concat(
-                        'src/host/browser/*.js',
-                        'src/application/browser/*.js'
+                        'src/js/host/browser/*.js'
                     ),
                     '<%= cfg.app %>/browser/app.css': appCSSFiles,
 
                     // Chrome
                     '<%= cfg.app %>/chrome/app.js': appJSFiles.concat(
-                        'src/host/chrome/*.js',
-                        '!src/host/chrome/background.js'
+                        'src/js/host/chrome/*.js'
                     ),
                     '<%= cfg.app %>/chrome/app.css': appCSSFiles,
 
                     // System
                     '<%= cfg.tmp %>/__app_system/app.js': appJSFiles.concat(
-                        'src/host/system/*.js'
+                        'src/js/host/system/*.js'
                     ),
                     '<%= cfg.tmp %>/__app_system/app.css': appCSSFiles
                 }
@@ -217,7 +215,7 @@ module.exports = function (grunt) {
                     // Browser
                     {
                         expand: true,
-                        cwd: 'src/application/browser',
+                        cwd: 'src/package/browser',
                         dest: '<%= cfg.app %>/browser/',
                         src: ['index.html']
                     },
@@ -225,7 +223,7 @@ module.exports = function (grunt) {
                     // Chrome
                     {
                         expand: true,
-                        cwd: 'src/application/chrome',
+                        cwd: 'src/package/chrome',
                         dest: '<%= cfg.app %>/chrome/',
                         src: ['index.html', 'manifest.json', 'background.js']
                     },
@@ -240,7 +238,7 @@ module.exports = function (grunt) {
                     // System
                     {
                         expand: true,
-                        cwd: 'src/application/system',
+                        cwd: 'src/package/system',
                         dest: '<%= cfg.tmp %>/__app_system/',
                         src: ['index.html', 'Info.plist', 'package.json']
                     },
@@ -296,9 +294,9 @@ module.exports = function (grunt) {
                 buildType: function () {
                     return 'system';
                 },
-                macIcns: 'src/application/system/appicon.icns',
+                macIcns: 'src/package/system/appicon.icns',
                 macZip: false,
-                winIco: 'src/application/system/appicon.ico'
+                winIco: 'src/package/system/appicon.ico'
             },
             src: '<%= cfg.tmp %>/__app_system/**/*'
         }
@@ -326,7 +324,7 @@ module.exports = function (grunt) {
             // package
             'test -f ./dist/gravit-osx.dmg && rm ./dist/gravit-osx.dmg',
             'mkdir ./dist',
-            './node_modules/appdmg/bin/appdmg ./src/application/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
+            './node_modules/appdmg/bin/appdmg ./src/package/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
         ];
 
         console.log('Sign & Package for OS-X');
