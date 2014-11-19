@@ -14,57 +14,30 @@ module.exports = function (grunt) {
         macSignIdentity: '1269B5CE3B0DCC676DA70011A618EB6FA95F8F50'
     };
 
-    var appJSFiles = [
-        '<%= cfg.lib %>/core/*.js',
-        '<%= cfg.lib %>/format/*.js',
-        '<%= cfg.lib %>/editor/*.js',
-        '<%= cfg.lib %>/component/*.js',
-        '<%= cfg.lib %>/shell/*.js',
-        '<%= cfg.lib %>/framework/*.js',
-        '<%= cfg.lib %>/application/*.js'
-    ];
+    // Take care of order!!
+    var modules = ['core', 'format', 'editor', 'component', 'shell', 'framework', 'application'];
 
-    var appCSSFiles = [
-        '<%= cfg.lib %>/core/*.css',
-        '<%= cfg.lib %>/format/*.css',
-        '<%= cfg.lib %>/editor/*.css',
-        '<%= cfg.lib %>/component/*.css',
-        '<%= cfg.lib %>/shell/*.css',
-        '<%= cfg.lib %>/framework/*.css',
-        '<%= cfg.lib %>/application/*.css'
-    ];
+    var appJSFiles = [];
+    var appCSSFiles = [];
 
-    function getAppCopyFiles(dest) {
-        return [
-            {
+    for (var i = 0; i < modules.length; ++i) {
+        appJSFiles.push('<%= cfg.lib %>/' + modules[i] + '/js/*.js');
+        appCSSFiles.push('<%= cfg.lib %>/' + modules[i] + '/style/*.css');
+    }
+
+    var getAppAssetFiles = function (dest) {
+        var result = [];
+
+        for (var i = 0; i < modules.length; ++i) {
+            result.push({
                 expand: true,
-                dot: true,
-                cwd: 'assets/editor',
-                dest: dest,
-                src: '{,*/}*.*'
-            },
-            {
-                expand: true,
-                dot: true,
-                cwd: 'assets/framework',
-                dest: dest,
-                src: '{,*/}*.*'
-            },
-            {
-                expand: true,
-                dot: true,
-                cwd: 'assets/application',
-                dest: dest,
-                src: '{,*/}*.*'
-            },
-            {
-                expand: true,
-                dot: true,
-                cwd: 'src/bower_components/font-awesome/fonts',
-                dest: dest + 'font',
-                src: '{,*/}*.*'
-            }
-        ]
+                cwd: '<%= cfg.lib %>/' + modules[i] + '/assets',
+                dest: dest + '/assets/' + modules[i] + '/',
+                src: '**/*'
+            });
+        }
+
+        return result;
     };
 
     grunt.initConfig({
@@ -73,7 +46,7 @@ module.exports = function (grunt) {
 
         watch: {
             compass: {
-                files: ['style/{,*/}*.{scss,sass}'],
+                files: ['src/style/{,*/}*.{scss,sass}'],
                 tasks: ['compass']
             },
             livereload: {
@@ -82,9 +55,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     'src/*.html',
-                    '<%= cfg.tmp %>/{,*/}*.css',
-                    '{<%= cfg.tmp %>,src/js/{,*/}*.js,test/{,*/}*.js',
-                    'assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    'src/js/{,*/}*.js,test/{,*/}*.js',
+                    'src/assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -98,25 +70,15 @@ module.exports = function (grunt) {
                 options: {
                     open: true,
                     base: [
-                        '<%= cfg.tmp %>',
-                        'assets/application',
-                        'assets/editor',
-                        'assets/framework',
-                        'src',
-                        '.'
+                        'src'
                     ]
                 }
             },
             test: {
                 options: {
                     base: [
-                        '<%= cfg.tmp %>',
-                        'assets/application',
-                        'assets/editor',
-                        'assets/framework',
                         'test',
-                        'src',
-                        '.'
+                        'src'
                     ]
                 }
             }
@@ -137,16 +99,11 @@ module.exports = function (grunt) {
         },
         compass: {
             options: {
-                sassDir: 'style',
-                cssDir: '<%= cfg.tmp %>',
-                importPath: 'src/bower_components',
-                generatedImagesDir: '<%= cfg.tmp %>/image/generated',
-                imagesDir: 'assets/image/images',
+                sassDir: 'src/style',
+                cssDir: 'src/style',
                 javascriptsDir: 'src/js',
-                fontsDir: '<%= cfg.tmp %>/font',
                 httpImagesPath: '/image',
                 httpGeneratedImagesPath: '/image/generated',
-                httpFontsPath: '/font',
                 relativeAssets: false,
                 debugInfo: true
             },
@@ -165,22 +122,22 @@ module.exports = function (grunt) {
             app: {
                 files: {
                     // Browser
-                    '<%= cfg.app %>/browser/app.js': appJSFiles.concat(
+                    '<%= cfg.app %>/browser/js/app.js': appJSFiles.concat(
                         'src/js/host/browser/*.js'
                     ),
-                    '<%= cfg.app %>/browser/app.css': appCSSFiles,
+                    '<%= cfg.app %>/browser/style/app.css': appCSSFiles,
 
                     // Chrome
-                    '<%= cfg.app %>/chrome/app.js': appJSFiles.concat(
+                    '<%= cfg.app %>/chrome/js/app.js': appJSFiles.concat(
                         'src/js/host/chrome/*.js'
                     ),
-                    '<%= cfg.app %>/chrome/app.css': appCSSFiles,
+                    '<%= cfg.app %>/chrome/style/app.css': appCSSFiles,
 
                     // System
-                    '<%= cfg.tmp %>/__app_system/app.js': appJSFiles.concat(
+                    '<%= cfg.tmp %>/__app_system/js/app.js': appJSFiles.concat(
                         'src/js/host/system/*.js'
                     ),
-                    '<%= cfg.tmp %>/__app_system/app.css': appCSSFiles
+                    '<%= cfg.tmp %>/__app_system/style/app.css': appCSSFiles
                 }
             }
         },
@@ -188,28 +145,46 @@ module.exports = function (grunt) {
             app: {
                 files: {
                     // Browser
-                    '<%= cfg.app %>/browser/app.js': ['<%= cfg.app %>/browser/app.js'],
+                    '<%= cfg.app %>/browser/js/app.js': ['<%= cfg.app %>/browser/js/app.js'],
 
                     // Chrome
-                    '<%= cfg.app %>/chrome/app.js': ['<%= cfg.app %>/chrome/app.js'],
+                    '<%= cfg.app %>/chrome/js/app.js': ['<%= cfg.app %>/chrome/js/app.js'],
 
                     // System
-                    '<%= cfg.tmp %>/__app_system/app.js': ['<%= cfg.tmp %>/__app_system/app.js']
+                    '<%= cfg.tmp %>/__app_system/js/app.js': ['<%= cfg.tmp %>/__app_system/js/app.js']
                 }
             }
         },
         copy: {
-            dev: {
+            lib: {
                 files: [
                     {
                         expand: true,
-                        dot: true,
-                        cwd: 'src/bower_components/font-awesome/fonts',
-                        dest: '<%= cfg.tmp %>/font/',
-                        src: '{,*/}*.*'
+                        cwd: 'src/assets/application',
+                        dest: '<%= cfg.lib %>/application/assets',
+                        src: '**/*'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/assets/editor',
+                        dest: '<%= cfg.lib %>/editor/assets',
+                        src: '**/*'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/assets/framework',
+                        dest: '<%= cfg.lib %>/framework/assets',
+                        src: '**/*'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/assets/shell',
+                        dest: '<%= cfg.lib %>/shell/assets',
+                        src: '**/*'
                     }
                 ]
             },
+
             app: {
                 files: [
                     // Browser
@@ -231,8 +206,22 @@ module.exports = function (grunt) {
                         expand: true,
                         dot: true,
                         cwd: 'src/bower_components/jquery/dist/',
-                        dest: '<%= cfg.app %>/chrome/',
+                        dest: '<%= cfg.app %>/chrome/js/',
                         src: 'jquery.min.js'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/css',
+                        dest: '<%= cfg.app %>/chrome/font-awesome/css/',
+                        src: 'font-awesome.min.css'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/fonts',
+                        dest: '<%= cfg.app %>/chrome/font-awesome/fonts/',
+                        src: '{,*/}*.*'
                     },
 
                     // System
@@ -246,13 +235,28 @@ module.exports = function (grunt) {
                         expand: true,
                         dot: true,
                         cwd: 'src/bower_components/jquery/dist/',
-                        dest: '<%= cfg.tmp %>/__app_system/',
+                        dest: '<%= cfg.tmp %>/__app_system/js/',
                         src: 'jquery.min.js'
                     },
-                ]
-                    .concat(getAppCopyFiles('<%= cfg.app %>/browser/'))
-                    .concat(getAppCopyFiles('<%= cfg.app %>/chrome/'))
-                    .concat(getAppCopyFiles('<%= cfg.tmp %>/__app_system/'))
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/css',
+                        dest: '<%= cfg.tmp %>/__app_system/font-awesome/css/',
+                        src: 'font-awesome.min.css'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/fonts',
+                        dest: '<%= cfg.tmp %>/__app_system/font-awesome/fonts/',
+                        src: '{,*/}*.*'
+                    }
+                ].concat(
+                    getAppAssetFiles('<%= cfg.app %>/browser'),
+                    getAppAssetFiles('<%= cfg.app %>/chrome'),
+                    getAppAssetFiles('<%= cfg.app %>/system')
+                )
             }
         },
         replace: {
@@ -287,7 +291,7 @@ module.exports = function (grunt) {
         },
         nodewebkit: {
             options: {
-                version: '0.10.1',
+                version: '0.11.0',
                 platforms: ['win', 'osx', 'linux64'],
                 cacheDir: './node-webkit',
                 buildDir: '<%= cfg.app %>',
@@ -310,21 +314,21 @@ module.exports = function (grunt) {
 
         var commands = [
             // sign
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '"',
 
             // verify
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '"',
 
             // package
             'test -f ./dist/gravit-osx.dmg && rm ./dist/gravit-osx.dmg',
             'mkdir ./dist',
-            './node_modules/appdmg/bin/appdmg ./src/package/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
+                './node_modules/appdmg/bin/appdmg ./src/package/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
         ];
 
         console.log('Sign & Package for OS-X');
@@ -395,7 +399,6 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:dev',
             'compass:dev',
-            'copy:dev',
             'connect:livereload',
             'watch'
         ]);
@@ -405,7 +408,6 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:dev',
             'compass:dev',
-            'copy:dev',
             'connect:test',
             'mocha'
         ]);
@@ -418,7 +420,8 @@ module.exports = function (grunt) {
             'compass:lib',
             'concat:generated',
             'cssmin:generated',
-            'uglify:generated'
+            'uglify:generated',
+            'copy:lib'
         ]);
     });
 
@@ -439,10 +442,10 @@ module.exports = function (grunt) {
             'test',
             'app',
             'clean:dist',
-             '_dist_osx',
-             '_dist_linux',
-             '_dist_win',
-             '_dist_chrome'
+            '_dist_osx',
+            '_dist_linux',
+            '_dist_win',
+            '_dist_chrome'
         ]);
     });
 

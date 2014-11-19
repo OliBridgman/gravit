@@ -6,23 +6,23 @@
             family: 'Open Sans',
             category: GFont.Category.Serif,
             substitutes: [
-                {style: GFont.Style.Normal, weight: GFont.Weight.Light, url: 'font/OpenSans-Light.ttf'},
-                {style: GFont.Style.Italic, weight: GFont.Weight.Light, url: 'font/OpenSans-LightItalic.ttf'},
-                {style: GFont.Style.Normal, weight: GFont.Weight.Regular, url: 'font/OpenSans-Regular.ttf'},
-                {style: GFont.Style.Italic, weight: GFont.Weight.Regular, url: 'font/OpenSans-Italic.ttf'},
-                {style: GFont.Style.Normal, weight: GFont.Weight.SemiBold, url: 'font/OpenSans-Semibold.ttf'},
-                {style: GFont.Style.Italic, weight: GFont.Weight.SemiBold, url: 'font/OpenSans-SemiboldItalic.ttf'},
-                {style: GFont.Style.Normal, weight: GFont.Weight.Bold, url: 'font/OpenSans-Bold.ttf'},
-                {style: GFont.Style.Italic, weight: GFont.Weight.Bold, url: 'font/OpenSans-BoldItalic.ttf'},
-                {style: GFont.Style.Normal, weight: GFont.Weight.ExtraBold, url: 'font/OpenSans-ExtraBold.ttf'},
-                {style: GFont.Style.Italic, weight: GFont.Weight.ExtraBold, url: 'font/OpenSans-ExtraBoldItalic.ttf'}
+                {style: GFont.Style.Normal, weight: GFont.Weight.Light, url: 'assets/application/font/OpenSans-Light.ttf'},
+                {style: GFont.Style.Italic, weight: GFont.Weight.Light, url: 'assets/application/font/OpenSans-LightItalic.ttf'},
+                {style: GFont.Style.Normal, weight: GFont.Weight.Regular, url: 'assets/application/font/OpenSans-Regular.ttf'},
+                {style: GFont.Style.Italic, weight: GFont.Weight.Regular, url: 'assets/application/font/OpenSans-Italic.ttf'},
+                {style: GFont.Style.Normal, weight: GFont.Weight.SemiBold, url: 'assets/application/font/OpenSans-Semibold.ttf'},
+                {style: GFont.Style.Italic, weight: GFont.Weight.SemiBold, url: 'assets/application/font/OpenSans-SemiboldItalic.ttf'},
+                {style: GFont.Style.Normal, weight: GFont.Weight.Bold, url: 'assets/application/font/OpenSans-Bold.ttf'},
+                {style: GFont.Style.Italic, weight: GFont.Weight.Bold, url: 'assets/application/font/OpenSans-BoldItalic.ttf'},
+                {style: GFont.Style.Normal, weight: GFont.Weight.ExtraBold, url: 'assets/application/font/OpenSans-ExtraBold.ttf'},
+                {style: GFont.Style.Italic, weight: GFont.Weight.ExtraBold, url: 'assets/application/font/OpenSans-ExtraBoldItalic.ttf'}
             ]
         },
         {
             family: 'Source Sans Pro',
             category: GFont.Category.Serif,
             substitutes: [
-                {style: GFont.Style.Normal, weight: GFont.Weight.Regular, url: 'font/SourceSansPro-Regular.ttf'}
+                {style: GFont.Style.Normal, weight: GFont.Weight.Regular, url: 'assets/application/font/SourceSansPro-Regular.ttf'}
             ]
         }
     ]

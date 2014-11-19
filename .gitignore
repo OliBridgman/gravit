@@ -8,3 +8,4 @@ lib
 tmp
 dist
 src/bower_components
+src/style/*.css

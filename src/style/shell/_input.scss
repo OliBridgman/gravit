@@ -140,12 +140,12 @@ input[type=checkbox] {
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    content: $fa-var-toggle-off;
+    content: "\f204";
   }
 
   &:checked {
     &:before {
-      content: $fa-var-toggle-on;
+      content: "\f205";
     }
   }
 }

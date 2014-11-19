@@ -1,5 +1,4 @@
 @import "compass/css3/box-sizing";
-@import 'font-awesome/scss/variables';
 @import '../variables';
 
 /** Base styling for ul menu */
@@ -100,7 +99,7 @@
 
 /** Add tail arrow indicator to right and spacing if sub-menu and not root */
 .g-menu:not(.g-menu-root) > .g-menu-item-menu > span.g-menu-item-tail:before {
-  content:$fa-var-caret-right;
+  content:"\f0da";
 }
 
 /** Icon needs fixed width */
@@ -166,7 +165,7 @@
   line-height: 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  content:$fa-var-check;
+  content:"\f00c";
 }
 
 /** Adjustments for menu bar */
