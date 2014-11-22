@@ -73,8 +73,8 @@
     };
 
     /** @override */
-    GPageGuide.prototype.isMappingAllowed = function () {
-        return !ifPlatform.modifiers.metaKey;
+    GPageGuide.prototype.isMappingAllowed = function (detail) {
+        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     /** @override */

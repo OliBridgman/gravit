@@ -753,7 +753,7 @@
                     this._guides.getShapeBoxGuide().useExclusions(this._selection);
                 }
                 this._guides.beginMap();
-                newSidePos = this._guides.mapPoint(newSidePos);
+                newSidePos = this._guides.mapPoint(newSidePos, true);
                 this._guides.finishMap();
                 translation = newSidePos.subtract(sidePos);
             } else {

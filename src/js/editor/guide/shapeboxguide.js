@@ -151,8 +151,8 @@
     };
 
     /** @override */
-    GShapeBoxGuide.prototype.isMappingAllowed = function () {
-        return !ifPlatform.modifiers.metaKey;
+    GShapeBoxGuide.prototype.isMappingAllowed = function (detail) {
+        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     /**

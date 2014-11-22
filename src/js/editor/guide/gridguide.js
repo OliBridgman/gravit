@@ -12,7 +12,7 @@
         GGuide.call(this, guides);
     }
 
-    GObject.inheritAndMix(GGridGuide, GGuide, [GGuide.Visual, GGuide.Map]);
+    GObject.inheritAndMix(GGridGuide, GGuide, [GGuide.Visual, GGuide.Map, GGuide.DetailMap]);
 
     GGridGuide.MIN_CELL_SPACE = 10;
 
@@ -72,8 +72,8 @@
     };
 
     /** @override */
-    GGridGuide.prototype.isMappingAllowed = function () {
-        return !ifPlatform.modifiers.metaKey;
+    GGridGuide.prototype.isMappingAllowed = function (detail) {
+        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     /** @override */

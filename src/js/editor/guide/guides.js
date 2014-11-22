@@ -152,9 +152,10 @@
     /**
      * Map a point to the current snapping options
      * @param {GPoint} point the point to map
+     * @param {Boolean} detail - use only guides with DetailMap mixin
      * @returns {GPoint} a mapped point
      */
-    GGuides.prototype.mapPoint = function (point) {
+    GGuides.prototype.mapPoint = function (point, detail) {
         var resX = null;
         var resY = null;
 
@@ -163,7 +164,7 @@
         var targPts = [];
         for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
-            if (guide.isMappingAllowed()) {
+            if (guide.isMappingAllowed(detail)) {
                 res = guide.map(point.getX(), point.getY(), true);
                 if (res) {
                     if (res.x && resX === null) {
@@ -212,9 +213,9 @@
     };
 
     /**
-     * Map a point to the current snapping options
-     * @param {GRect} point the point to map
-     * @returns {GRect} a mapped point
+     * Map a rectangle to the current snapping options
+     * @param {GRect} rectangle the rectangle to map
+     * @returns {GRect} a mapped rectangle
      */
     GGuides.prototype.mapRect = function (rect) {
         /*
@@ -284,6 +285,7 @@
             deltaY = resY[0].y.value - pivots[resY[0].pivotIdx].getY();
         }
 
+        // There is a mapping to apply. Check visuals to draw
         if (deltaX || deltaY) {
             resRect = rect.translated(deltaX, deltaY);
             var deltaPt = new GPoint(deltaX, deltaY);

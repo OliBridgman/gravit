@@ -11,7 +11,7 @@
         GGuide.call(this, guides);
     }
 
-    GObject.inheritAndMix(GUnitGuide, GGuide, [GGuide.Map]);
+    GObject.inheritAndMix(GUnitGuide, GGuide, [GGuide.Map, GGuide.DetailMap]);
 
     /** @override */
     GUnitGuide.prototype.map = function (x, y) {

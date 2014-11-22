@@ -668,7 +668,7 @@
                         this._editorMovePartInfo.id.type == GPathEditor.PartType.Segment)) {
 
                     this._editor.getGuides().beginMap();
-                    position = this._editor.getGuides().mapPoint(position);
+                    position = this._editor.getGuides().mapPoint(position, this._editor.hasSelectionDetail());
                     this._editor.getGuides().finishMap();
 
                     var moveDelta = position.subtract(this._moveStartTransformed);

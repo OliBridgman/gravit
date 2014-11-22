@@ -52,6 +52,23 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GGuide.DetailMap Mixin
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * A mixin marking a guide should work in Detail Mode
+     * @class GGuide.DetailMap
+     * @constructor
+     * @mixin
+     */
+    GGuide.DetailMap = function () {
+    };
+
+    /** @override */
+    GGuide.DetailMap.prototype.toString = function () {
+        return "[Mixin GGuide.DetailMap]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GGuide.Map Mixin
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -78,10 +95,19 @@
     /**
      * Called to check for each guide if mapping is allowed at the current moment. It may be blocked due to
      * key modifiers like CTRL, and so on.
+     * @param {Boolean} detail - if set, allow only if guide has DetailMap mixin; if not set, allow always
      * @returns {Boolean}
      */
-    GGuide.Map.prototype.isMappingAllowed = function () {
-        return true;
+    GGuide.Map.prototype.isMappingAllowed = function (detail) {
+        //res = (detail === true || detail === false) ? this.hasMixin(GGuide.DetailMap) : true;
+        //res = res ? !!detail : true;
+        if (detail === true || detail === false) {
+            res = detail ? this.hasMixin(GGuide.DetailMap) : false;
+        } else {
+            res = true;
+        }
+        return res;
+        return this.hasMixin(GGuide.DetailMap) ? !!detail : true;
     };
 
     /** @override */
