@@ -105,7 +105,7 @@
                 // add new point
                 var pt = this._view.getViewTransform().mapPoint(event.client);
                 this._editor.getGuides().beginMap();
-                pt = this._editor.getGuides().mapPoint(pt);
+                pt = this._editor.getGuides().mapPoint(pt, GGuide.DetailMap.Mode.DetailOnFilterOn);
                 this._editor.getGuides().finishMap();
                 anchorPt = this._constructNewPoint(event, pt);
                 if (event.button == GMouseEvent.BUTTON_RIGHT) {
@@ -223,7 +223,7 @@
                 // add new point
                 var clickPt = this._view.getViewTransform().mapPoint(newPos);
                 this._editor.getGuides().beginMap();
-                clickPt = this._editor.getGuides().mapPoint(clickPt);
+                clickPt = this._editor.getGuides().mapPoint(clickPt, GGuide.DetailMap.Mode.DetailOnFilterOn);
                 this._editor.getGuides().finishMap();
                 newPos = this._view.getWorldTransform().mapPoint(clickPt);
                 anchorPt = this._constructNewPoint(event, clickPt);

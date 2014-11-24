@@ -332,7 +332,7 @@
 
             newPos = this._view.getWorldTransform().mapPoint(
                 this._editor.getGuides().mapPoint(
-                    this._view.getViewTransform().mapPoint(newPos)));
+                    this._view.getViewTransform().mapPoint(newPos), GGuide.DetailMap.Mode.DetailOnFilterOn));
 
             this._editor.getGuides().finishMap();
             this._pathEditor.movePoint(this._editPt, newPos, this._view.getWorldTransform(), this._dragStartPt);

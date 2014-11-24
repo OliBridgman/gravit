@@ -152,7 +152,7 @@
     /**
      * Map a point to the current snapping options
      * @param {GPoint} point the point to map
-     * @param {Boolean} detail - use only guides with DetailMap mixin
+     * @param {GGuide.DetailMap.Mode} detail - if only guides with DetailMap mixin should be used
      * @returns {GPoint} a mapped point
      */
     GGuides.prototype.mapPoint = function (point, detail) {
