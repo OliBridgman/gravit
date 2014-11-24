@@ -1,9 +1,33 @@
 (function (_) {
+    function extractFileName (path) {
+        var tmpPath = path;
+        if (tmpPath.charAt(tmpPath.length - 1) === '/') {
+            tmpPath = tmpPath.substr(tmpPath, 0, tmpPath.length - 1);
+        }
+
+        var lastSlash = tmpPath.lastIndexOf('/');
+        if (lastSlash < 0) {
+            lastSlash = tmpPath.lastIndexOf('\\');
+        }
+
+        if (lastSlash >= 0) {
+            var lastDot = tmpPath.lastIndexOf('.');
+            if (lastDot > 0) {
+                return tmpPath.substr(lastSlash + 1, lastDot - lastSlash - 1);
+            } else {
+                return tmpPath.substr(lastSlash + 1);
+            }
+        } else {
+            throw new Error('Unable to extract filename');
+        }
+    };
+
     var gui = require('nw.gui');
+    var fs = require('fs');
 
     gui.App.on('open', function (cmdline) {
         if (cmdline && cmdline.length > 0) {
-            gApp.openDocument('file://' + cmdline);
+            // TODO gApp.addProject(new GProject(cmdline, extractFileName(cmdLine)));
         }
     });
 
@@ -29,6 +53,30 @@
         }
 
         this._clipboardMimeTypes = {};
+
+        this._fileInput = $('<input/>')
+            .css('display', 'none')
+            .attr('type', 'file')
+            .on('change', function (evt) {
+                var files = this._fileInput[0].files;
+                if (files && files.length > 0) {
+                    var file = this._fileInput[0].files[0];
+                    var location = GUtil.replaceAll(file.path, '\\', '/');
+
+                    if (this._fileInputMode === 'open_resource') {
+                        this._fileInputCallback(location, extractFileName(location));
+                    } else if (this._fileInputMode === 'save_resource') {
+                        var extension = this._fileInput.attr('data-extension');
+                        if (extension && !location.match("\\." + extension + "$")) {
+                            location += "." + extension;
+                        }
+                        this._fileInputCallback(location, extractFileName(location));
+                    } else if (this._fileInputMode === 'directory') {
+                        this._fileInputCallback(location, extractFileName(location));
+                    }
+                }
+            }.bind(this))
+            .appendTo($('body'));
     };
     GObject.inherit(GSystemHost, GHost);
 
@@ -44,10 +92,21 @@
      */
     GSystemHost.prototype._clipboardMimeTypes = null;
 
+    /**
+     * @type {String}
+     * @private
+     */
+    GSystemHost.prototype._fileInputMode = null;
+
+    /**
+     * @type {Function}
+     * @private
+     */
+    GSystemHost.prototype._fileInputCallback = null;
+
     /** @override */
     GSystemHost.prototype.isDevelopment = function () {
-        var argv = gui.App.argv;
-        return argv.indexOf('-dev') >= 0;
+        return gui.App.manifest.development === true;
     };
 
     /** @override */
@@ -66,9 +125,14 @@
         if (argv && argv.length) {
             for (var i = 0; i < argv.length; ++i) {
                 if (argv[i].charAt(0) !== '-') {
-                    gApp.openDocument('file://' + argv[i]);
+                    // TODO gApp.addProject(new GProject(argv[i], extractFileName(argv[i])));
                 }
             }
+        }
+
+        // Open dev console if desired at earliest convince
+        if (_.gHost.isDevelopment() && argv.indexOf('-console') >= 0) {
+            win.showDevTools();
         }
     };
 
@@ -139,6 +203,27 @@
     /** @override */
     GSystemHost.prototype.setClipboardContent = function (mimeType, content) {
         this._clipboardMimeTypes[mimeType] = content;
+    };
+
+    /** @override */
+    GSystemHost.prototype.openDirectoryPrompt = function (done) {
+        this._fileInputMode = 'directory';
+        this._fileInputCallback = done;
+        this._prepareFileInput();
+        this._fileInput
+            .attr('nwdirectory', '')
+            .trigger('click');
+    };
+
+    /** @private */
+    GSystemHost.prototype._prepareFileInput = function () {
+        this._fileInput
+            .removeAttr('accept')
+            .removeAttr('nwsaveas')
+            .removeAttr('nwdirectory')
+            .removeAttr('nwworkingdir')
+            .removeAttr('data-extension')
+            .val('');
     };
 
     /**
@@ -361,12 +446,4 @@
     };
 
     _.gHost = new GSystemHost;
-
-    $(document).ready(function () {
-        // Open dev console if desired at earliest convince
-        var argv = gui.App.argv;
-        if (_.gHost.isDevelopment() || argv.indexOf('-console') >= 0) {
-            win.showDevTools();
-        }
-    });
 })(this);

@@ -2,7 +2,7 @@
     gDevelopment.tests.push({
         title: 'Create Multiple Pages',
         test: function () {
-            gApp.executeAction(GNewAction.ID);
+            gApp.createNewDocument();
             var document = gApp.getActiveDocument();
             var scene = document.getScene();
             scene.removeChild(scene.getActivePage());

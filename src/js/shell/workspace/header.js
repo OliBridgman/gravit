@@ -15,6 +15,18 @@
      */
     GHeader.prototype._htmlElement = null;
 
+    GHeader.prototype.setShowWindows = function (show) {
+        this._htmlElement.find('.windows').css('display', show ? '' : 'none');
+    };
+
+    GHeader.prototype.setShowView = function (show) {
+        this._htmlElement.find('.view').css('display', show ? '' : 'none');
+    };
+
+    GHeader.prototype.setShowProjects = function (show) {
+        this._htmlElement.find('.projects').css('display', show ? '' : 'none');
+    };
+
     /**
      * Called from the workspace to initialize
      */
@@ -22,6 +34,14 @@
         // Window tabs
         $('<div></div>')
             .addClass('windows')
+            .appendTo(this._htmlElement);
+
+        // Misc toolbar
+        $('<div></div>')
+            .addClass('misc')
+            .append($('<select></select>')
+                .addClass('projects')
+                .css('width', '100%'))
             .appendTo(this._htmlElement);
 
         // View toolbar
@@ -32,6 +52,7 @@
 
         this._updateZoomFromWindow();
 
+        gApp.addEventListener(GApplication.ProjectEvent, this._projectEvent, this);
         gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
         gApp.getWindows().addEventListener(GWindows.WindowEvent, this._windowEvent, this);
         this._updateView();
@@ -41,8 +62,28 @@
      * Called from the workspace to relayout
      */
     GHeader.prototype.relayout = function () {
-        this._htmlElement.find('.view')
-            .css('padding-right', gApp.isPartVisible(GApplication.Part.Palettes) ? gApp.getPart(GApplication.Part.Palettes).outerWidth().toString() + 'px' : '');
+        this._htmlElement.find('.misc')
+            .css('width', gApp.isPartVisible(GApplication.Part.Palettes) ? gApp.getPart(GApplication.Part.Palettes).outerWidth().toString() + 'px' : '');
+    };
+
+    /**
+     * @param {GApplication.ProjectEvent} evt
+     * @private
+     */
+    GHeader.prototype._projectEvent = function (evt) {
+        switch (evt.type) {
+            case GApplication.ProjectEvent.Type.Added:
+                this._htmlElement.find('.projects').append($('<option></option>').text(evt.project.getName()));
+                break;
+            case GApplication.ProjectEvent.Type.Removed:
+                break;
+            case GApplication.ProjectEvent.Type.Activated:
+                break;
+            case GApplication.ProjectEvent.Type.Deactivated:
+                break;
+            default:
+                break;
+        }
     };
 
     /**

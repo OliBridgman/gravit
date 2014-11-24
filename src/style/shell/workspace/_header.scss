@@ -41,7 +41,15 @@
 
   > .view {
     float:right;
-    padding-right: 5px;
+    margin-right: 5px;
+
+    > * {
+      margin-top: 2px;
+    }
+  }
+
+  > .misc {
+    float:right;
 
     > * {
       margin-top: 2px;

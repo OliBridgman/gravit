@@ -2,7 +2,7 @@
     gDevelopment.tests.push({
         title: 'Create Styled Shape',
         test: function test() {
-            gApp.executeAction(GNewAction.ID);
+            gApp.executeAction(GNewProjectAction.ID);
             var document = gApp.getActiveDocument();
             var scene = document.getScene();
             var page = scene.getActivePage();

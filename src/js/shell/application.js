@@ -9,6 +9,7 @@
     function GApplication() {
         this._actions = [];
         this._toolManager = new GToolManager();
+        this._projects = [];
         this._documents = [];
 
         document.addEventListener("touchstart", this._touchHandler, true);
@@ -97,6 +98,48 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
+    // GApplication.ProjectEvent Event
+    // -----------------------------------------------------------------------------------------------------------------
+    /**
+     * An event whenever a project event occurrs
+     * @class GApplication.ProjectEvent
+     * @extends GEvent
+     * @constructor
+     */
+    GApplication.ProjectEvent = function (type, project) {
+        this.type = type;
+        this.project = project;
+    };
+    GObject.inherit(GApplication.ProjectEvent, GEvent);
+
+    /**
+     * Enumeration of project event types
+     * @enum
+     */
+    GApplication.ProjectEvent.Type = {
+        Added: 0,
+        Removed: 1,
+        Deactivated: 10,
+        Activated: 11
+    };
+
+    /**
+     * @type {GApplication.ProjectEvent.Type}
+     */
+    GApplication.ProjectEvent.prototype.type = null;
+
+    /**
+     * The affected project
+     * @type {Project}
+     */
+    GApplication.ProjectEvent.prototype.project = null;
+
+    /** @override */
+    GApplication.ProjectEvent.prototype.toString = function () {
+        return "[Object GApplication.ProjectEvent]";
+    };
+
+    // -----------------------------------------------------------------------------------------------------------------
     // GApplication.DocumentEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
@@ -112,7 +155,7 @@
     GObject.inherit(GApplication.DocumentEvent, GEvent);
 
     /**
-     * Enumeration of view event types
+     * Enumeration of document event types
      * @enum
      */
     GApplication.DocumentEvent.Type = {
@@ -154,6 +197,18 @@
      * @private
      */
     GApplication.prototype._toolManager = null;
+
+    /**
+     * @type {Array<GProject>}
+     * @private
+     */
+    GApplication.prototype._projects = null;
+
+    /**
+     * @type {GProject}
+     * @private
+     */
+    GApplication.prototype._activeProject = null;
 
     /**
      * @type {number}
@@ -241,6 +296,22 @@
      */
     GApplication.prototype.getToolManager = function () {
         return this._toolManager;
+    };
+
+    /**
+     * Returns a list of all opened projects
+     * @return {Array<GProject>}
+     */
+    GApplication.prototype.getProjects = function () {
+        return this._projects;
+    };
+
+    /**
+     * Returns the currently active project
+     * @return {GProject}
+     */
+    GApplication.prototype.getActiveProject = function () {
+        return this._activeProject ? this._activeProject : null;
     };
 
     /**
@@ -356,6 +427,57 @@
             }
         }
         return null;
+    };
+
+    /**
+     * Add a new project and mark it as being active
+     * @param {GProject} project the project to add
+     */
+    GApplication.prototype.addProject = function (project) {
+        // Add the project
+        this._projects.push(project);
+
+        // Send an event
+        if (this.hasEventListeners(GApplication.ProjectEvent)) {
+            this.trigger(new GApplication.ProjectEvent(GApplication.ProjectEvent.Type.Added, project));
+        }
+
+        // Mark it being active
+        this.activateProject(project);
+    };
+
+    /**
+     * Activates a project
+     * @param {GProject} project the project to be activated, maybe
+     * null to deactivate the current project
+     */
+    GApplication.prototype.activateProject = function (project) {
+        if (project != this._activeProject) {
+            // Deactivate previous one if any
+            if (this._activeProject) {
+                if (this._activeProject) {
+                    this._activeProject.deactivate();
+
+                    if (this.hasEventListeners(GApplication.ProjectEvent)) {
+                        this.trigger(new GApplication.ProjectEvent(GApplication.ProjectEvent.Type.Deactivated, this._activeProject));
+                    }
+                }
+
+                this._activeProject = null;
+            }
+
+            // Activate new one if any
+            if (project) {
+                project.activate();
+
+                // Now assign the active project
+                this._activeProject = project;
+
+                if (this.hasEventListeners(GApplication.ProjectEvent)) {
+                    this.trigger(new GApplication.ProjectEvent(GApplication.ProjectEvent.Type.Activated, project));
+                }
+            }
+        }
     };
 
     /**

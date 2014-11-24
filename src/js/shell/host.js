@@ -114,5 +114,13 @@
         throw new Error("Not Supported.");
     };
 
+    /**
+     * Prompt for opening a directory
+     * @param {Function} done called with the directory and the directory name as arguments
+     */
+    GHost.prototype.openDirectoryPrompt = function (done) {
+        throw new Error('Not supported.');
+    };
+
     _.GHost = GHost;
 })(this);

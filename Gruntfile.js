@@ -291,7 +291,7 @@ module.exports = function (grunt) {
         },
         nodewebkit: {
             options: {
-                version: '0.11.0',
+                version: '0.11.1',
                 platforms: ['win', 'osx', 'linux64'],
                 cacheDir: './node-webkit',
                 buildDir: '<%= cfg.app %>',

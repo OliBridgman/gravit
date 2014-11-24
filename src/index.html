@@ -291,6 +291,7 @@
 <script src="js/shell/bootstrap.js"></script>
 <script src="js/shell/host.js"></script>
 <script src="js/shell/application.js"></script>
+<script src="js/shell/project.js"></script>
 <script src="js/shell/document.js"></script>
 <!-- I18N -->
 <script src="js/shell/i18n/i18n_en.js"></script>
@@ -327,7 +328,7 @@
 <script src="js/framework/action/invertselectionaction.js"></script>
 <script src="js/framework/action/layertypeaction.js"></script>
 <script src="js/framework/action/magnificationaction.js"></script>
-<script src="js/framework/action/newaction.js"></script>
+<script src="js/framework/action/newprojectaction.js"></script>
 <script src="js/framework/action/newwindowaction.js"></script>
 <script src="js/framework/action/openaction.js"></script>
 <script src="js/framework/action/arrangeaction.js"></script>
@@ -416,7 +417,7 @@
 <script src="js/development/testaction.js"></script>
 <script src="js/development/development.js"></script>
 
-<!-- Include the proper shell for development -->
+<!-- Include the proper host for development -->
 <script type="text/javascript">
     if (this['process'] && this['require']) {
         document.writeln("<script src=\"js/host/system/filestorage.js\" type=\"text\/javascript\"><\/script>");

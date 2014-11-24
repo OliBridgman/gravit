@@ -11,5 +11,6 @@
         "width": 1024,
         "height": 786,
         "show": true
-    }
+    },
+    "development": true
 }

@@ -5,7 +5,7 @@
             var RECT_SIZE = 50;
             var RECT_SPACE = 10;
 
-            gApp.executeAction(GNewAction.ID);
+            gApp.executeAction(GNewProjectAction.ID);
             var document = gApp.getActiveDocument();
             var scene = document.getScene();
             var page = scene.getActivePage();

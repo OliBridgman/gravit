@@ -190,7 +190,7 @@
 
         gravit.actions.push(
             // File
-            new GNewAction(),
+            new GNewProjectAction(),
             new GOpenAction(),
 
             new GSaveAction(),
