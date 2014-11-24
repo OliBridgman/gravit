@@ -15,7 +15,7 @@ module.exports = function (grunt) {
     };
 
     // Take care of order!!
-    var modules = ['core', 'format', 'editor', 'component', 'shell', 'framework', 'application'];
+    var modules = ['core', 'format', 'editor', 'component', 'application'];
 
     var appJSFiles = [];
     var appCSSFiles = [];
@@ -123,19 +123,19 @@ module.exports = function (grunt) {
                 files: {
                     // Browser
                     '<%= cfg.app %>/browser/js/app.js': appJSFiles.concat(
-                        'src/js/host/browser/*.js'
+                        'src/js/application/host/browser/*.js'
                     ),
                     '<%= cfg.app %>/browser/style/app.css': appCSSFiles,
 
                     // Chrome
                     '<%= cfg.app %>/chrome/js/app.js': appJSFiles.concat(
-                        'src/js/host/chrome/*.js'
+                        'src/js/application/host/chrome/*.js'
                     ),
                     '<%= cfg.app %>/chrome/style/app.css': appCSSFiles,
 
                     // System
                     '<%= cfg.tmp %>/__app_system/js/app.js': appJSFiles.concat(
-                        'src/js/host/system/*.js'
+                        'src/js/application/host/system/*.js'
                     ),
                     '<%= cfg.tmp %>/__app_system/style/app.css': appCSSFiles
                 }
@@ -168,18 +168,6 @@ module.exports = function (grunt) {
                         expand: true,
                         cwd: 'src/assets/editor',
                         dest: '<%= cfg.lib %>/editor/assets',
-                        src: '**/*'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'src/assets/framework',
-                        dest: '<%= cfg.lib %>/framework/assets',
-                        src: '**/*'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'src/assets/shell',
-                        dest: '<%= cfg.lib %>/shell/assets',
                         src: '**/*'
                     }
                 ]

@@ -14,13 +14,9 @@
     <!-- build:css component/style/gravit.component.css -->
     <link rel="stylesheet" href="style/component.css">
     <!-- endbuild -->
-    <!-- build:css framework/style/gravit.framework.css -->
-    <link rel="stylesheet" href="style/framework.css">
+    <!-- build:css application/style/gravit.application.css -->
+    <link rel="stylesheet" href="style/application.css">
     <!-- endbuild -->
-    <!-- build:css shell/style/gravit.shell.css -->
-    <link rel="stylesheet" href="style/shell.css">
-    <!-- endbuild -->
-</head>
 <body>
 
 <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -245,9 +241,9 @@
 
 
 <!-- ############################################################## -->
-<!-- # Gravit Shell Libraries ##################################### -->
+<!-- # Gravit Application Libraries ############################### -->
 <!-- ############################################################## -->
-<!-- build:js shell/js/gravit.shell.libs.js -->
+<!-- build:js application/js/gravit.application.libs.js -->
 <script src="bower_components/jqtree/tree.jquery.js"></script>
 
 <script src="bower_components/mousetrap/mousetrap.js"></script>
@@ -262,143 +258,127 @@
 
 
 <!-- ############################################################## -->
-<!-- # Gravit Shell ############################################### -->
-<!-- ############################################################## -->
-<!-- build:js shell/js/gravit.shell.js -->
-<!-- Extension -->
-<script src="js/shell/extension/action.js"></script>
-<script src="js/shell/extension/exporter.js"></script>
-<script src="js/shell/extension/module.js"></script>
-<script src="js/shell/extension/view.js"></script>
-<script src="js/shell/extension/palette.js"></script>
-<script src="js/shell/extension/panel.js"></script>
-<script src="js/shell/extension/properties.js"></script>
-<script src="js/shell/extension/sidebar.js"></script>
-<script src="js/shell/extension/storage.js"></script>
-<!-- Workspace -->
-<script src="js/shell/workspace/header.js"></script>
-<script src="js/shell/workspace/palettes.js"></script>
-<script src="js/shell/workspace/panels.js"></script>
-<script src="js/shell/workspace/sidebars.js"></script>
-<script src="js/shell/workspace/toolbar.js"></script>
-<script src="js/shell/workspace/window.js"></script>
-<script src="js/shell/workspace/windows.js"></script>
-<!-- Util -->
-<script src="js/shell/util/ciede2000.js"></script>
-<script src="js/shell/util/image.js"></script>
-<script src="js/shell/util/jqueryext.js"></script>
-<!-- Root -->
-<script src="js/shell/bootstrap.js"></script>
-<script src="js/shell/host.js"></script>
-<script src="js/shell/application.js"></script>
-<script src="js/shell/project.js"></script>
-<script src="js/shell/document.js"></script>
-<!-- I18N -->
-<script src="js/shell/i18n/i18n_en.js"></script>
-<script src="js/shell/i18n/i18n_de.js"></script>
-<!-- endbuild -->
-
-
-<!-- ############################################################## -->
-<!-- # Gravit Framework ########################################### -->
-<!-- ############################################################## -->
-<!-- build:js framework/js/gravit.framework.js -->
-<!-- Action -->
-<script src="js/framework/action/addlayeraction.js"></script>
-<script src="js/framework/action/deletelayeraction.js"></script>
-<script src="js/framework/action/addpageaction.js"></script>
-<script src="js/framework/action/alignaction.js"></script>
-<script src="js/framework/action/cloneaction.js"></script>
-<script src="js/framework/action/converttopathaction.js"></script>
-<script src="js/framework/action/closeaction.js"></script>
-<script src="js/framework/action/closeallaction.js"></script>
-<script src="js/framework/action/copyaction.js"></script>
-<script src="js/framework/action/cutaction.js"></script>
-<script src="js/framework/action/deleteaction.js"></script>
-<script src="js/framework/action/deletepageaction.js"></script>
-<script src="js/framework/action/distributeaction.js"></script>
-<script src="js/framework/action/duplicateaction.js"></script>
-<script src="js/framework/action/fitallaction.js"></script>
-<script src="js/framework/action/fitcurrentlayeraction.js"></script>
-<script src="js/framework/action/fitcurrentpageaction.js"></script>
-<script src="js/framework/action/fitselectionaction.js"></script>
-<script src="js/framework/action/groupaction.js"></script>
-<script src="js/framework/action/joinpathsaction.js"></script>
-<script src="js/framework/action/placeimageaction.js"></script>
-<script src="js/framework/action/invertselectionaction.js"></script>
-<script src="js/framework/action/layertypeaction.js"></script>
-<script src="js/framework/action/magnificationaction.js"></script>
-<script src="js/framework/action/newprojectaction.js"></script>
-<script src="js/framework/action/newwindowaction.js"></script>
-<script src="js/framework/action/openaction.js"></script>
-<script src="js/framework/action/arrangeaction.js"></script>
-<script src="js/framework/action/originalviewaction.js"></script>
-<script src="js/framework/action/outlineaction.js"></script>
-<script src="js/framework/action/offsetaction.js"></script>
-<script src="js/framework/action/pixelpreviewaction.js"></script>
-<script src="js/framework/action/paintmodeaction.js"></script>
-<script src="js/framework/action/pasteaction.js"></script>
-<script src="js/framework/action/pasteinplaceaction.js"></script>
-<script src="js/framework/action/pasteinsideaction.js"></script>
-<script src="js/framework/action/pastestyleaction.js"></script>
-<script src="js/framework/action/redoaction.js"></script>
-<script src="js/framework/action/reverseorderaction.js"></script>
-<script src="js/framework/action/saveaction.js"></script>
-<script src="js/framework/action/saveallaction.js"></script>
-<script src="js/framework/action/saveasaction.js"></script>
-<script src="js/framework/action/showrulersaction.js"></script>
-<script src="js/framework/action/selectallaction.js"></script>
-<script src="js/framework/action/showallpagesaction.js"></script>
-<script src="js/framework/action/showgridaction.js"></script>
-<script src="js/framework/action/slicefromselection.js"></script>
-<script src="js/framework/action/snapunitaction.js"></script>
-<script src="js/framework/action/splitpathsaction.js"></script>
-<script src="js/framework/action/transformaction.js"></script>
-<script src="js/framework/action/undoaction.js"></script>
-<script src="js/framework/action/ungroupaction.js"></script>
-<script src="js/framework/action/zoominaction.js"></script>
-<script src="js/framework/action/zoomoutaction.js"></script>
-<!-- Dialog -->
-<script src="js/framework/dialog/styledialog.js"></script>
-<!-- Exporter -->
-<script src="js/framework/exporter/imagexporter.js"></script>
-<!-- Palette -->
-<script src="js/framework/palette/alignpalette.js"></script>
-<script src="js/framework/palette/exportpalette.js"></script>
-<script src="js/framework/palette/layerspalette.js"></script>
-<script src="js/framework/palette/pagespalette.js"></script>
-<script src="js/framework/palette/stylespalette.js"></script>
-<script src="js/framework/palette/swatchespalette.js"></script>
-<script src="js/framework/palette/transformpalette.js"></script>
-<!-- Panel -->
-<script src="js/framework/panel/propertiespanel.js"></script>
-<!-- Properties -->
-<script src="js/framework/properties/effectsproperties.js"></script>
-<script src="js/framework/properties/polygonproperties.js"></script>
-<script src="js/framework/properties/pathproperties.js"></script>
-<script src="js/framework/properties/compoundpathproperties.js"></script>
-<script src="js/framework/properties/rectangleproperties.js"></script>
-<script src="js/framework/properties/ellipseproperties.js"></script>
-<script src="js/framework/properties/imageproperties.js"></script>
-<script src="js/framework/properties/infoproperties.js"></script>
-<script src="js/framework/properties/pageproperties.js"></script>
-<script src="js/framework/properties/textproperties.js"></script>
-<script src="js/framework/properties/fillborderproperties.js"></script>
-<script src="js/framework/properties/styleproperties.js"></script>
-<script src="js/framework/properties/sliceproperties.js"></script>
-<!-- Sidebar -->
-<script src="js/framework/sidebar/documentsidebar.js"></script>
-<!-- I18N -->
-<script src="js/framework/i18n/i18n_en.js"></script>
-<script src="js/framework/i18n/i18n_de.js"></script>
-<!-- endbuild -->
-
-<!-- ############################################################## -->
 <!-- # Gravit Application ######################################### -->
 <!-- ############################################################## -->
 <!-- build:js application/js/gravit.application.js -->
-<script src="js/application/gravitapplication.js"></script>
-<script src="js/application/gravitmodule.js"></script>
+<!-- Extension -->
+<script src="js/application/extension/action.js"></script>
+<script src="js/application/extension/exporter.js"></script>
+<script src="js/application/extension/module.js"></script>
+<script src="js/application/extension/view.js"></script>
+<script src="js/application/extension/palette.js"></script>
+<script src="js/application/extension/panel.js"></script>
+<script src="js/application/extension/properties.js"></script>
+<script src="js/application/extension/sidebar.js"></script>
+<script src="js/application/extension/storage.js"></script>
+<!-- Action -->
+<script src="js/application/action/addlayeraction.js"></script>
+<script src="js/application/action/deletelayeraction.js"></script>
+<script src="js/application/action/addpageaction.js"></script>
+<script src="js/application/action/alignaction.js"></script>
+<script src="js/application/action/cloneaction.js"></script>
+<script src="js/application/action/converttopathaction.js"></script>
+<script src="js/application/action/closeaction.js"></script>
+<script src="js/application/action/closeallaction.js"></script>
+<script src="js/application/action/copyaction.js"></script>
+<script src="js/application/action/cutaction.js"></script>
+<script src="js/application/action/deleteaction.js"></script>
+<script src="js/application/action/deletepageaction.js"></script>
+<script src="js/application/action/distributeaction.js"></script>
+<script src="js/application/action/duplicateaction.js"></script>
+<script src="js/application/action/fitallaction.js"></script>
+<script src="js/application/action/fitcurrentlayeraction.js"></script>
+<script src="js/application/action/fitcurrentpageaction.js"></script>
+<script src="js/application/action/fitselectionaction.js"></script>
+<script src="js/application/action/groupaction.js"></script>
+<script src="js/application/action/joinpathsaction.js"></script>
+<script src="js/application/action/placeimageaction.js"></script>
+<script src="js/application/action/invertselectionaction.js"></script>
+<script src="js/application/action/layertypeaction.js"></script>
+<script src="js/application/action/magnificationaction.js"></script>
+<script src="js/application/action/newprojectaction.js"></script>
+<script src="js/application/action/newwindowaction.js"></script>
+<script src="js/application/action/openaction.js"></script>
+<script src="js/application/action/arrangeaction.js"></script>
+<script src="js/application/action/originalviewaction.js"></script>
+<script src="js/application/action/outlineaction.js"></script>
+<script src="js/application/action/offsetaction.js"></script>
+<script src="js/application/action/pixelpreviewaction.js"></script>
+<script src="js/application/action/paintmodeaction.js"></script>
+<script src="js/application/action/pasteaction.js"></script>
+<script src="js/application/action/pasteinplaceaction.js"></script>
+<script src="js/application/action/pasteinsideaction.js"></script>
+<script src="js/application/action/pastestyleaction.js"></script>
+<script src="js/application/action/redoaction.js"></script>
+<script src="js/application/action/reverseorderaction.js"></script>
+<script src="js/application/action/saveaction.js"></script>
+<script src="js/application/action/saveallaction.js"></script>
+<script src="js/application/action/saveasaction.js"></script>
+<script src="js/application/action/showrulersaction.js"></script>
+<script src="js/application/action/selectallaction.js"></script>
+<script src="js/application/action/showallpagesaction.js"></script>
+<script src="js/application/action/showgridaction.js"></script>
+<script src="js/application/action/slicefromselection.js"></script>
+<script src="js/application/action/snapunitaction.js"></script>
+<script src="js/application/action/splitpathsaction.js"></script>
+<script src="js/application/action/transformaction.js"></script>
+<script src="js/application/action/undoaction.js"></script>
+<script src="js/application/action/ungroupaction.js"></script>
+<script src="js/application/action/zoominaction.js"></script>
+<script src="js/application/action/zoomoutaction.js"></script>
+<!-- Dialog -->
+<script src="js/application/dialog/styledialog.js"></script>
+<!-- Exporter -->
+<script src="js/application/exporter/imagexporter.js"></script>
+<!-- Palette -->
+<script src="js/application/palette/alignpalette.js"></script>
+<script src="js/application/palette/exportpalette.js"></script>
+<script src="js/application/palette/layerspalette.js"></script>
+<script src="js/application/palette/pagespalette.js"></script>
+<script src="js/application/palette/stylespalette.js"></script>
+<script src="js/application/palette/swatchespalette.js"></script>
+<script src="js/application/palette/transformpalette.js"></script>
+<!-- Panel -->
+<script src="js/application/panel/propertiespanel.js"></script>
+<!-- Properties -->
+<script src="js/application/properties/effectsproperties.js"></script>
+<script src="js/application/properties/polygonproperties.js"></script>
+<script src="js/application/properties/pathproperties.js"></script>
+<script src="js/application/properties/compoundpathproperties.js"></script>
+<script src="js/application/properties/rectangleproperties.js"></script>
+<script src="js/application/properties/ellipseproperties.js"></script>
+<script src="js/application/properties/imageproperties.js"></script>
+<script src="js/application/properties/infoproperties.js"></script>
+<script src="js/application/properties/pageproperties.js"></script>
+<script src="js/application/properties/textproperties.js"></script>
+<script src="js/application/properties/fillborderproperties.js"></script>
+<script src="js/application/properties/styleproperties.js"></script>
+<script src="js/application/properties/sliceproperties.js"></script>
+<!-- Sidebar -->
+<script src="js/application/sidebar/documentsidebar.js"></script>
+<!-- Host -->
+<script src="js/application/host/host.js"></script>
+<!-- Workspace -->
+<script src="js/application/workspace/header.js"></script>
+<script src="js/application/workspace/palettes.js"></script>
+<script src="js/application/workspace/panels.js"></script>
+<script src="js/application/workspace/sidebars.js"></script>
+<script src="js/application/workspace/toolbar.js"></script>
+<script src="js/application/workspace/window.js"></script>
+<script src="js/application/workspace/windows.js"></script>
+<!-- Util -->
+<script src="js/application/util/ciede2000.js"></script>
+<script src="js/application/util/image.js"></script>
+<script src="js/application/util/jqueryext.js"></script>
+<!-- Root -->
+<script src="js/application/bootstrap.js"></script>
+<script src="js/application/application.js"></script>
+<script src="js/application/project.js"></script>
+<script src="js/application/document.js"></script>
+<script src="js/application/gravit.js"></script>
+<!-- I18N -->
+<script src="js/application/i18n/i18n_en.js"></script>
+<script src="js/application/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
@@ -420,11 +400,11 @@
 <!-- Include the proper host for development -->
 <script type="text/javascript">
     if (this['process'] && this['require']) {
-        document.writeln("<script src=\"js/host/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"js/host/system/winstate.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"js/host/system/systemhost.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/winstate.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/systemhost.js\" type=\"text\/javascript\"><\/script>");
     } else {
-        document.writeln("<script src=\"js/host/browser/browserhost.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/browser/browserhost.js\" type=\"text\/javascript\"><\/script>");
     }
 </script>
 </body>

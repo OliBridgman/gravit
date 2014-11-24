@@ -10,24 +10,6 @@
     };
 
     /**
-     * @type {HTMLDivElement}
-     * @private
-     */
-    GHeader.prototype._htmlElement = null;
-
-    GHeader.prototype.setShowWindows = function (show) {
-        this._htmlElement.find('.windows').css('display', show ? '' : 'none');
-    };
-
-    GHeader.prototype.setShowView = function (show) {
-        this._htmlElement.find('.view').css('display', show ? '' : 'none');
-    };
-
-    GHeader.prototype.setShowProjects = function (show) {
-        this._htmlElement.find('.projects').css('display', show ? '' : 'none');
-    };
-
-    /**
      * Called from the workspace to initialize
      */
     GHeader.prototype.init = function () {

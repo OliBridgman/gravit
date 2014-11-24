@@ -1,17 +1,17 @@
 (function (_) {
     /**
      * Gravit Module
-     * @class GravitModule
+     * @class Gravit
      * @constructor
      * @extends GModule
      */
-    function GravitModule() {
+    function Gravit() {
     }
 
-    GObject.inherit(GravitModule, GModule);
+    GObject.inherit(Gravit, GModule);
 
     /** @override */
-    GravitModule.prototype.init = function () {
+    Gravit.prototype.init = function () {
         gravit.exporters.push(
             new GImageExporter()
         );
@@ -308,9 +308,9 @@
     };
 
     /** @override */
-    GravitModule.prototype.toString = function () {
+    Gravit.prototype.toString = function () {
         return '[Module Gravit]';
     };
 
-    gravit.modules.push(new GravitModule());
+    gravit.modules.push(new Gravit());
 })(this);
