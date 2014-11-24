@@ -5,4 +5,4 @@ before_install:
   - gem install compass --version "=0.12.3"
   - npm install -g grunt-cli
 install: npm install
-before_script: grunt dist
+before_script: grunt app
