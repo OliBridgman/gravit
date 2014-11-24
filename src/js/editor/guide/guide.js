@@ -63,6 +63,18 @@
     GGuide.DetailMap = function () {
     };
 
+    /**
+     * @enum
+     */
+    GGuide.DetailMap.Mode = {
+        /** Use detail mode filter, detail mode is on */
+        DetailOnFilterOn: 1,
+        /** Use detail mode filter, detail mode is off */
+        DetailOffFilterOn: 2,
+        /** Don't use detail mode filter */
+        FilterOff: 3
+    };
+
     /** @override */
     GGuide.DetailMap.prototype.toString = function () {
         return "[Mixin GGuide.DetailMap]";
@@ -78,7 +90,6 @@
      * @mixin
      */
     GGuide.Map = function () {
-
     };
 
     /**
@@ -95,19 +106,18 @@
     /**
      * Called to check for each guide if mapping is allowed at the current moment. It may be blocked due to
      * key modifiers like CTRL, and so on.
-     * @param {Boolean} detail - if set, allow only if guide has DetailMap mixin; if not set, allow always
+     * @param {GGuide.DetailMap.Mode} detail - allow depending on detail mode settings and DetailMap mixin;
+     * if detail is not specified, considered the default value GGuide.DetailMap.Mode.FilterOff
      * @returns {Boolean}
      */
     GGuide.Map.prototype.isMappingAllowed = function (detail) {
-        //res = (detail === true || detail === false) ? this.hasMixin(GGuide.DetailMap) : true;
-        //res = res ? !!detail : true;
-        if (detail === true || detail === false) {
-            res = detail ? this.hasMixin(GGuide.DetailMap) : false;
-        } else {
-            res = true;
+        var res = true;
+        if (detail === GGuide.DetailMap.Mode.DetailOnFilterOn) {
+            res = this.hasMixin(GGuide.DetailMap);
+        } else if (detail === GGuide.DetailMap.Mode.DetailOffFilterOn) {
+            res = false;
         }
         return res;
-        return this.hasMixin(GGuide.DetailMap) ? !!detail : true;
     };
 
     /** @override */
