@@ -75,6 +75,8 @@
     GStylesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._htmlElement = htmlElement;
         this._controls = controls;
 
@@ -142,7 +144,6 @@
         this._updateControls();
     };
 
-    /** @override */
     GStylesPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

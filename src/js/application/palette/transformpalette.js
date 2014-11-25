@@ -197,6 +197,8 @@
     GTransformPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._htmlElement = htmlElement;
 
         htmlElement
@@ -327,7 +329,6 @@
         this._setTransformMode('Move');
     };
 
-    /** @override */
     GTransformPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

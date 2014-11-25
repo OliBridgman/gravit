@@ -24,7 +24,6 @@
      * @param {JQuery} htmlElement the panel to put the panel into
      */
     GPanel.prototype.init = function (htmlElement) {
-        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
     };
 
     /**

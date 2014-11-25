@@ -44,6 +44,9 @@
     /** @override */
     GDocumentSidebar.prototype.init = function (htmlElement) {
         GSidebar.prototype.init.call(this, htmlElement);
+
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._htmlElement = htmlElement;
 
         var _createInput = function (property) {
@@ -253,7 +256,6 @@
         return !!this._document;
     };
 
-    /** @override */
     GDocumentSidebar.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

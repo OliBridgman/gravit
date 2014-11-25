@@ -117,9 +117,49 @@
     /**
      * Prompt for opening a directory
      * @param {Function} done called with the directory and the directory name as arguments
+     * @return {*} a directory reference
      */
     GHost.prototype.openDirectoryPrompt = function (done) {
         throw new Error('Not supported.');
+    };
+
+    /**
+     * Open a file within a directory
+     * @param {*} directory the directory reference to be used
+     * @param {String} filename the filename relative to the directory
+     * @param {Boolean} createIfNotExists create the file if it doesn't exist.
+     * Has no effect when writeable is set to false.
+     * @param {Boolean} writeable if true, open file to be writeable, otherwise
+     * opens file as read-only
+     * @param {Function} done called with the file reference used for reading/writing
+     */
+    GHost.prototype.openDirectoryFile = function (directory, filename, createIfNotExists, writeable, done) {
+        throw new Error('Not supported.');
+    };
+
+    /**
+     * Get the contents of a file
+     * @param {*} file the file reference to gets contents for
+     * @param {Boolean} binary if true, the data is read as binary,
+     * otherwise it is read as String
+     * @param {Function} callback called with the data contents which
+     * is either an ArrayBuffer for binary or a String
+     * @return {String}
+     */
+    GHost.prototype.getFileContents = function (file, binary, done) {
+        throw new Error('Not Supported.');
+    };
+
+    /**
+     * Put contents into a file
+     * @param {*} file the file reference to put contents into
+     * @param {ArrayBuffer|String} data the data to put. If
+     * binary is set to true, an ArrayBuffer is expected, otherwise a string
+     * @param {Boolean} binary whether the data is binary or not
+     * @param {Function} callback called when data was stored
+     */
+    GHost.prototype.putFileContents = function (file, data, binary, done) {
+        throw new Error('Not Supported.');
     };
 
     _.GHost = GHost;

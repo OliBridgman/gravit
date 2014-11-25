@@ -8,8 +8,7 @@
     function GProject(directory, name) {
         this._directory = directory;
         this._name = name;
-
-        // TODO : Load project
+        this._swatches = new GSwatches();
     };
     GObject.inherit(GProject, GEventTarget);
 
@@ -28,6 +27,13 @@
     GProject.prototype._name = null;
 
     /**
+     * The swatches of the project
+     * @type {GSwatches}
+     * @private
+     */
+    GProject.prototype._swatches = null;
+
+    /**
      * Returns the directory of the project
      * @returns {*}
      */
@@ -44,10 +50,68 @@
     };
 
     /**
-     * Save the project
+     * Returns the swatches for the project
+     * @return {String}
      */
-    GProject.prototype.save = function () {
-        // TODO
+    GProject.prototype.getSwatches = function () {
+        return this._swatches;
+    };
+
+    /**
+     * Opens the project
+     */
+    GProject.prototype.open = function (done) {
+        gHost.openDirectoryFile(this._directory, 'project.gravit', false, false, function (file) {
+            alert('ready_to_read_project_file');
+            this.syncSwatches(function () {
+                if (done) {
+                    done();
+                }
+            });
+        }.bind(this));
+    };
+
+    GProject.prototype.syncSwatches = function (done) {
+        gHost.openDirectoryFile(this._directory, 'swatches.gravit-swatches', false, false, function (file) {
+            gHost.getFileContents(file, false, function (buffer) {
+                var blob = JSON.parse(buffer);
+                if (blob) {
+                    GNode.restoreInstance(blob, this._swatches);
+
+                    if (done) {
+                        done();
+                    }
+                }
+            }.bind(this));
+        }.bind(this));
+    };
+
+    /**
+     * Saves the project
+     */
+    GProject.prototype.save = function (done) {
+        gHost.openDirectoryFile(this._directory, 'project.gravit', true, true, function (file) {
+            alert('ready_to_write_project_file');
+            gHost.putFileContents(file, JSON.stringify({
+                test: 'bla',
+                moreStuff: 123
+            }), false, function () {
+                gHost.openDirectoryFile(this._directory, 'swatches.gravit-swatches', true, true, function (file) {
+                    /*
+                     var input = GNode.serialize(this._scene);
+                     var output = pako.gzip(input, {level: 9});
+                     this._storage.save(this._url, output.buffer, true, function (name) {
+                     this._title = name;
+                     }.bind(this));
+                     */
+                    gHost.putFileContents(file, GNode.serialize(this._swatches), false, function () {
+                        if (done) {
+                            done();
+                        }
+                    });
+                }.bind(this));
+            }.bind(this));
+        }.bind(this));
     };
 
     /**

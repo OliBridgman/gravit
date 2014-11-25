@@ -77,6 +77,8 @@
     GPagesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._pagesPanel = $('<div></div>')
             .addClass('g-grid pages')
             .appendTo(htmlElement);
@@ -104,7 +106,6 @@
                 .appendTo(controls);
     };
 
-    /** @override */
     GPagesPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

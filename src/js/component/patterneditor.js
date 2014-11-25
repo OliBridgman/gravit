@@ -15,7 +15,6 @@
                 var $this = $(this)
                     .addClass('g-pattern-editor')
                     .data('gpatterneditor', {
-                        scene: null,
                         value: null,
                         options: options
                     });
@@ -112,26 +111,16 @@
             });
         },
 
-        scene: function (scene) {
+        swatches: function (swatches) {
             var $this = $(this);
             var data = $this.data('gpatterneditor');
 
             if (!arguments.length) {
-                return data.scene;
+                $this.find('.swatches')
+                    .gSwatchPanel('swatches');
             } else {
-                if (scene !== data.scene) {
-                    var swatchPanel = $this.find('.swatches');
-
-                    if (data.scene) {
-                        swatchPanel.gSwatchPanel('detach');
-                    }
-
-                    data.scene = scene;
-
-                    if (data.scene) {
-                        swatchPanel.gSwatchPanel('attach', data.scene.getSwatchCollection());
-                    }
-                }
+                $this.find('.swatches')
+                    .gSwatchPanel('swatches', swatches);
 
                 return this;
             }

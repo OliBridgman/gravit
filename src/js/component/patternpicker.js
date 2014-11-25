@@ -17,7 +17,7 @@
     $.gPatternPicker.open = function (options) {
         options = $.extend({
             target: null,
-            scene: null,
+            swatches: null,
             types: null,
             value: null,
             modal: false,
@@ -28,13 +28,13 @@
 
         var patternEditor = $.gPatternPicker.getEditor();
         patternEditor.gOverlay('close');
-        patternEditor.gPatternEditor('scene', options.scene);
+        patternEditor.gPatternEditor('swatches', options.swatches);
         patternEditor.gPatternEditor('types', options.types);
         patternEditor.gPatternEditor('value', options.value);
         patternEditor.gPatternEditor('opacity', options.opacity);
 
         var closeCallback = function () {
-            patternEditor.gPatternEditor('scene', null);
+            patternEditor.gPatternEditor('swatches', null);
 
 
             if (options.changeCallback) {
@@ -102,7 +102,7 @@
                     .data('gpatternpicker', {
                         options: options,
                         opened: false,
-                        scene: null,
+                        swatches: null,
                         types: null,
                         opacity: null,
                         manualChangeEvent: false,
@@ -144,7 +144,7 @@
 
             $.gPatternPicker.open({
                 target: this,
-                scene: data.scene,
+                swatches: data.swatches,
                 types: data.types,
                 modal: data.options.modal,
                 value: $this.gPatternTarget('value'),
@@ -163,14 +163,14 @@
             return this;
         },
 
-        scene: function (value) {
+        swatches: function (value) {
             var $this = $(this);
             var data = $this.data('gpatternpicker');
 
             if (!arguments.length) {
-                return data.scene;
+                return data.swatches;
             } else {
-                data.scene = value;
+                data.swatches = value;
                 return this;
             }
         },

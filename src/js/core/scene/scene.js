@@ -216,12 +216,6 @@
     GScene.prototype._styleCollection = null;
 
     /**
-     * @type {GScene.SwatchCollection}
-     * @private
-     */
-    GScene.prototype._swatchCollection = null;
-
-    /**
      * Returns the style-collection of this scene
      * @returns {GScene.StyleCollection}
      */
@@ -248,35 +242,6 @@
         }
 
         return this._styleCollection;
-    };
-
-    /**
-     * Returns the swatch-collection of this scene
-     * @returns {GScene.SwatchCollection}
-     */
-    GScene.prototype.getSwatchCollection = function () {
-        // If we have a _swatchCollection reference and it not
-        // has ourself as a parent, then clear it, first
-        if (this._swatchCollection && this._swatchCollection.getParent() !== this) {
-            this._swatchCollection = null;
-        }
-
-        if (!this._swatchCollection) {
-            // Find our swatch-collection and save reference for faster access
-            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof GScene.SwatchCollection) {
-                    this._swatchCollection = child;
-                    break;
-                }
-            }
-        }
-
-        if (!this._swatchCollection) {
-            this._swatchCollection = new GScene.SwatchCollection();
-            this.appendChild(this._swatchCollection);
-        }
-
-        return this._swatchCollection;
     };
 
     /**

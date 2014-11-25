@@ -70,6 +70,8 @@
     GExportPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         // Init our extensions / exporters
         for (var k = 0; k < gravit.exporters.length; ++k) {
             var exporter = gravit.exporters[k];
@@ -142,7 +144,6 @@
             .appendTo(this._htmlElement);
     };
 
-    /** @override */
     GExportPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;

@@ -10,7 +10,7 @@
     };
     GObject.inherit(GNewProjectAction, GAction);
 
-    GNewProjectAction.ID = 'file.new';
+    GNewProjectAction.ID = 'file.new-project';
     GNewProjectAction.TITLE = new GLocale.Key(GNewProjectAction, "title");
 
     /**
@@ -54,7 +54,10 @@
     GNewProjectAction.prototype.execute = function () {
         gHost.openDirectoryPrompt(function (directory, name) {
             // TODO : Check and query for empty directory
-            gApp.addProject(new GProject(directory, name));
+            var project = new GProject(directory, name);
+            project.save(function () {
+                gApp.addProject(project);
+            });
         });
     };
 

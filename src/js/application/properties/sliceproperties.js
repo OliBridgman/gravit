@@ -126,7 +126,7 @@
 
         this._panel.find('[data-property="cls"]')
             .gPatternPicker('value', slice.getProperty('cls'))
-            .gPatternPicker('scene', scene);
+            .gPatternPicker('swatches', gApp.getActiveProject().getSwatches());
 
         this._panel.find('input[data-property="trm"]').prop('checked', slice.getProperty('trm'));
     };

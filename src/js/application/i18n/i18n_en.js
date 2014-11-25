@@ -24,7 +24,7 @@ ifLocale.setValues(GInvertSelectionAction, GLocale.Language.English, ["title"], 
 ifLocale.setValues(GLayerTypeAction, GLocale.Language.English, ["title"], ["%name% Layer"]);
 ifLocale.setValues(GNewProjectAction, GLocale.Language.English, ["title"], ["New Project..."]);
 ifLocale.setValues(GNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
-ifLocale.setValues(GOpenAction, GLocale.Language.English, ["title"], ["Open..."]);
+ifLocale.setValues(GOpenProjectAction, GLocale.Language.English, ["title"], ["Open Project..."]);
 ifLocale.setValues(GArrangeAction, GLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
 ifLocale.setValues(GOffsetAction, GLocale.Language.English, ["title"], ["Create Offset Path"]);
 ifLocale.setValues(GOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);

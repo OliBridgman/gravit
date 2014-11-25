@@ -16,10 +16,10 @@
     GSwatchesPalette.TITLE = new GLocale.Key(GSwatchesPalette, "title");
 
     /**
-     * @type {GDocument}
+     * @type {GProject}
      * @private
      */
-    GSwatchesPalette.prototype._document = null;
+    GSwatchesPalette.prototype._project = null;
 
     /**
      * @type {JQuery}
@@ -63,6 +63,8 @@
     GSwatchesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.ProjectEvent, this._projectEvent, this);
+
         var self = this;
 
         var importInput = $('<input>')
@@ -77,7 +79,7 @@
                 if (files && files.length) {
                     GIO.read('application/x-adobe-ase', files[0], function (result) {
                         if (result && result.colors) {
-                            var swatches = self._document.getScene().getSwatchCollection();
+                            var swatches = gApp.getActiveProject().getSwatches();
                             for (var i = 0; i < result.colors.length; ++i) {
                                 var swatch = result.colors[i];
                                 var pattern = null;
@@ -109,7 +111,7 @@
                 placeholder: 'Drop Swatches here'
             })
             .on('swatchchange', function (evt, swatch) {
-                this._document.getScene().getSwatchCollection().acceptChildren(function (node) {
+                gApp.getActiveProject().getSwatches().acceptChildren(function (node) {
                     node.removeFlag(GNode.Flag.Selected);
                 });
 
@@ -154,18 +156,17 @@
     };
 
     /** @override */
-    GSwatchesPalette.prototype._documentEvent = function (event) {
-        if (event.type === GApplication.DocumentEvent.Type.Activated) {
-            this._document = event.document;
-            var scene = this._document.getScene();
-            this._swatchPanel.gSwatchPanel('attach', scene.getSwatchCollection());
-            this._swatchPanel.gSwatchPanel('value', scene.getSwatchCollection().querySingle('swatch:selected'));
+    GSwatchesPalette.prototype._projectEvent = function (event) {
+        if (event.type === GApplication.ProjectEvent.Type.Activated) {
+            this._project = event.project;
+            var swatches = this._project.getSwatches();
+            this._swatchPanel.gSwatchPanel('swatches', swatches);
+            this._swatchPanel.gSwatchPanel('value', swatches.querySingle('swatch:selected'));
             this._updateControls();
             this.trigger(GPalette.UPDATE_EVENT);
-        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
-            var scene = this._document.getScene();
-            this._document = null;
-            this._swatchPanel.gSwatchPanel('detach');
+        } else if (event.type === GApplication.ProjectEvent.Type.Deactivated) {
+            this._project = null;
+            this._swatchPanel.gSwatchPanel('swatches', null);
             this._updateControls();
             this.trigger(GPalette.UPDATE_EVENT);
         }

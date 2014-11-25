@@ -37,7 +37,7 @@
      * @param {JQuery} controls the controls to add controls into
      */
     GPalette.prototype.init = function (htmlElement, controls) {
-        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+        // NO-OP
     };
 
     /** @override */

@@ -68,6 +68,8 @@
     GLayersPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._layersTree = $('<div></div>')
             .addClass('g-list layers')
             .tree({
@@ -121,7 +123,6 @@
                 .appendTo(controls);
     };
 
-    /** @override */
     GLayersPalette.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
@@ -544,7 +545,7 @@
 
                         $.gPatternPicker.open({
                             target: $target,
-                            scene: this._document.getScene(),
+                            swatches: gApp.getActiveProject().getSwatches(),
                             types: [GColor],
                             value: $target.gPatternTarget('value'),
                             changeCallback: patternChange

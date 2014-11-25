@@ -416,7 +416,7 @@
         this._panel.find('[data-property="bck"]')
             .gPatternPicker('value', page.getProperty('bck'))
             .gPatternPicker('opacity', page.getProperty('bop'))
-            .gPatternPicker('scene', scene);
+            .gPatternPicker('swatches', gApp.getActiveProject().getSwatches());
         this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
         this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));
         this._panel.find('input[data-property="mt"]').val(scene.pointToString(page.getProperty('mt')));

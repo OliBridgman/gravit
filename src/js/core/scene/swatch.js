@@ -31,7 +31,7 @@
 
     /** @override */
     GSwatch.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GScene.SwatchCollection;
+        return parent instanceof GSwatches;
     };
 
     /** @override */

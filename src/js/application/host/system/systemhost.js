@@ -1,5 +1,5 @@
 (function (_) {
-    function extractFileName (path) {
+    function extractFileName(path) {
         var tmpPath = path;
         if (tmpPath.charAt(tmpPath.length - 1) === '/') {
             tmpPath = tmpPath.substr(tmpPath, 0, tmpPath.length - 1);
@@ -213,6 +213,61 @@
         this._fileInput
             .attr('nwdirectory', '')
             .trigger('click');
+    };
+
+    /** @override */
+    GSystemHost.prototype.openDirectoryFile = function (directory, filename, createIfNotExists, writeable, done) {
+        if (directory.substr(directory.length - 1, 1) !== '/') {
+            directory += '/';
+        }
+
+        var location = new URI(directory).filename(filename).path();
+
+        fs.exists(location, function (exists) {
+            if (!exists && createIfNotExists) {
+                done(location);
+            } else if (exists) {
+                fs.stat(location, function (err, stats) {
+                    if (!err && stats.isFile()) {
+                        done(location);
+                    }
+                });
+            }
+        });
+    };
+
+    /** @override */
+    GSystemHost.prototype.getFileContents = function (file, binary, done) {
+        var location = new URI(file).path();
+        var buffer = fs.readFileSync(location, binary ? null : 'utf8');
+
+        if (buffer) {
+            if (binary) {
+                var ab = new ArrayBuffer(buffer.length);
+                var view = new Uint8Array(ab);
+                for (var i = 0; i < buffer.length; ++i) {
+                    view[i] = buffer[i];
+                }
+                buffer = ab;
+            }
+
+            done(buffer);
+        }
+    };
+
+    /** @override */
+    GSystemHost.prototype.putFileContents = function (file, data, binary, done) {
+        var location = new URI(file).path();
+
+        if (binary) {
+            data = new Buffer(new Uint8Array(data));
+        }
+
+        fs.writeFileSync(location, data, binary ? null : 'utf8');
+
+        if (done) {
+            done();
+        }
     };
 
     /** @private */

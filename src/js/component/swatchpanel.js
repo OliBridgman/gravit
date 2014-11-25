@@ -33,24 +33,24 @@
 
     function afterInsertEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gswatchpanel').container;
-        if (evt.node instanceof GSwatch && evt.node.getParent() === container) {
+        var swatches = $this.data('gswatchpanel').swatches;
+        if (evt.node instanceof GSwatch && evt.node.getParent() === swatches) {
             insertSwatch.call(this, evt.node);
         }
     };
 
     function beforeRemoveEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gswatchpanel').container;
-        if (evt.node instanceof GSwatch && evt.node.getParent() === container) {
+        var swatches = $this.data('gswatchpanel').swatches;
+        if (evt.node instanceof GSwatch && evt.node.getParent() === swatches) {
             removeSwatch.call(this, evt.node);
         }
     };
 
     function afterPropertiesChangeEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gswatchpanel').container;
-        if (evt.node.getParent() === container) {
+        var swatches = $this.data('gswatchpanel').swatches;
+        if (evt.node.getParent() === swatches) {
             updateSwatch.call(this, evt.node);
         }
     };
@@ -75,7 +75,7 @@
         return false;
     };
 
-    function insertSwatch (swatch, index) {
+    function insertSwatch(swatch, index) {
         var $this = $(this);
         var data = $this.data('gswatchpanel');
 
@@ -231,7 +231,7 @@
 
                     if (dragSwatch) {
                         if (data.options.allowReorder) {
-                            if (data.container && dragSwatch.getParent() === data.container) {
+                            if (data.swatches && dragSwatch.getParent() === data.swatches) {
                                 var parent = dragSwatch.getParent();
                                 var sourceIndex = parent.getIndexOfChild(dragSwatch);
                                 var targetIndex = parent.getIndexOfChild(targetSwatch);
@@ -261,7 +261,7 @@
         updateSwatch.call(this, swatch);
     };
 
-    function updateSwatch (swatch) {
+    function updateSwatch(swatch) {
         var $this = $(this);
 
         $this.find('.swatch-block').each(function (index, element) {
@@ -280,7 +280,7 @@
         });
     };
 
-    function removeSwatch (swatch) {
+    function removeSwatch(swatch) {
         var $this = $(this);
         var data = $this.data('gswatchpanel');
 
@@ -300,7 +300,7 @@
         });
     };
 
-    function clear () {
+    function clear() {
         var $this = $(this);
         var remove = [];
 
@@ -318,12 +318,12 @@
         updatePlaceholder($this);
     };
 
-    function updateFromContainer () {
+    function updateFromContainer() {
         var $this = $(this);
         var data = $this.data('gswatchpanel');
 
-        if (data.container) {
-            for (var child = data.container.getFirstChild(); child !== null; child = child.getNext()) {
+        if (data.swatches) {
+            for (var child = data.swatches.getFirstChild(); child !== null; child = child.getNext()) {
                 if (child instanceof GSwatch) {
                     insertSwatch.call(this, child);
                 }
@@ -380,12 +380,11 @@
                         var event = evt.originalEvent;
                         event.stopPropagation();
 
-                        if (dragSwatch || !data.container || !data.container.getScene()) {
+                        if (dragSwatch || !data.swatches || !data.swatches.getScene()) {
                             dragSwatch = null;
                             return;
                         }
 
-                        var scene = data.container.getScene();
                         var sourcePattern = event.dataTransfer.getData(GPattern.MIME_TYPE);
                         if (sourcePattern) {
                             var pattern = GPattern.deserialize(sourcePattern);
@@ -429,88 +428,50 @@
         createSwatch: function (pattern) {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
-            var scene = data.container.getScene();
             var name = pattern instanceof GColor ? pattern.toHumanString() : '';
 
-            GEditor.tryRunTransaction(scene, function () {
-                var swatch = new GSwatch();
-                swatch.setProperties(['name', 'pat'], [name, pattern]);
-                scene.getSwatchCollection().appendChild(swatch);
-            }, 'Add Swatch');
-
-            /*
-            vex.dialog.prompt({
-                // TODO : I18N
-                message: 'Enter a name for the new swatch:',
-                value: sourceName,
-                callback: function (name) {
-                    if (!name) {
-                        return;
-                    }
-                    if (name.trim() === '') {
-                        name = sourceName;
-                    }
-
-                    // Add pattern as swatch
-                    // TODO : I18N
-                    GEditor.tryRunTransaction(scene, function () {
-                        var swatch = new GSwatch();
-                        swatch.setProperties(['name', 'pat'], [name, pattern]);
-                        scene.getSwatchCollection().appendChild(swatch);
-                    }, 'Add Swatch');
-                }
-            });
-            */
+            var swatch = new GSwatch();
+            swatch.setProperties(['name', 'pat'], [name, pattern]);
+            data.swatches.appendChild(swatch);
         },
 
-        attach: function (container) {
+        swatches: function (swatches) {
             var $this = $(this);
             var data = $this.data('gswatchpanel');
 
-            methods.detach.call(this);
+            if (!arguments.length) {
+                return data.swatches;
+            } else {
+                if (data.swatches !== swatches) {
+                    if (data.swatches) {
+                        data.swatches.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        data.swatches.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        data.swatches.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
 
-            data.container = container;
+                        data.swatches = null;
+                        data.afterInsertHandler = null;
+                        data.beforeRemoveHandler = null;
+                        data.afterPropertiesChangeHandler = null;
 
-            if (container) {
-                updateFromContainer.call(this);
+                        clear.call(this);
+                    }
 
-                // Subscribe to container
-                var scene = container.getScene();
-                if (scene) {
-                    data.afterInsertHandler = afterInsertEvent.bind(this);
-                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
-                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    data.swatches = swatches;
+
+                    if (data.swatches) {
+                        updateFromContainer.call(this);
+
+                        data.afterInsertHandler = afterInsertEvent.bind(this);
+                        data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                        data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
+                        data.swatches.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        data.swatches.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        data.swatches.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
+                    }
                 }
+
+                return this;
             }
-            return this;
-        },
-
-        detach: function () {
-            var $this = $(this);
-            var data = $this.data('gswatchpanel');
-            var container = data.container;
-
-            if (container) {
-                // Unsubscribe from container
-                var scene = container.getScene();
-                if (scene) {
-                    scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-
-            data.container = null;
-            data.afterInsertHandler = null;
-            data.beforeRemoveHandler = null;
-            data.afterPropertiesChangeHandler = null;
-
-            clear.call(this);
-
-            return this;
         },
 
         types: function (types) {

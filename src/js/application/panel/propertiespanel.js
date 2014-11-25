@@ -55,6 +55,8 @@
     GPropertiesPanel.prototype.init = function (htmlElement, controls) {
         GPanel.prototype.init.call(this, htmlElement, controls);
 
+        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+
         this._htmlElement = htmlElement;
 
         var propertiesPanels = $('<div></div>')
@@ -90,7 +92,6 @@
         return !!this._document;
     };
 
-    /** @override */
     GPropertiesPanel.prototype._documentEvent = function (event) {
         if (event.type === GApplication.DocumentEvent.Type.Activated) {
             this._document = event.document;
