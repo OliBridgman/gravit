@@ -591,28 +591,6 @@
         }
     };
 
-    GScene.prototype._calculatePaintBBox = function () {
-        var bbox = GElement.prototype._calculatePaintBBox.call(this);
-        if (this.__editor__ && this.__editor__.isTransformBoxActive()) {
-            var transBBox = this.__editor__.getTransformBox()._calculatePaintBBox();
-            if (transBBox && !transBBox.isEmpty()) {
-                bbox = bbox ? bbox.united(transBBox) : transBBox;
-            }
-        }
-        return bbox;
-    };
-
-    GScene.prototype._calculateGeometryBBox = function () {
-        var bbox = GElement.prototype._calculateGeometryBBox.call(this);
-        if (this.__editor__ && this.__editor__.isTransformBoxActive()) {
-            var transBBox = this.__editor__.getTransformBox()._calculatePaintBBox();
-            if (transBBox && !transBBox.isEmpty()) {
-                bbox = bbox ? bbox.united(transBBox) : transBBox;
-            }
-        }
-        return bbox;
-    };
-
     /** @override */
     GScene.prototype._handleChange = function (change, args) {
         if (change === GNode._Change.Store) {
