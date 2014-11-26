@@ -443,6 +443,31 @@
         return pathRef;
     };
 
+    GEditor.prototype.getAlignExclusions = function (clone) {
+        var res = null;
+        if (this._selection && this._selection.length) {
+            var alignExclusions = [];
+            if (!clone) {
+                alignExclusions = this._selection.slice();
+            }
+            for (var i = 0; i < this._selection.length; ++i) {
+                var item = this._selection[i];
+                if (item instanceof GNode.Container) {
+                    item.acceptChildrenAny(function (node) {
+                        if (!(node instanceof GElement)) {
+                            return false;
+                        }
+                        alignExclusions.push(node);
+                    }.bind(this));
+                }
+            }
+            if (alignExclusions.length) {
+                res = alignExclusions;
+            }
+        }
+        return res;
+    };
+
     /**
      * Called to release and detach this editor
      */
@@ -744,23 +769,21 @@
     GEditor.prototype.moveSelection = function (delta, align, partId, partData, startPos, clone) {
         var translation = delta;
         if (align) {
+            var alignExclusions = this.getAlignExclusions(clone);
+            if (alignExclusions) {
+                this._guides.useExclusions(alignExclusions);
+            }
             if (this.hasSelectionDetail() && startPos && this._selection.length == 1) {
                 var selBBox = this._selection[0].getGeometryBBox();
                 var side = selBBox.getClosestSideName(startPos);
                 var sidePos = selBBox.getSide(side);
                 var newSidePos = sidePos.add(delta);
-                if (!clone) {
-                    this._guides.getShapeBoxGuide().useExclusions(this._selection);
-                }
                 this._guides.beginMap();
                 newSidePos = this._guides.mapPoint(newSidePos, GGuide.DetailMap.Mode.DetailOnFilterOn);
                 this._guides.finishMap();
                 translation = newSidePos.subtract(sidePos);
             } else {
                 var selBBox = GElement.prototype.getGroupGeometryBBox(this._selection);
-                if (!clone) {
-                    this._guides.getShapeBoxGuide().useExclusions(this._selection);
-                }
                 if (selBBox && !selBBox.isEmpty()) {
                     var newSelBBox = selBBox.translated(delta.getX(), delta.getY());
                     this._guides.beginMap();

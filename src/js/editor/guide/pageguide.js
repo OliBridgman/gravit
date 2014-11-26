@@ -21,9 +21,20 @@
         var resY = null;
         var guideX = null;
         var guideY = null;
+        var deltaX = null;
+        var deltaY= null;
+        var delta;
         var result = null;
 
         var _snap = function (page) {
+            if (this._exclusions && this._exclusions.length) {
+                for (var i = 0; i < this._exclusions.length; ++i) {
+                    if (this._exclusions[i] == page) {
+                        return;
+                    }
+                }
+            }
+
             var pageBBox = page.getGeometryBBox();
             if (pageBBox && !pageBBox.isEmpty()) {
                 var tl = pageBBox.getSide(GRect.Side.TOP_LEFT);
@@ -33,14 +44,18 @@
                 var sides = [GRect.Side.TOP_LEFT, GRect.Side.BOTTOM_RIGHT, GRect.Side.CENTER];
                 for (var i = 0; i < sides.length; ++i) {
                     var pivot = pivots[i];
-                    if (resX === null && Math.abs(x - pivot.getX()) <= snapDistance) {
+                    delta = Math.abs(x - pivot.getX());
+                    if (resX === null && delta <= snapDistance) {
                         resX = pivot.getX();
+                        deltaX = delta;
                         if (sides[i] == GRect.Side.CENTER) {
                             guideX = [new GPoint(resX, tl.getY()), new GPoint(resX, br.getY())];
                         }
                     }
-                    if (resY === null && Math.abs(y - pivot.getY()) <= snapDistance) {
+                    delta = Math.abs(y - pivot.getY());
+                    if (resY === null && delta <= snapDistance) {
                         resY = pivot.getY();
+                        deltaY = delta;
                         if (sides[i] == GRect.Side.CENTER) {
                             guideY = [new GPoint(tl.getX(), resY), new GPoint(br.getX(), resY)];
                         }
@@ -65,8 +80,8 @@
 
         if (resX !== null || resY !== null) {
             result = {
-                x: resX !== null ? {value: resX, guide: guideX} : null,
-                y: resY !== null ? {value: resY, guide: guideY} : null};
+                x: resX !== null ? {value: resX, guide: guideX, delta: deltaX} : null,
+                y: resY !== null ? {value: resY, guide: guideY, delta: deltaY} : null};
         }
 
         return result;
@@ -75,6 +90,17 @@
     /** @override */
     GPageGuide.prototype.isMappingAllowed = function (detail) {
         return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
+    };
+
+    GPageGuide.prototype.useExclusions = function (exclusions) {
+        var node;
+        this._exclusions = [];
+        for (var i = 0; i < exclusions.length; ++i) {
+            node = exclusions[i];
+            if (node instanceof GPage) {
+                this._exclusions.push(node);
+            }
+        }
     };
 
     /** @override */

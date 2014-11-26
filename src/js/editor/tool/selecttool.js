@@ -649,7 +649,7 @@
                         exclusion = exclusion.splice(i, 1);
                     }
                 }
-                this._editor.getGuides().getShapeBoxGuide().useExclusions(exclusion);
+                this._editor.getGuides().useExclusions(exclusion);
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                     position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);

@@ -17,9 +17,11 @@
     GUnitGuide.prototype.map = function (x, y) {
         // Snap to units if desired
         if (this._scene.getProperty('unitSnap') === true) {
+            var valueX = GMath.round(x, true);
+            var valueY = GMath.round(y, true);
             return {
-                x: {value: GMath.round(x, true), guide: null},
-                y: {value: GMath.round(y, true), guide: null}};
+                x: {value: valueX, guide: null, delta: Math.abs(x - valueX)},
+                y: {value: valueY, guide: null, delta: Math.abs(y - valueY)}};
         }
 
         return null;

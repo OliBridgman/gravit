@@ -12,9 +12,7 @@
         this._counter = 0;
         this._visuals = [];
 
-        this._shapeBoxGuide = new GShapeBoxGuide(this);
-
-        this._addGuide(this._shapeBoxGuide);
+        this._addGuide(new GShapeBoxGuide(this));
         this._addGuide(new GPageGuide(this));
         this._addGuide(new GGridGuide(this));
         this._addGuide(new GUnitGuide(this));
@@ -113,38 +111,40 @@
     GGuides.prototype.finishMap = function () {
         if (this._counter > 0) {
             --this._counter;
-            if (this._counter == 0 && this._visuals.length) {
-                var minx = null;
-                var miny = null;
-                var maxx = null;
-                var maxy = null;
-                var visLine;
-                for (var i = 0; i < this._visuals.length; ++i) {
-                    visLine = this._visuals[i];
-                    for (var j = 0; j < 2; ++j) {
-                        if (minx === null || minx > visLine[j].getX()) {
-                            minx = visLine[j].getX();
-                        }
-                        if (miny === null || miny > visLine[j].getY()) {
-                            miny = visLine[j].getY();
-                        }
-                        if (maxx === null || maxx < visLine[j].getX()) {
-                            maxx = visLine[j].getX();
-                        }
-                        if (maxy === null || maxy < visLine[j].getY()) {
-                            maxy = visLine[j].getY();
+            if (this._counter == 0) {
+                if (this._visuals.length) {
+                    var minx = null;
+                    var miny = null;
+                    var maxx = null;
+                    var maxy = null;
+                    var visLine;
+                    for (var i = 0; i < this._visuals.length; ++i) {
+                        visLine = this._visuals[i];
+                        for (var j = 0; j < 2; ++j) {
+                            if (minx === null || minx > visLine[j].getX()) {
+                                minx = visLine[j].getX();
+                            }
+                            if (miny === null || miny > visLine[j].getY()) {
+                                miny = visLine[j].getY();
+                            }
+                            if (maxx === null || maxx < visLine[j].getX()) {
+                                maxx = visLine[j].getX();
+                            }
+                            if (maxy === null || maxy < visLine[j].getY()) {
+                                maxy = visLine[j].getY();
+                            }
                         }
                     }
+                    minx -= 1;
+                    miny -= 1;
+                    maxx += 1;
+                    maxy += 1;
+
+                    this._area = new GRect(minx, miny, maxx - minx, maxy - miny);
+                    this.invalidate(this._area);
                 }
-                minx -= 1;
-                miny -= 1;
-                maxx += 1;
-                maxy += 1;
 
-                this._area = new GRect(minx, miny, maxx - minx, maxy - miny);
-                this.invalidate(this._area);
-
-                this._shapeBoxGuide.cleanExclusions();
+                this.cleanExclusions();
             }
         }
     };
@@ -421,6 +421,26 @@
      */
     GGuides.prototype.getShapeBoxGuide = function () {
         return this._shapeBoxGuide;
+    };
+
+
+    /**
+     * Use the passed list of elements as exclusions from snapping to them
+     * @param {Array} exclusions
+     */
+    GGuides.prototype.useExclusions = function (exclusions) {
+        for (var i = 0; i < this._guides.length; ++i) {
+            this._guides[i].useExclusions(exclusions);
+        }
+    };
+
+    /**
+     * clean exclusions list
+     */
+    GGuides.prototype.cleanExclusions = function () {
+        for (var i = 0; i < this._guides.length; ++i) {
+            this._guides[i].cleanExclusions();
+        }
     };
 
     /**

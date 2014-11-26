@@ -1281,6 +1281,31 @@
         return true;
     };
 
+    /**
+     * Accept a visitor on this container's children
+     * @param {Function} visitor
+     * @param {Boolean} reverse - walk through children in reverse order
+     * @return {Boolean}
+     * @version 1.0
+     */
+    GNode.Container.prototype.acceptChildrenAny = function (visitor, reverse) {
+        var res = false;
+        if (reverse) {
+            for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
+                if (child.acceptAny(visitor, reverse) === true) {
+                    res = true;
+                }
+            }
+        } else {
+            for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
+                if (child.acceptAny(visitor, reverse) === true) {
+                    res = true;
+                }
+            }
+        }
+        return res;
+    };
+
     /** @override */
     GNode.Container.prototype.toString = function () {
         return "[Mixin GNode.Container]";
@@ -1507,6 +1532,27 @@
 
         if (this.hasMixin(GNode.Container)) {
             return this.acceptChildren(visitor, reverse);
+        }
+
+        return true;
+    };
+
+    /**
+     * Accept a visitor
+     * @param {Function} visitor a visitor function called for each visit retrieving the current
+     * node as first parameter. The function may return a boolean value indicating whether to
+     * return visiting (true) or whether to cancel visiting (false). Not returning anything or
+     * returning anything else than a Boolean will be ignored.
+     * @param {Boolean} reverse - walk through children in reverse order
+     * @return {Boolean} result of visiting (false = canceled, true = went through)
+     */
+    GNode.prototype.acceptAny = function (visitor, reverse) {
+        if (visitor.call(null, this) === false) {
+            return false;
+        }
+
+        if (this.hasMixin(GNode.Container)) {
+            return this.acceptChildrenAny(visitor, reverse);
         }
 
         return true;

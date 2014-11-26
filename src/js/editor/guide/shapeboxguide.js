@@ -16,13 +16,6 @@
 
     GShapeBoxGuide.GUIDE_MARGIN = 20;
 
-    /**
-     * Array of elements, which should be excluded from snapping to them
-     * @type {Array}
-     * @private
-     */
-    GShapeBoxGuide.prototype._exclusions = null;
-
     /** @override */
     GShapeBoxGuide.prototype.map = function (x, y, useMargin) {
         var resX = null;
@@ -38,7 +31,7 @@
             var snapDistance = this._scene.getProperty('snapDist');
 
             var _snap = function (shape) {
-                if (this._exclusions) {
+                if (this._exclusions && this._exclusions.length) {
                     for (var i = 0; i < this._exclusions.length; ++i) {
                         if (this._exclusions[i] == shape) {
                             return;
@@ -132,9 +125,9 @@
                 }
             }.bind(this);
 
-            var page = this._scene.getActivePage();
+            var layer = this._scene.getActiveLayer();
 
-            page.accept(function (node) {
+            layer.accept(function (node) {
                 if (node instanceof GShape && node.getParent() instanceof GLayer) {
                     _snap(node);
                 }
@@ -155,19 +148,15 @@
         return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
-    /**
-     * Use the passed list of elements as exclusions from snapping to them
-     * @param {Array} exclusions
-     */
     GShapeBoxGuide.prototype.useExclusions = function (exclusions) {
-        this._exclusions = exclusions;
-    };
-
-    /**
-     * Clean exclusions list
-     */
-    GShapeBoxGuide.prototype.cleanExclusions = function () {
-        this._exclusions = null;
+        var node;
+        this._exclusions = [];
+        for (var i = 0; i < exclusions.length; ++i) {
+            node = exclusions[i];
+            if (node instanceof GShape) {
+                this._exclusions.push(node);
+            }
+        }
     };
 
     /** @override */

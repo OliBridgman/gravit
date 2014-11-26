@@ -312,7 +312,7 @@
     GSceneEditor.prototype.transformTBox = function (startPos, curPos, option, ratio, ratioStep) {
         if (this._tBoxMode != GSceneEditor.TBoxMode.PASSIVE && this._tBoxMode != GSceneEditor.TBoxMode.NA) {
             var guides = this._getGraphicEditor().getGuides();
-            guides.getShapeBoxGuide().useExclusions(this._getGraphicEditor().getSelection());
+            guides.useExclusions(this._getGraphicEditor().getAlignExclusions(false));
             guides.beginMap();
             var rStep = ratioStep;
             if (!rStep && this._tBoxMode == GSceneEditor.TBoxMode.SKEW) {

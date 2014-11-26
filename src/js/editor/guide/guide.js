@@ -24,6 +24,13 @@
      */
     GGuide.prototype._scene = null;
 
+    /**
+     * Array of elements, which should be excluded from snapping to them
+     * @type {Array}
+     * @private
+     */
+    GGuide.prototype._exclusions = null;
+
     // -----------------------------------------------------------------------------------------------------------------
     // GGuide.Visual Mixin
     // -----------------------------------------------------------------------------------------------------------------
@@ -128,6 +135,21 @@
     // -----------------------------------------------------------------------------------------------------------------
     // GGuide
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Use the passed list of elements as exclusions from snapping to them
+     * @param {Array} exclusions
+     */
+    GGuide.prototype.useExclusions = function (exclusions) {
+        this._exclusions = exclusions;
+    };
+
+    /**
+     * Clean exclusions list
+     */
+    GGuide.prototype.cleanExclusions = function () {
+        this._exclusions = null;
+    };
 
     /** @override */
     GGuide.prototype.toString = function () {
