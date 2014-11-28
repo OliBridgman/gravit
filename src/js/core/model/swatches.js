@@ -8,8 +8,9 @@
      * @mixes GEventTarget
      * @constructor
      */
-    function GSwatches() {
+    function GSwatches(workspace) {
         GNode.call(this);
+        this._setWorkspace(workspace);
     }
 
     GNode.inheritAndMix("swatches", GSwatches, GNode, [GNode.Container, GNode.Store, GEventTarget]);

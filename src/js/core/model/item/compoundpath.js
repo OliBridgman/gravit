@@ -17,7 +17,6 @@
         // Add anchor paths
         this._anchorPaths = new GCompoundPath.AnchorPaths();
         this.appendChild(this._anchorPaths);
-        this._anchorPaths._setScene(this._scene);
         this._anchorPaths._removalAllowed = false;
     }
 

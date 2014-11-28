@@ -18,7 +18,7 @@
 
         gravit.palettes.push(
             new GLayersPalette(),
-            new GPagesPalette(),
+            //new GPagesPalette(),
             new GAlignPalette(),
             new GTransformPalette(),
             new GExportPalette(),
@@ -31,7 +31,7 @@
         );
 
         gravit.sidebars.push(
-            new GDocumentSidebar()
+            //new GDocumentSidebar()
         );
 
         // Register default tools

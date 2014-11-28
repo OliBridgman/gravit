@@ -471,8 +471,7 @@
         if (this.getStylePropertySets().indexOf(GStylable.PropertySet.Effects) >= 0) {
             if (!this._effects) {
                 this._effects = new GStylable.Effects();
-                this._effects._parent = this;
-                this._effects._setScene(this._scene);
+                this._effects._setParent(this);
             }
             return this._effects;
         }
@@ -698,8 +697,7 @@
                 if (propertySet === GStylable.PropertySet.Effects) {
                     if (args._eff) {
                         this._effects = GNode.restore(args._eff);
-                        this._effects._parent = this;
-                        this._effects._setScene(this._scene);
+                        this._effects._setParent(this);
                     }
                 } else {
                     var propertySetInfo = GStylable.PropertySetInfo[propertySet];
@@ -711,13 +709,12 @@
                     }
                 }
             }
-        } else if (change === GNode._Change.Attached) {
+        } else if (change === GNode._Change.ParentAttached || change === GNode._Change.ParentDetach) {
             if (this._effects) {
-                this._effects._setScene(this._scene);
-            }
-        } else if (change === GNode._Change.Detach) {
-            if (this._effects) {
-                this._effects._setScene(null);
+                this._effects._detachFromParent(this);
+                if (change === GNode._Change.ParentAttached) {
+                    this._effects._attachToParent(this);
+                }
             }
         }
     };

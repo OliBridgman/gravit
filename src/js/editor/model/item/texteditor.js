@@ -173,7 +173,7 @@
     /** @override */
     GTextEditor.prototype.initialSetup = function () {
         var element = this.getElement();
-        var defStyle = element.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
+        var defStyle = element.getWorkspace().getStyles().querySingle('style[_sdf="text"]');
         if (defStyle) {
             element.assignStyleFrom(defStyle);
         }

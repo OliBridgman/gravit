@@ -60,9 +60,13 @@
     };
 
     /** @override */
-    GPage.prototype._paintToBitmap = function (context) {
+    GSlice.prototype._paintToBitmap = function (context) {
+        if (!this._scene) {
+            throw new Error('Not part of a scene.');
+        }
+
         // Paint scene and not ourself
-        this.getScene().paint(context);
+        this._scene.paint(context);
 
         var bitmap = context.canvas.getBitmap();
 

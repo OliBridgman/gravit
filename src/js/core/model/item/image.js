@@ -190,8 +190,8 @@
             if (args.properties.indexOf('url') >= 0) {
                 this._updateImage();
             }
-        } else if (change === GNode._Change.Attached) {
-            if (this._status === GImage.ImageStatus.Delayed) {
+        } else if (change === GNode._Change.ParentAttached) {
+            if (this._workspace && this._scene && this._status === GImage.ImageStatus.Delayed) {
                 this._updateImage();
             }
         }
@@ -269,11 +269,11 @@
      * @private
      */
     GImage.prototype._updateImage = function () {
-        if (!this.isAttached()) {
-            this._setStatus(GImage.ImageStatus.Delayed);
-        } else {
+        if (this._workspace && this._scene) {
             this._setStatus(GImage.ImageStatus.Resolving);
-            this._scene.resolveUrl(this.$url, this._resolvedImage.bind(this));
+            this._workspace.resolveUrl(this.$url, this._resolvedImage.bind(this));
+        } else {
+            this._setStatus(GImage.ImageStatus.Delayed);
         }
     };
     /**
@@ -311,7 +311,7 @@
         if (status !== this._status) {
             this._status = status;
             if (this._canEventBeSend(GImage.StatusEvent)) {
-                this._scene.trigger(new GImage.StatusEvent(this, this._status));
+                this._sendEvent(new GImage.StatusEvent(this, this._status));
             }
         }
     };

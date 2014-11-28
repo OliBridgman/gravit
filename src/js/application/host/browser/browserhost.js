@@ -108,5 +108,30 @@
         this._clipboardMimeTypes[mimeType] = content;
     };
 
+    /** @override */
+    GBrowserHost.prototype.openDirectoryPrompt = function (done) {
+        // Dummy
+        done('', 'dummy');
+    };
+
+    /** @override */
+    GBrowserHost.prototype.openDirectoryFile = function (directory, filename, createIfNotExists, writeable, done) {
+        // Dummy
+        done('');
+    };
+
+    /** @override */
+    GBrowserHost.prototype.getFileContents = function (file, binary, done) {
+        // Dummy
+    };
+
+    /** @override */
+    GBrowserHost.prototype.putFileContents = function (file, data, binary, done) {
+        // Dummy
+        if (done) {
+            done();
+        }
+    };
+
     _.gHost = new GBrowserHost;
 })(this);

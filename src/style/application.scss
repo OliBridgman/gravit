@@ -7,13 +7,13 @@
 @import 'application/base';
 @import 'application/input';
 
-@import 'application/workspace/workspace';
-@import 'application/workspace/header';
-@import 'application/workspace/toolbar';
-@import 'application/workspace/panels';
-@import 'application/workspace/sidebars';
-@import 'application/workspace/windows';
-@import 'application/workspace/palettes';
+@import 'application/gui/workspace';
+@import 'application/gui/header';
+@import 'application/gui/toolbar';
+@import 'application/gui/panels';
+@import 'application/gui/sidebars';
+@import 'application/gui/windows';
+@import 'application/gui/palettes';
 
 @import 'application/palette/color';
 @import 'application/palette/export';

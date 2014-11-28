@@ -136,13 +136,13 @@
                             })
                             .addClass('g-style-list')
                             .gStylePanel()
-                            .gStylePanel('attach', this._document.getScene().getStyleCollection())
+                            .gStylePanel('styles', this._document.getProject().getStyles())
                             .gOverlay({
                                 releaseOnClose: true
                             })
                             .gOverlay('open', evt.target)
                             .on('close', function () {
-                                $(this).gStylePanel('detach');
+                                $(this).gStylePanel('styles', null);
                             })
                             .on('stylechange', function (evt, style) {
                                 $(evt.target).gOverlay('close');
@@ -172,16 +172,18 @@
                         .addClass('fa fa-plus'))
                     .on('click', function () {
                         var scene = this._document.getScene();
+                        var project = this._document.getProject();
                         var newStyle = new GStyle();
-                        newStyle.setProperty('name', 'Style-' + (scene.getStyleCollection().queryCount('> style')).toString());
+                        newStyle.setProperty('name', 'Style-' + (project.getStyles().queryCount('> style')).toString());
                         newStyle.setProperty('ps', this._elements[0].getStylePropertySets().slice());
                         newStyle.assignStyleFrom(this._elements[0]);
                         new GStyleDialog(newStyle).open(function (result, assign) {
                             if (result) {
+                                project.getStyles().appendChild(newStyle);
+
                                 // TODO : I18N
                                 GEditor.tryRunTransaction(scene, function () {
                                     assign();
-                                    scene.getStyleCollection().appendChild(newStyle);
                                     for (var i = 0; i < this._elements.length; ++i) {
                                         this._elements[i].setProperty('sref', newStyle.getReferenceId());
                                     }
@@ -276,9 +278,9 @@
                     .on('click', function () {
                         var defStyle = null;
                         if (this._elements[0] instanceof GText) {
-                            defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="text"]');
+                            defStyle = this._document.getProject().getStyles().querySingle('style[_sdf="text"]');
                         } else if (this._elements[0] instanceof GShape) {
-                            defStyle = this._document.getScene().getStyleCollection().querySingle('style[_sdf="shape"]');
+                            defStyle = this._document.getProject().getStyles().querySingle('style[_sdf="shape"]');
                         }
 
                         if (defStyle) {

@@ -13,7 +13,7 @@
     /** @override */
     GShapeEditor.prototype.initialSetup = function () {
         var element = this.getElement();
-        var defStyle = element.getScene().getStyleCollection().querySingle('style[_sdf="shape"]');
+        var defStyle = element.getWorkspace().getStyles().querySingle('style[_sdf="shape"]');
         if (defStyle) {
             element.assignStyleFrom(defStyle);
         }

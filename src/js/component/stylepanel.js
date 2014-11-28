@@ -1,5 +1,5 @@
 (function ($) {
-    function createStylePreviewImage (style, width, height) {
+    function createStylePreviewImage(style, width, height) {
         // Create either a temporary rectangle or text depending on the property sets
         var previewBox = new GRect(0, 0, width, height);
         var propertySets = style.getStylePropertySets();
@@ -51,24 +51,24 @@
 
     function afterInsertEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof GStyle && evt.node.getParent() === container) {
+        var styles = $this.data('gstylepanel').styles;
+        if (evt.node instanceof GStyle && evt.node.getParent() === styles) {
             insertStyle.call(this, evt.node);
         }
     };
 
     function beforeRemoveEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gstylepanel').container;
-        if (evt.node instanceof GStyle && evt.node.getParent() === container) {
+        var styles = $this.data('gstylepanel').styles;
+        if (evt.node instanceof GStyle && evt.node.getParent() === styles) {
             removeStyle.call(this, evt.node);
         }
     };
 
     function afterPropertiesChangeEvent(evt) {
         var $this = $(this);
-        var container = $this.data('gstylepanel').container;
-        if (evt.node.getParent() === container) {
+        var styles = $this.data('gstylepanel').styles;
+        if (evt.node.getParent() === styles) {
             updateStyle.call(this, evt.node);
         }
     };
@@ -94,8 +94,7 @@
     };
 
 
-
-    function insertStyle (style, index) {
+    function insertStyle(style, index) {
         var $this = $(this);
         var data = $this.data('gstylepanel');
         var insertBefore = null;
@@ -213,7 +212,7 @@
                     var targetStyle = $(this).data('style');
 
                     if (data.options.allowReorder && dragStyle) {
-                        if (data.container && dragStyle.getParent() === data.container) {
+                        if (data.styles && dragStyle.getParent() === data.styles) {
                             var parent = dragStyle.getParent();
                             var sourceIndex = parent.getIndexOfChild(dragStyle);
                             var targetIndex = parent.getIndexOfChild(targetStyle);
@@ -250,7 +249,7 @@
         updateStyle.call(this, style);
     };
 
-    function updateStyle (style) {
+    function updateStyle(style) {
         var $this = $(this);
         var data = $this.data('gstylepanel');
 
@@ -270,7 +269,7 @@
         });
     };
 
-    function removeStyle (style) {
+    function removeStyle(style) {
         var $this = $(this);
         var data = $this.data('gstylepanel');
 
@@ -290,7 +289,7 @@
         });
     };
 
-    function clear () {
+    function clear() {
         var $this = $(this);
         var remove = [];
 
@@ -341,58 +340,46 @@
             });
         },
 
-        attach: function (container) {
+        styles: function (styles) {
             var $this = $(this);
             var data = $this.data('gstylepanel');
 
-            methods.detach.call(this);
+            if (!arguments.length) {
+                return data.styles;
+            } else {
+                if (data.styles !== styles) {
+                    if (data.styles) {
+                        data.styles.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        data.styles.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        data.styles.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
 
-            data.container = container;
+                        data.afterInsertHandler = null;
+                        data.beforeRemoveHandler = null;
+                        data.afterPropertiesChangeHandler = null;
 
-            if (container) {
-                for (var child = container.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof GStyle) {
-                        insertStyle.call(this, child);
+                        clear.call(this);
+                    }
+
+                    data.styles = styles;
+
+                    if (data.styles) {
+                        for (var child = data.styles.getFirstChild(); child !== null; child = child.getNext()) {
+                            if (child instanceof GStyle) {
+                                insertStyle.call(this, child);
+                            }
+                        }
+
+                        data.afterInsertHandler = afterInsertEvent.bind(this);
+                        data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
+                        data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
+                        data.styles.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
+                        data.styles.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
+                        data.styles.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
                     }
                 }
 
-                // Subscribe to container
-                var scene = container.getScene();
-                if (scene) {
-                    data.afterInsertHandler = afterInsertEvent.bind(this);
-                    data.beforeRemoveHandler = beforeRemoveEvent.bind(this);
-                    data.afterPropertiesChangeHandler = afterPropertiesChangeEvent.bind(this);
-                    scene.addEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.addEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.addEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
+                return this;
             }
-            return this;
-        },
-
-        detach: function () {
-            var $this = $(this);
-            var data = $this.data('gstylepanel');
-            var container = data.container;
-
-            if (container) {
-                // Unsubscribe from container
-                var scene = container.getScene();
-                if (scene) {
-                    scene.removeEventListener(GNode.AfterInsertEvent, data.afterInsertHandler);
-                    scene.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
-                    scene.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
-                }
-            }
-
-            data.container = null;
-            data.afterInsertHandler = null;
-            data.beforeRemoveHandler = null;
-            data.afterPropertiesChangeHandler = null;
-
-            clear.call(this);
-
-            return this;
         },
 
         // Assigns or returns the selected style

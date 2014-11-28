@@ -380,7 +380,7 @@
                         var event = evt.originalEvent;
                         event.stopPropagation();
 
-                        if (dragSwatch || !data.swatches || !data.swatches.getScene()) {
+                        if (dragSwatch || !data.swatches) {
                             dragSwatch = null;
                             return;
                         }
@@ -448,7 +448,6 @@
                         data.swatches.removeEventListener(GNode.BeforeRemoveEvent, data.beforeRemoveHandler);
                         data.swatches.removeEventListener(GNode.AfterPropertiesChangeEvent, data.afterPropertiesChangeHandler);
 
-                        data.swatches = null;
                         data.afterInsertHandler = null;
                         data.beforeRemoveHandler = null;
                         data.afterPropertiesChangeHandler = null;

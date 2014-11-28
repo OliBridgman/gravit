@@ -595,17 +595,8 @@
         // Create scene, add it and call add page to insert a default page
         var scene = new GScene();
 
-        // Setup scene defaults
-        scene.setProperty('unit', GLength.Unit.PX);
 
-        // Add default styles for shapes & text
-        var defShapeStyle = new GStyle();
-        defShapeStyle.setProperties(['name', '_sdf', 'ps', '_bpt', '_fpt'], ['Shape Default', 'shape', [GStylable.PropertySet.Style, GStylable.PropertySet.Effects, GStylable.PropertySet.Fill, GStylable.PropertySet.Border], GRGBColor.BLACK, GRGBColor.WHITE]);
-        var defTextStyle = new GStyle();
-        defTextStyle.setProperties(['name', '_sdf', 'ps', '_fpt'], ['Text Default', 'text', [GStylable.PropertySet.Style, GStylable.PropertySet.Effects, GStylable.PropertySet.Fill, GStylable.PropertySet.Border, GStylable.PropertySet.Text, GStylable.PropertySet.Paragraph], GRGBColor.BLACK]);
-
-        scene.getStyleCollection().appendChild(defShapeStyle);
-        scene.getStyleCollection().appendChild(defTextStyle);
+        scene._setWorkspace(gApp.getActiveProject());
 
         // Create and add our document now
         var document = this.addDocument(scene);

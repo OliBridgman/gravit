@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * A scene covers all graphical resources
+     * A scene covers multiple elements
      * @class GScene
      * @extends GElement
      * @mixes GNode.Container
@@ -12,8 +12,6 @@
     function GScene() {
         GElement.call(this);
         this._scene = this;
-        this._references = {};
-        this._links = {};
         this._setDefaultProperties(GScene.MetaProperties);
     }
 
@@ -88,160 +86,6 @@
     /** @override */
     GScene.InvalidationRequestEvent.prototype.toString = function () {
         return "[Event GScene.InvalidationRequestEvent]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GScene.ReferenceEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event whenever a reference has been either linked or unlinked
-     * @param {GNode.Reference} reference the affected reference
-     * @param {GNode} target the target that was linked/unlinked against reference
-     * @param {Boolean} linked if true, reference was linked, otherwise unlinked
-     * @class GScene.ReferenceEvent
-     * @extends GEvent
-     * @constructor
-     */
-    GScene.ReferenceEvent = function (reference, target, linked) {
-        this.reference = reference;
-        this.target = target;
-        this.linked = linked;
-    };
-    GObject.inherit(GScene.ReferenceEvent, GEvent);
-
-    /** @type {GNode.Reference} */
-    GScene.ReferenceEvent.prototype.reference = null;
-
-    /** @type {GNode} */
-    GScene.ReferenceEvent.prototype.target = null;
-
-    /** @type {Boolean} */
-    GScene.ReferenceEvent.prototype.linked = null;
-
-    /** @override */
-    GScene.ReferenceEvent.prototype.toString = function () {
-        return "[Event GScene.ReferenceEvent]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GScene.ResolveUrlEvent Event
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * An event for resolving a given url. If one handles this event,
-     * it should call the resolved callback with the resolved url
-     * @param {String} url
-     * @param {Function} resolved
-     * @class GScene.ResolveUrlEvent
-     * @extends GEvent
-     * @constructor
-     */
-    GScene.ResolveUrlEvent = function (url, resolved) {
-        this.url = url;
-        this.resolved = resolved;
-    };
-    GObject.inherit(GScene.ResolveUrlEvent, GEvent);
-
-    /** @type String */
-    GScene.ResolveUrlEvent.prototype.url = null;
-
-    /** @type Function */
-    GScene.ResolveUrlEvent.prototype.resolved = null;
-
-    /** @override */
-    GScene.ResolveUrlEvent.prototype.toString = function () {
-        return "[Event GScene.ResolveUrlEvent]";
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GScene.StyleCollection Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @class GScene.StyleCollection
-     * @extends GNode
-     * @mixes GNode.Container
-     * @mixes GNode.Store
-     * @private
-     */
-    GScene.StyleCollection = function () {
-        GNode.call(this);
-    }
-
-    GNode.inheritAndMix("styles", GScene.StyleCollection, GNode, [GNode.Container, GNode.Store]);
-
-    /** @override */
-    GScene.StyleCollection.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GScene;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GScene.SwatchCollection Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @class GScene.SwatchCollection
-     * @extends GNode
-     * @mixes GNode.Container
-     * @mixes GNode.Store
-     * @private
-     */
-    GScene.SwatchCollection = function () {
-        GNode.call(this);
-    }
-
-    GNode.inheritAndMix("swatches", GScene.SwatchCollection, GNode, [GNode.Container, GNode.Store]);
-
-    /** @override */
-    GScene.SwatchCollection.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GScene;
-    };
-
-    // -----------------------------------------------------------------------------------------------------------------
-    // GScene Class
-    // -----------------------------------------------------------------------------------------------------------------
-    /**
-     * @type {{}}
-     * @private
-     */
-    GScene.prototype._references = null;
-
-    /**
-     * @type {{}}
-     * @private
-     */
-    GScene.prototype._links = null;
-
-    /**
-     * @type {GScene.StyleCollection}
-     * @private
-     */
-    GScene.prototype._styleCollection = null;
-
-    /**
-     * Returns the style-collection of this scene
-     * @returns {GScene.StyleCollection}
-     */
-    GScene.prototype.getStyleCollection = function () {
-        // If we have a _styleCollection reference and it not
-        // has ourself as a parent, then clear it, first
-        if (this._styleCollection && this._styleCollection.getParent() !== this) {
-            this._styleCollection = null;
-        }
-
-        if (!this._styleCollection) {
-            // Find our style-collection and save reference for faster access
-            for (var child = this.getFirstChild(true); child !== null; child = child.getNext(true)) {
-                if (child instanceof GScene.StyleCollection) {
-                    this._styleCollection = child;
-                    break;
-                }
-            }
-        }
-
-        if (!this._styleCollection) {
-            this._styleCollection = new GScene.StyleCollection();
-            this.appendChild(this._styleCollection);
-        }
-
-        return this._styleCollection;
     };
 
     /**
@@ -330,10 +174,6 @@
      * @param {GPage} page the page made active
      */
     GScene.prototype.setActivePage = function (page) {
-        if (!page.isAttached()) {
-            throw new Error('Page needs to be attached to be made active.');
-        }
-
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
             if (child instanceof GPage && child !== page) {
                 child.removeFlag(GNode.Flag.Active);
@@ -358,10 +198,6 @@
      * @param {GLayer} layer the layer made active
      */
     GScene.prototype.setActiveLayer = function (layer) {
-        if (!layer.isAttached()) {
-            throw new Error('Layer needs to be attached to be made active.');
-        }
-
         // Make sure to activate parent page of layer, first
         var layerPage = layer.getPage();
         this.setActivePage(layerPage);
@@ -410,138 +246,6 @@
             }
         }
         return false;
-    };
-
-    /**
-     * Links a referenceable target to a linked node
-     * @param {GNode.Reference} target referenceable target to be linked against
-     * @param {GNode} link linked node to be linked from
-     */
-    GScene.prototype.link = function (target, link) {
-        var referenceId = target.getReferenceId();
-        if (!this._links.hasOwnProperty(referenceId)) {
-            this._links[referenceId] = [];
-        }
-        this._links[referenceId].push(link);
-
-        if (this.hasEventListeners(GScene.ReferenceEvent)) {
-            this.trigger(new GScene.ReferenceEvent(target, link, true));
-        }
-    };
-
-    /**
-     * Unlinks a referenceable target from a linked node
-     * @param {GNode.Reference} target referenceable target to be unlinked to
-     * @param {GNode} link linked node to be unlinked from
-     */
-    GScene.prototype.unlink = function (target, link) {
-        var referenceId = target.getReferenceId();
-        if (this._links.hasOwnProperty(referenceId)) {
-            var links = this._links[referenceId];
-            var index = links.indexOf(link);
-            if (index >= 0) {
-                links.splice(index, 1);
-                if (links.length === 0) {
-                    delete this._links[referenceId];
-                }
-
-                if (this.hasEventListeners(GScene.ReferenceEvent)) {
-                    this.trigger(new GScene.ReferenceEvent(target, link, false));
-                }
-            }
-        }
-    };
-
-    /**
-     * Visits all links linking to a specific target node
-     * @param {GNode.Reference} target the target node to visit links for
-     * @param {Function} visitor the visitor function called for each
-     * link with the link being the only argument
-     */
-    GScene.prototype.visitLinks = function (target, visitor) {
-        var links = this._links[target.getReferenceId()];
-        if (links) {
-            links = links.slice();
-            for (var i = 0; i < links.length; ++i) {
-                visitor(links[i]);
-            }
-        }
-    };
-
-    /**
-     * Returns whether a given reference node has links or not
-     * @param {GNode.Reference} reference
-     * @returns {boolean}
-     */
-    GScene.prototype.hasLinks = function (reference) {
-        return this._links.hasOwnProperty(reference.getReferenceId());
-    };
-
-    /**
-     * Returns the number of links a given reference has
-     * @param {GNode.Reference} reference
-     * @returns {Number}
-     */
-    GScene.prototype.linkCount = function (reference) {
-        var links = this._links[reference.getReferenceId()];
-        if (links) {
-            return links.length;
-        }
-        return 0;
-    };
-
-    /**
-     * Register a referenceable node
-     * @param {GNode.Reference} reference
-     */
-    GScene.prototype.addReference = function (reference) {
-        var referenceId = reference.getReferenceId();
-        if (this._references.hasOwnProperty(referenceId)) {
-            throw new Error('Reference already added.');
-        }
-        this._references[referenceId] = reference;
-    };
-
-    /**
-     * Unregister a referenceable node
-     * @param {GNode.Reference} reference
-     */
-    GScene.prototype.removeReference = function (reference) {
-        var referenceId = reference.getReferenceId();
-        if (!this._references.hasOwnProperty(referenceId)) {
-            throw new Error('Reference not yet added.');
-        }
-        delete this._references[referenceId];
-    };
-
-    /**
-     * Returns a reference node by it's id if any
-     * @param {String} referenceId
-     * @return {GNode.Reference}
-     */
-    GScene.prototype.getReference = function (referenceId) {
-        if (this._references.hasOwnProperty(referenceId)) {
-            return this._references[referenceId];
-        }
-        return null;
-    };
-
-    /**
-     * Try to resolve a given url. This is asynchron.
-     * If the url is null or empty or a data url, it
-     * is returned as is. Otherwise, if it was resolved,
-     * the given resolved function containing the resolved
-     * url as parameter will be called.
-     * @param {String} url
-     * @param {Function} resolved
-     * @return {String}
-     */
-    GScene.prototype.resolveUrl = function (url, resolved) {
-        if (!url || url.indexOf('data:') === 0) {
-            resolved(url);
-        } else if (this.hasEventListeners(GScene.ResolveUrlEvent)) {
-            this.trigger(new GScene.ResolveUrlEvent(url, resolved));
-        }
     };
 
     /** @override */

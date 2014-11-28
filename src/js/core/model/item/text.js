@@ -592,8 +592,7 @@
     GText.prototype.getContent = function () {
         if (!this._content) {
             this._content = new GText.Content();
-            this._content._parent = this;
-            this._content._setScene(this._scene);
+            this._content._setParent(this);
         }
 
         return this._content;
@@ -1022,8 +1021,7 @@
 
             if (args.ct) {
                 this._content = GNode.restore(args.ct);
-                this._content._parent = this;
-                this._content._scene = this._scene;
+                this._content._setParent(this);
             }
 
             this._tl = new GPoint(args.tlx, args.tly);
@@ -1031,13 +1029,12 @@
             this._br = new GPoint(args.brx, args.bry);
             this._bl = new GPoint(args.blx, args.bly);
             this._runsDirty = true;
-        } else if (change === GNode._Change.Attached) {
+        } else if (change === GNode._Change.ParentAttached || change === GNode._Change.ParentDetach) {
             if (this._content) {
-                this._content._setScene(this._scene);
-            }
-        } else if (change === GNode._Change.Detach) {
-            if (this._content) {
-                this._content._setScene(null);
+                this._content._detachFromParent(this);
+                if (change === GNode._Change.ParentAttached) {
+                    this._content._attachToParent(this);
+                }
             }
         }
 

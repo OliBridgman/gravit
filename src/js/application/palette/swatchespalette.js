@@ -111,7 +111,7 @@
                 placeholder: 'Drop Swatches here'
             })
             .on('swatchchange', function (evt, swatch) {
-                gApp.getActiveProject().getSwatches().acceptChildren(function (node) {
+                this._project.getSwatches().acceptChildren(function (node) {
                     node.removeFlag(GNode.Flag.Selected);
                 });
 
@@ -155,7 +155,6 @@
         this._updateControls();
     };
 
-    /** @override */
     GSwatchesPalette.prototype._projectEvent = function (event) {
         if (event.type === GApplication.ProjectEvent.Type.Activated) {
             this._project = event.project;

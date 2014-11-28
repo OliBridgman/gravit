@@ -28,10 +28,10 @@
     GStylesPalette.prototype._controls = null;
 
     /**
-     * @type {GDocument}
+     * @type {GProject}
      * @private
      */
-    GStylesPalette.prototype._document = null;
+    GStylesPalette.prototype._project = null;
 
     /**
      * @type {JQuery}
@@ -75,7 +75,7 @@
     GStylesPalette.prototype.init = function (htmlElement, controls) {
         GPalette.prototype.init.call(this, htmlElement, controls);
 
-        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+        gApp.addEventListener(GApplication.ProjectEvent, this._projectEvent, this);
 
         this._htmlElement = htmlElement;
         this._controls = controls;
@@ -86,7 +86,7 @@
                 allowNameEdit: true
             })
             .on('stylechange', function (evt, style) {
-                this._document.getScene().getStyleCollection().acceptChildren(function (node) {
+                this._project.getStyles().acceptChildren(function (node) {
                     node.removeFlag(GNode.Flag.Selected);
                 });
 
@@ -144,18 +144,17 @@
         this._updateControls();
     };
 
-    GStylesPalette.prototype._documentEvent = function (event) {
-        if (event.type === GApplication.DocumentEvent.Type.Activated) {
-            this._document = event.document;
-            var scene = this._document.getScene();
-            this._stylePanel.gStylePanel('attach', scene.getStyleCollection());
-            this._stylePanel.gStylePanel('value', scene.getStyleCollection().querySingle('style:selected'));
+    GStylesPalette.prototype._projectEvent = function (event) {
+        if (event.type === GApplication.ProjectEvent.Type.Activated) {
+            this._project = event.project;
+            var styles = this._project.getStyles();
+            this._stylePanel.gStylePanel('styles', styles);
+            this._stylePanel.gStylePanel('value', styles.querySingle('style:selected'));
             this._updateControls();
             this.trigger(GPalette.UPDATE_EVENT);
-        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
-            var scene = this._document.getScene();
-            this._document = null;
-            this._stylePanel.gStylePanel('detach');
+        } else if (event.type === GApplication.ProjectEvent.Type.Deactivated) {
+            this._project = null;
+            this._stylePanel.gStylePanel('styles', null);
             this._updateControls();
             this.trigger(GPalette.UPDATE_EVENT);
         }

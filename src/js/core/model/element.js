@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * An element represent an elementary node within a scene, something like a layer,
+     * An element represent an elementary node something like a layer,
      * a shape, a group of shapes and more
      * @class GElement
      * @extends GNode
@@ -77,18 +77,31 @@
      */
     GElement._Change = {
         /**
+         * Called when the element got attached to a scene
+         * @type {Number}
+         */
+        SceneAttached: 200,
+
+        /**
+         * Called before the element gets detached from it's scene
+         * args = none
+         * @type {Number}
+         */
+        SceneDetach: 201,
+
+        /**
          * A child's geometry has been updated. This change gets populated up in hierarchy.
          * args = the child which' geometry has been updated
          * @type {Number}
          */
-        ChildGeometryUpdate: 200,
+        ChildGeometryUpdate: 220,
 
         /**
          * A geometry update is prepared
          * args = none
          * @type {Number}
          */
-        PrepareGeometryUpdate: 220,
+        PrepareGeometryUpdate: 240,
 
         /**
          * A geometry update is finished
@@ -97,28 +110,28 @@
          * does not invalidate any geometry at all
          * @type {Number}
          */
-        FinishGeometryUpdate: 221,
+        FinishGeometryUpdate: 241,
 
         /**
          * An invalidation is requested
          * args = none
          * @type {Number}
          */
-        InvalidationRequest: 230,
+        InvalidationRequest: 250,
 
         /**
          * An invalidation was requested. This change gets populated up in hierarchy.
          * args = the requested invalidation area rect
          * @type {Number}
          */
-        InvalidationRequested: 231
+        InvalidationRequested: 251
     };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GElement.GeometryChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event on geometrical changes of an element sent via a scene
+     * An event on geometrical changes of an element
      * @param {GElement} element the affected element
      * @param {GElement.GeometryChangeEvent.Type} type the geometrical change type
      * @class GElement.GeometryChangeEvent
@@ -283,7 +296,7 @@
      * @returns {GStyle}
      */
     GElement.Stylable.prototype.getReferencedStyle = function () {
-        return this.isAttached() && this.$sref ? this.getScene().getReference(this.$sref) : null;
+        return !!this._workspace && this.$sref ? this._workspace.getReference(this.$sref) : null;
     };
 
     /**
@@ -612,25 +625,23 @@
 
     /** @override */
     GElement.Stylable.prototype._handleStyleChange = function (change, args) {
-        if (this.isAttached()) {
+        if (this._workspace) {
             if (((change === GNode._Change.BeforePropertiesChange || change === GNode._Change.AfterPropertiesChange) && args.properties.indexOf('sref') >= 0) ||
-                change === GNode._Change.Attached || change === GNode._Change.Detach) {
-                var scene = this.getScene();
+                change === GNode._Change.WorkspaceAttached || change === GNode._Change.WorkspaceDetach) {
                 var referencedStyle = this.getReferencedStyle();
                 if (referencedStyle) {
                     switch (change) {
                         case GNode._Change.BeforePropertiesChange:
-                        case GNode._Change.Detach:
-                            scene.unlink(referencedStyle, this);
+                        case GNode._Change.WorkspaceDetach:
+                            this._workspace.unlink(referencedStyle, this);
                             break;
                         case GNode._Change.AfterPropertiesChange:
-                        case GNode._Change.Attached:
-                            scene.link(referencedStyle, this);
+                        case GNode._Change.WorkspaceAttached:
+                            this._workspace.link(referencedStyle, this);
                             break;
                     }
                 }
             }
-
 
             if (change === GNode._Change.AfterPropertiesChange) {
                 var styleBlendModeIdx = args.properties.indexOf('_sbl');
@@ -656,7 +667,7 @@
     /** @override */
     GElement.Stylable.prototype._getStyleMaskClipArea = function () {
         // Clip to our page if attached and not in single mode
-        if (this.isAttached() && this.getScene().getProperty('singlePage') === false) {
+        if (this._scene) {
             var myPage = this.getPage();
             if (myPage) {
                 return myPage.getPageClipBBox();
@@ -674,6 +685,12 @@
     // GElement
     // -----------------------------------------------------------------------------------------------------------------
     /**
+     * @type GScene
+     * @private
+     */
+    GElement.prototype._scene = null;
+
+    /**
      * @type GRect
      * @private
      */
@@ -684,6 +701,15 @@
      * @private
      */
     GElement.prototype._paintBBox = null;
+
+    /**
+     * Access the scene of this element
+     * @return {GScene}
+     * @version 1.0
+     */
+    GElement.prototype.getScene = function () {
+        return this._scene;
+    };
 
     /**
      * Called to get the geometry bbox which usually is the bbox of the underlying shape
@@ -1059,9 +1085,9 @@
         }
 
         if (!context) {
-            // If there's no context we can only paint when attached and having a parent
-            // or when we are the scene by ourself
-            return (this.isAttached() && this.getParent()) || (this instanceof GScene);
+            // If there's no context we can only paint when there's a scene and
+            // we are having a parent or when we are the scene by ourself
+            return (!!this._scene && !!this.getParent()) || (this instanceof GScene);
         }
 
         var paintBBox = this.getPaintBBox();
@@ -1379,7 +1405,7 @@
      * @private
      */
     GElement.prototype._requestInvalidationArea = function (area) {
-        if (this.isAttached()) {
+        if (this._scene) {
             this._scene._invalidateArea(area);
             this._handleChange(GElement._Change.InvalidationRequested, area);
         }
@@ -1391,6 +1417,54 @@
      */
     GElement.prototype._requestInvalidation = function () {
         this._requestInvalidateNode(this);
+    };
+
+    /**
+     * @param {GScene} scene
+     * @private
+     */
+    GElement.prototype._setScene = function (scene) {
+        if (scene !== this._scene) {
+            if (this._scene) {
+                this._notifyChange(GElement._Change.SceneDetach);
+            }
+
+            this._scene = scene;
+
+            if (this._scene) {
+                this._notifyChange(GElement._Change.SceneAttached);
+            }
+        }
+    };
+
+    /**
+     * @param {GNode} parent
+     * @private
+     */
+    GElement.prototype._attachToParent = function (parent) {
+        if (parent._workspace || parent._scene) {
+            this.accept(function (node) {
+                node._setWorkspace(parent._workspace);
+                if (node instanceof GElement) {
+                    node._setScene(parent._scene);
+                }
+            });
+        }
+    };
+
+    /**
+     * @param {GNode} parent
+     * @private
+     */
+    GElement.prototype._detachFromParent = function (parent) {
+        if (parent._workspace || parent._scene) {
+            this.accept(function (node) {
+                node._setWorkspace(null);
+                if (node instanceof GElement) {
+                    node._setScene(null);
+                }
+            });
+        }
     };
 
     /** @override */
@@ -1407,7 +1481,7 @@
         } else if (change == GElement._Change.PrepareGeometryUpdate) {
             if (this.isVisible()) {
                 if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Before));
+                    this._sendEvent(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Before));
                 }
             }
         } else if (change == GElement._Change.FinishGeometryUpdate) {
@@ -1455,7 +1529,7 @@
                 }
 
                 if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.After));
+                    this._sendEvent(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.After));
                 }
             }
         } else if (change == GElement._Change.ChildGeometryUpdate) {
@@ -1463,7 +1537,7 @@
                 this._invalidateGeometryForChildUpdate();
 
                 if (this._canEventBeSend(GElement.GeometryChangeEvent)) {
-                    this._scene.trigger(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Child));
+                    this._sendEvent(new GElement.GeometryChangeEvent(this, GElement.GeometryChangeEvent.Type.Child));
                 }
 
                 // Forward to parent

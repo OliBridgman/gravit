@@ -53,7 +53,7 @@
      * @returns {boolean}
      */
     GPage.prototype.isMaster = function () {
-        return this.isAttached() ? this.getScene().hasLinks(this) : false;
+        return this._workspace ? this._workspace.hasLinks(this) : false;
     };
 
     /**
@@ -61,7 +61,7 @@
      * @returns {GNode.Reference}
      */
     GPage.prototype.getMasterPage = function () {
-        var result = this.$msref && this.isAttached() ? this.getScene().getReference(this.$msref) : null;
+        var result = this.$msref && this._workspace ? this._workspace.getReference(this.$msref) : null;
 
         // try to avoid returning ourself
         if (result === this) {
@@ -253,6 +253,16 @@
                 this.setFlag(GNode.Flag.Active);
             }
             delete this.__restoring;
+        } else if (change === GElement._Change.WorkspaceAttached) {
+            var masterPage = this._workspace.getReference(this.$msref);
+            if (masterPage) {
+                this._workspace.link(masterPage, this)
+            }
+        } else if (change === GElement._Change.WorkspaceDetach) {
+            var masterPage = this._workspace.getReference(this.$msref);
+            if (masterPage) {
+                this._workspace.unlink(masterPage, this);
+            }
         }
 
         if (this._handleGeometryChangeForProperties(change, args, GPage.GeometryProperties)) {
@@ -281,10 +291,10 @@
                 if (masterPage) {
                     switch (change) {
                         case GNode._Change.BeforePropertiesChange:
-                            this.getScene().unlink(masterPage, this);
+                            this._workspace.unlink(masterPage, this);
                             break;
                         case GNode._Change.AfterPropertiesChange:
-                            this.getScene().link(masterPage, this);
+                            this._workspace.link(masterPage, this);
                             break;
                     }
                 }
@@ -298,15 +308,15 @@
             var area = args;
 
             // Handle invalidation if we're a master
-            if (area && !area.isEmpty() && this.isMaster() && this.getScene().getProperty('singlePage') === false) {
+            if (area && !area.isEmpty() && this.isMaster()) {
                 // If the invalidation area intersects with our page clipping box then
                 // we need to invalidate the same area on all paintable linked pages as well
                 var clipBBox = this.getPageClipBBox();
                 if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
-                    this.getScene().visitLinks(this, function (link) {
+                    this._workspace.visitLinks(this, function (link) {
                         if (link instanceof GPage && link.isPaintable()) {
                             // Move invalidation area relative to the linked page and let the
-                            // page invalidate the area which by itself my trigger more invalidations
+                            // page invalidate the area which by itself triggers more invalidations
                             // when the linked page is also a master
                             var dx = link.getProperty('x') - this.$x;
                             var dy = link.getProperty('y') - this.$y;
@@ -318,24 +328,6 @@
         }
 
         GBlock.prototype._handleChange.call(this, change, args);
-    };
-
-    /** @override */
-    GPage.prototype._setScene = function (scene) {
-        if (scene !== this._scene) {
-            if (scene) {
-                var masterPage = scene.getReference(this.$msref);
-                if (masterPage) {
-                    scene.link(masterPage, this)
-                }
-            } else {
-                var masterPage = this._scene.getReference(this.$msref);
-                if (masterPage) {
-                    this._scene.unlink(masterPage, this);
-                }
-            }
-        }
-        GBlock.prototype._setScene.call(this, scene);
     };
 
     _.GPage = GPage;

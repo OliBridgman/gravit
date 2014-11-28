@@ -136,7 +136,7 @@
      * @version 1.0
      */
     GElementEditor.openEditor = function (element) {
-        if (!element.isAttached()) {
+        if (!element._scene) {
             throw new Error("Node is not attached to create an editor for.");
         }
         if (GElementEditor.getEditor(element) != null) {

@@ -16,8 +16,7 @@
 
         // Add anchor points
         this._anchorPoints = anchorPoints ? anchorPoints : new GPathBase.AnchorPoints();
-        this._anchorPoints._parent = this;
-        this._anchorPoints._setScene(this._scene);
+        this._anchorPoints._setParent(this);
         this._anchorPoints._removalAllowed = false;
 
         this._vertices = new GVertexContainer();
@@ -1678,13 +1677,12 @@
             } else if (args.properties.indexOf('trf') >= 0) {
                 this._verticesDirty = true;
             }
-        } else if (change === GNode._Change.Attached) {
+        } else if (change === GNode._Change.ParentAttached || change === GNode._Change.ParentDetach) {
             if (this._anchorPoints) {
-                this._anchorPoints._setScene(this._scene);
-            }
-        } else if (change === GNode._Change.Detach) {
-            if (this._anchorPoints) {
-                this._anchorPoints._setScene(null);
+                this._anchorPoints._detachFromParent(this);
+                if (change === GNode._Change.ParentAttached) {
+                    this._anchorPoints._attachToParent(this);
+                }
             }
         }
 

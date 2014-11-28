@@ -65,6 +65,14 @@
     GDocument.prototype._title = null;
 
     /**
+     * Returns the project this document is working on
+     * @returns {GScene}
+     */
+    GDocument.prototype.getProject = function () {
+        return this._scene.getWorkspace();
+    };
+
+    /**
      * Returns the scene this document is working on
      * @returns {GScene}
      */

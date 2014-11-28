@@ -35,9 +35,8 @@
 
     /** @override */
     GStyle.prototype.assignStyleFrom = function (source, compare) {
-        var scene = this.getScene();
-        if (scene) {
-            scene.visitLinks(this, function (link) {
+        if (this._workspace) {
+            this._workspace.visitLinks(this, function (link) {
                 if (link !== source && link.hasMixin(GStylable)) {
                     link.assignStyleFrom(source, this);
                 }
@@ -56,9 +55,8 @@
      * Disconnect this style from all the ones it is linked to
      */
     GStyle.prototype.disconnectStyle = function () {
-        var scene = this.getScene();
-        if (scene) {
-            scene.visitLinks(this, function (link) {
+        if (this._workspace) {
+            this._workspace.visitLinks(this, function (link) {
                 if (link.hasMixin(GElement.Stylable)) {
                     link.setProperty('sref', null);
                 }
@@ -73,14 +71,13 @@
 
     /** @override */
     GStyle.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GScene.StyleCollection;
+        return parent instanceof GStyles;
     };
 
     /** @private */
     GStyle.prototype._stylePropertiesUpdated = function (properties, previousValues) {
-        var scene = this.getScene();
-        if (scene) {
-            scene.visitLinks(this, function (link) {
+        if (this._workspace) {
+            this._workspace.visitLinks(this, function (link) {
                 if (link.hasMixin(GStylable)) {
                     link.assignStyleFrom(this);
                 }

@@ -1,6 +1,6 @@
 (function (_) {
     /**
-     * Base node representing a single item within a scene
+     * Base node
      * @class GNode
      * @extends GObject
      * @constructor
@@ -395,11 +395,24 @@
         AfterFlagChange: 31,
 
         /**
+         * Called when the node got attached to a parent
+         * @type {Number}
+         */
+        ParentAttached: 40,
+
+        /**
+         * Called before the node gets detached from it's parent
+         * args = none
+         * @type {Number}
+         */
+        ParentDetach: 41,
+
+        /**
          * Called before storing a node into a given blob.
          * args = the blob to store into
          * @type {Number}
          */
-        PrepareStore: 40,
+        PrepareStore: 50,
 
         /**
          * Called to store a node into a given blob.
@@ -407,14 +420,14 @@
          * args = the blob to store into
          * @type {Number}
          */
-        Store: 41,
+        Store: 51,
 
         /**
          * Called before restoring a node from a given blob.
          * args = the blob to restore from
          * @type {Number}
          */
-        PrepareRestore: 42,
+        PrepareRestore: 52,
 
         /**
          * Called to restore a node from a given blob.
@@ -422,27 +435,27 @@
          * args = the blob to restore from
          * @type {Number}
          */
-        Restore: 43,
+        Restore: 53,
 
         /**
-         * Called when the node got attached
+         * Called when the node got attached to a workspace
          * @type {Number}
          */
-        Attached: 50,
+        WorkspaceAttached: 60,
 
         /**
-         * Called before the node gets detached
+         * Called before the node gets detached from it's workspace
          * args = none
          * @type {Number}
          */
-        Detach: 51
+        WorkspaceDetach: 61
     };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GNode.BeforeInsertEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a future node insertion sent via a scene
+     * An event for a future node insertion
      * @param {GNode} node the node that will be inserted
      * @class GNode.BeforeInsertEvent
      * @extends GEvent
@@ -471,7 +484,7 @@
     // GNode.AfterInsertEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for node insertion sent via a scene
+     * An event for node insertion
      * @param {GNode} node the node that was inserted
      * @class GNode.AfterInsertEvent
      * @extends GEvent
@@ -499,7 +512,7 @@
     // GNode.BeforeRemoveEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a future node removal sent via a scene
+     * An event for a future node removal
      * @param {GNode} node the node that will be removed
      * @class GNode.BeforeRemoveEvent
      * @extends GEvent
@@ -527,7 +540,7 @@
     // GNode.AfterRemoveEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a node removal sent via a scene
+     * An event for a node removal
      * @param {GNode} node the node that was removed
      * @class GNode.AfterRemoveEvent
      * @extends GEvent
@@ -555,7 +568,7 @@
     // GNode.BeforePropertiesChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a node properties change sent via a scene before the properties will be changed
+     * An event for a node properties change before the properties will be changed
      * @param {GNode} node the node which' properties are affected by the change
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that will be assigned
@@ -597,7 +610,7 @@
     // GNode.AfterPropertiesChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a node properties change sent via a scene after the property has changed
+     * An event for a node properties change after the property has changed
      * @param {GNode} node the node which' properties are affected by the change
      * @param {Array<String>} properties the names of the properties affected by the change
      * @param {Array<*>} values the values that the properties previously had have
@@ -640,7 +653,7 @@
     // GNode.BeforeFlagChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a node flag change sent via a scene before the flag will be changed
+     * An event for a node flag change before the flag will be changed
      * @param {GNode} node the node which' flag is affected by the change
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will be set (true) or cleared/removed (false)
@@ -686,7 +699,7 @@
     // GNode.AfterFlagChangeEvent Event
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * An event for a node flag change sent via a scene after the flag was changed
+     * An event for a node flag change after the flag was changed
      * @param {GNode} node the node which' flag was affected by the change
      * @param {Number} flag the flag affected by the change
      * @param {Boolean} set whether the flag will was set (true) or cleared/removed (false)
@@ -1109,7 +1122,7 @@
      * @param {GNode} reference reference to insert before, can be null to append
      */
     GNode.Container.prototype.insertChild = function (child, reference) {
-        if (child._scene != null) {
+        if (child._parent != null) {
             throw new Error("Child is already appended somewhere else");
         }
         if (reference != null && reference.getParent() != this) {
@@ -1122,7 +1135,6 @@
         this._notifyChange(GNode._Change.BeforeChildInsert, child);
 
         // Link our new child now
-        child._setParent(this);
         if (reference != null) {
             child._setNext(reference);
             child._setPrevious(reference._previous);
@@ -1152,16 +1164,7 @@
             this._lastChild = child;
         }
 
-        // If attached, attach all children recursively
-        if (this.isAttached()) {
-            var self = this;
-            if (child.accept) {
-                child.accept(function (node) {
-                    // Assign this scene to the node
-                    node._setScene(self._scene);
-                }, true);
-            }
-        }
+        child._setParent(this);
 
         this._notifyChange(GNode._Change.AfterChildInsert, child);
     };
@@ -1198,12 +1201,11 @@
         child._setPrevious(null);
         child._setNext(null);
 
-        // If attached, detach all children recursively
-        if (this.isAttached()) {
-            if (child.accept) {
-                child.accept(function (node) {
-                    node._setScene(null);
-                }, true);
+        if (this._workspace) {
+            if (child.hasMixin(GNode.Container)) {
+                for (var n = child.getFirstChild(); !!n; n = n.getNext()) {
+                    n._setWorkspace(null);
+                }
             }
         }
 
@@ -1349,10 +1351,10 @@
     // -----------------------------------------------------------------------------------------------------------------
 
     /**
-     * @type GScene
+     * @type GWorkspace
      * @private
      */
-    GNode.prototype._scene = null;
+    GNode.prototype._workspace = null;
 
     /**
      * @type GNode
@@ -1397,21 +1399,12 @@
     };
 
     /**
-     * Checks if this node is actually attached to a scene or not
-     * @return {Boolean} whether the node is attached or not
+     * Access the workspace of this node
+     * @return {GGworkspace}
      * @version 1.0
      */
-    GNode.prototype.isAttached = function () {
-        return this._scene != null;
-    };
-
-    /**
-     * Access the scene of this node
-     * @return {GScene}
-     * @version 1.0
-     */
-    GNode.prototype.getScene = function () {
-        return this._scene;
+    GNode.prototype.getWorkspace = function () {
+        return this._workspace;
     };
 
     /**
@@ -1811,70 +1804,55 @@
     };
 
     /**
-     * Returns whether a given event can be send which is only the case
-     * when the node is attached, the scene has a listener for the event
-     * and the event is not blocked
+     * Returns whether a given event can be send
      * @param eventClass
      * @returns {Boolean}
      * @private
      */
     GNode.prototype._canEventBeSend = function (eventClass) {
-        if (!this.isAttached()) {
-            return false;
-        }
-
-        if (!this._scene.hasEventListeners(eventClass)) {
-            return false;
-        }
-
         var event_id = GObject.getTypeId(eventClass);
         return !this._blockedEvents || !this._blockedEvents[event_id];
     };
 
     /**
+     * Sends an event by bubbling it up to each parent
+     * @param {GEvent} event
      * @private
      */
-    GNode.prototype._setSceneToChildren = function () {
-        if (this.hasMixin(GNode.Container)) {
-            var scene = this._scene;
-            for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-                if (child.accept) {
-                    child.accept(function (node) {
-                        node._setScene(scene);
-                    }, true);
+    GNode.prototype._sendEvent = function (event) {
+        for (var p = this; !!p; p = p.getParent()) {
+            if (p instanceof GEventTarget ||  p.hasMixin(GEventTarget)) {
+                if (p.hasEventListeners(event.constructor)) {
+                    p.trigger(event);
                 }
             }
         }
     };
 
     /**
-     * @param {GScene} scene
+     * @param {GWorkspace} workspace
      * @private
      */
-    GNode.prototype._setScene = function (scene) {
-        if (scene !== this._scene) {
-            if (this._scene) {
-                this._notifyChange(GNode._Change.Detach);
+    GNode.prototype._setWorkspace = function (workspace) {
+        if (workspace !== this._workspace) {
+            if (this._workspace) {
+                this._notifyChange(GNode._Change.WorkspaceDetach);
 
                 if (this.hasMixin(GNode.Reference)) {
-                    this._scene.removeReference(this);
+                    this._workspace.removeReference(this);
                 }
 
-                this._scene = null;
-
-                this._setSceneToChildren();
+                this._workspace = null;
             }
 
-            this._scene = scene;
+            this._workspace = workspace;
 
-            if (this._scene) {
+            if (this._workspace) {
                 if (this.hasMixin(GNode.Reference)) {
-                    this._scene.addReference(this);
+                    this._workspace.addReference(this);
                 }
 
-                this._setSceneToChildren();
-
-                this._notifyChange(GNode._Change.Attached);
+                this._notifyChange(GNode._Change.WorkspaceAttached);
             }
         }
     };
@@ -1883,8 +1861,44 @@
      * @param {GNode} parent
      * @private
      */
+    GNode.prototype._attachToParent = function (parent) {
+        if (parent._workspace) {
+            this.accept(function (node) {
+                node._setWorkspace(parent._workspace);
+            });
+        }
+    };
+
+    /**
+     * @param {GNode} parent
+     * @private
+     */
+    GNode.prototype._detachFromParent = function (parent) {
+        if (parent._workspace) {
+            this.accept(function (node) {
+                node._setWorkspace(null);
+            });
+        }
+    };
+
+    /**
+     * @param {GNode} parent
+     * @private
+     */
     GNode.prototype._setParent = function (parent) {
-        this._parent = parent;
+        if (this._parent !== parent) {
+            if (this._parent) {
+                this._notifyChange(GNode._Change.ParentDetach);
+                this._detachFromParent(this._parent);
+            }
+
+            this._parent = parent;
+
+            if (this._parent) {
+                this._attachToParent(this._parent);
+                this._notifyChange(GNode._Change.ParentAttached);
+            }
+        }
     };
 
     /**
@@ -1916,53 +1930,53 @@
             /** @type {GNode} */
             var child = args;
             if (this._canEventBeSend(GNode.BeforeInsertEvent)) {
-                this._scene.trigger(new GNode.BeforeInsertEvent(child));
+                this._sendEvent(new GNode.BeforeInsertEvent(child));
             }
         }
         else if (change == GNode._Change.AfterChildInsert) {
             /** @type {GNode} */
             var child = args;
             if (this._canEventBeSend(GNode.AfterInsertEvent)) {
-                this._scene.trigger(new GNode.AfterInsertEvent(child));
+                this._sendEvent(new GNode.AfterInsertEvent(child));
             }
         } else if (change == GNode._Change.BeforeChildRemove) {
             /** @type {GNode} */
             var child = args;
             if (this._canEventBeSend(GNode.BeforeRemoveEvent)) {
-                this._scene.trigger(new GNode.BeforeRemoveEvent(child));
+                this._sendEvent(new GNode.BeforeRemoveEvent(child));
             }
         }
         else if (change == GNode._Change.AfterChildRemove) {
             /** @type {GNode} */
             var child = args;
             if (this._canEventBeSend(GNode.AfterRemoveEvent)) {
-                this._scene.trigger(new GNode.AfterRemoveEvent(child));
+                this._sendEvent(new GNode.AfterRemoveEvent(child));
             }
         } else if (change == GNode._Change.BeforePropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
             if (this._canEventBeSend(GNode.BeforePropertiesChangeEvent)) {
-                this._scene.trigger(new GNode.BeforePropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
+                this._sendEvent(new GNode.BeforePropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
         }
         else if (change == GNode._Change.AfterPropertiesChange) {
             /** @type {{properties: Array<String>, values: Array<*>}} */
             var propertyArgs = args;
             if (this._canEventBeSend(GNode.AfterPropertiesChangeEvent)) {
-                this._scene.trigger(new GNode.AfterPropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
+                this._sendEvent(new GNode.AfterPropertiesChangeEvent(this, propertyArgs.properties, propertyArgs.values));
             }
         } else if (change == GNode._Change.BeforeFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
             if (this._canEventBeSend(GNode.BeforeFlagChangeEvent)) {
-                this._scene.trigger(new GNode.BeforeFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
+                this._sendEvent(new GNode.BeforeFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }
         else if (change == GNode._Change.AfterFlagChange) {
             /** @type {{flag: Number, set: Boolean}} */
             var flagArgs = args;
             if (this._canEventBeSend(GNode.AfterFlagChangeEvent)) {
-                this._scene.trigger(new GNode.AfterFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
+                this._sendEvent(new GNode.AfterFlagChangeEvent(this, flagArgs.flag, flagArgs.set));
             }
         }
     };
