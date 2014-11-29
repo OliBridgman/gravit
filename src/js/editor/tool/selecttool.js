@@ -638,18 +638,18 @@
         if (this._mode == GSelectTool._Mode.Moving) {
             var position = this._moveCurrent;
             if (this._editorMovePartInfo && this._editorMovePartInfo.isolated) {
-                var exclusion = this._editor.getSelection();
+                var exclusions = this._editor.getSelection();
                 if (this._editorMovePartInfo.id === GBlockEditor.RESIZE_HANDLE_PART_ID) {
-                    exclusion = [];
-                    exclusion = exclusion.concat(this._editor.getSelection());
+                    exclusions = [];
+                    exclusions = exclusions.concat(this._editor.getSelection());
                     var elem = this._editorMovePartInfo.editor.getElement();
-                    for (var i = 0; i < exclusion.length && elem != exclusion[i]; ++i) {
+                    for (var i = 0; i < exclusions.length && elem != exclusions[i]; ++i) {
                     }
-                    if (i < exclusion.length && elem == exclusion[i]) {
-                        exclusion = exclusion.splice(i, 1);
+                    if (i < exclusions.length && elem == exclusions[i]) {
+                        exclusions = exclusions.splice(i, 1);
                     }
                 }
-                this._editor.getGuides().useExclusions(exclusion);
+                this._editor.getGuides().useExclusions(this._editor.getAlignExclusions(false, exclusions));
                 this._editor.getGuides().beginMap();
                 this._editorMovePartInfo.editor.movePart(this._editorMovePartInfo.id, this._editorMovePartInfo.data,
                     position, this._view.getViewTransform(), this._editor.getGuides(), ifPlatform.modifiers.shiftKey, ifPlatform.modifiers.optionKey);

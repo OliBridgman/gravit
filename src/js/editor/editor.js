@@ -443,16 +443,25 @@
         return pathRef;
     };
 
-    GEditor.prototype.getAlignExclusions = function (clone) {
+    /**
+     * Returns the list of elements which should be excluded from snapping to them. This list contains the selected
+     * elements and all their children elements and so on, which are GElement instances
+     * @param {Boolean} clone - if true, the selection should be clonned, and thus should not be excluded from snapping
+     * @param {Array} elements - the array of basic elements to be used instead of full selection
+     * for creating the list of exclusions
+     * @returns {Array{GElement}} the list of elements which should be excluded from snapping to them
+     */
+    GEditor.prototype.getAlignExclusions = function (clone, elements) {
         var res = null;
-        if (this._selection && this._selection.length) {
+        var elems = elements ? elements : this._selection;
+        if (elems && elems.length) {
             var alignExclusions = [];
             if (!clone) {
-                alignExclusions = this._selection.slice();
+                alignExclusions = elems.slice();
             }
-            for (var i = 0; i < this._selection.length; ++i) {
-                var item = this._selection[i];
-                if (item instanceof GNode.Container) {
+            for (var i = 0; i < elems.length; ++i) {
+                var item = elems[i];
+                if (item.hasMixin(GNode.Container)) {
                     item.acceptChildrenAny(function (node) {
                         if (!(node instanceof GElement)) {
                             return false;

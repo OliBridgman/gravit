@@ -50,7 +50,6 @@
 
         if (partId === GPolygonEditor.INSIDE_PART_ID || partId === GPolygonEditor.OUTSIDE_PART_ID) {
             var newPos = viewToWorldTransform.mapPoint(position);
-            //newPos = guides.mapPoint(newPos);
             var trf = this._element.getProperty('trf');
             if (trf) {
                 newPos = trf.inverted().mapPoint(newPos);

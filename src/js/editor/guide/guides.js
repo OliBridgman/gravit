@@ -62,12 +62,6 @@
     GGuides.prototype._guides = null;
 
     /**
-     * @type {GShapeBoxGuide}
-     * @private
-     */
-    GGuides.prototype._shapeBoxGuide = null;
-
-    /**
      * Internal counter of begin/endMap calls
      * @type {number}
      * @private
@@ -414,15 +408,6 @@
             }
         }
     };
-
-    /**
-     * Returns ShapeBoxGuide
-     * @returns {GShapeBoxGuide}
-     */
-    GGuides.prototype.getShapeBoxGuide = function () {
-        return this._shapeBoxGuide;
-    };
-
 
     /**
      * Use the passed list of elements as exclusions from snapping to them
