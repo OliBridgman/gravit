@@ -771,7 +771,9 @@
                 var sidePos = selBBox.getSide(side);
                 var newSidePos = sidePos.add(delta);
                 this._guides.beginMap();
-                newSidePos = this._guides.mapPoint(newSidePos, GGuide.DetailMap.Mode.DetailOnFilterOn);
+                newSidePos = this._guides.mapPoint(newSidePos,
+                    partId ? GGuide.DetailMap.Mode.DetailOnFilterOn : GGuide.DetailMap.Mode.FilterOff);
+
                 this._guides.finishMap();
                 translation = newSidePos.subtract(sidePos);
             } else {

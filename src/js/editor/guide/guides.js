@@ -239,7 +239,8 @@
         for (var i = 0; i < this._guides.length && (!resX.length || !resY.length); ++i) {
             guide = this._guides[i];
             if (guide.isMappingAllowed()) {
-                for (var j = 0; j < sides.length; ++j) {
+                // For Unit guide we map only top left corner
+                for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                     var pivot = pivots[j];
                     res = guide.map(pivot.getX(), pivot.getY());
                     if (res) {
@@ -298,7 +299,8 @@
             for (var i = 0; i < this._guides.length && (!resX.length || !resY.length); ++i) {
                 guide = this._guides[i];
                 if (guide.isMappingAllowed()) {
-                    for (var j = 0; j < sides.length; ++j) {
+                    // For Unit guide we map only top left corner
+                    for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                         var pivot = pivots[j];
                         res = guide.map(pivot.getX(), pivot.getY());
                         if (res) {

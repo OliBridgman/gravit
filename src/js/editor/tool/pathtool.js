@@ -405,6 +405,10 @@
             } else {
                 this._pathEditor.requestInvalidation();
                 if (this._mode == GPathTool.Mode.Append) {
+                    if (this._dpathRef) {
+                        this._dpathRef.getAnchorPoints().removeChild(anchorPt);
+                        this._dpathRef = null;
+                    }
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
                     this._startTransaction(GPathTool.Transaction.AppendPoint);
@@ -412,6 +416,10 @@
                     this._pathEditor.selectOnePoint(anchorPt);
                     this._pathEditor.setActiveExtendingMode(true);
                 } else if (this._mode == GPathTool.Mode.Prepend) {
+                    if (this._dpathRef) {
+                        this._dpathRef.getAnchorPoints().removeChild(anchorPt);
+                        this._dpathRef = null;
+                    }
                     this._pathEditor.releasePathPreview(); // we release preview here, as base path will be modified
                     this._pathEditor.requestInvalidation();
                     this._startTransaction(GPathTool.Transaction.AppendPoint);
