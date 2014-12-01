@@ -1263,44 +1263,29 @@
      * Accept a visitor on this container's children
      * @param {Function} visitor
      * @param {Boolean} reverse - walk through children in reverse order
+     * @param {Boolean} any - if true, all the children will be processed,
+     * and if the result of one child is true, the overall result will be true
      * @return {Boolean}
      * @version 1.0
      */
-    GNode.Container.prototype.acceptChildren = function (visitor, reverse) {
+    GNode.Container.prototype.acceptChildren = function (visitor, reverse, any) {
+        var res = !any;
+        var childRes;
         if (reverse) {
             for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
-                if (child.accept(visitor, reverse) === false) {
+                childRes = child.accept(visitor, reverse, any);
+                if (childRes === false && !any) {
                     return false;
-                }
-            }
-        } else {
-            for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
-                if (child.accept(visitor, reverse) === false) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
-
-    /**
-     * Accept a visitor on this container's children
-     * @param {Function} visitor
-     * @param {Boolean} reverse - walk through children in reverse order
-     * @return {Boolean}
-     * @version 1.0
-     */
-    GNode.Container.prototype.acceptChildrenAny = function (visitor, reverse) {
-        var res = false;
-        if (reverse) {
-            for (var child = this.getLastChild(); child != null; child = child.getPrevious()) {
-                if (child.acceptAny(visitor, reverse) === true) {
+                } else if (childRes === true && any) {
                     res = true;
                 }
             }
         } else {
             for (var child = this.getFirstChild(); child != null; child = child.getNext()) {
-                if (child.acceptAny(visitor, reverse) === true) {
+                childRes = child.accept(visitor, reverse, any);
+                if (childRes === false && !any) {
+                    return false;
+                } else if (childRes === true && any) {
                     res = true;
                 }
             }
@@ -1516,36 +1501,17 @@
      * return visiting (true) or whether to cancel visiting (false). Not returning anything or
      * returning anything else than a Boolean will be ignored.
      * @param {Boolean} reverse - walk through children in reverse order
+     * @param {Boolean} any - if true, all the children will be processed,
+     * and if the result of one child is true, the overall result will be true
      * @return {Boolean} result of visiting (false = canceled, true = went through)
      */
-    GNode.prototype.accept = function (visitor, reverse) {
+    GNode.prototype.accept = function (visitor, reverse, any) {
         if (visitor.call(null, this) === false) {
             return false;
         }
 
         if (this.hasMixin(GNode.Container)) {
-            return this.acceptChildren(visitor, reverse);
-        }
-
-        return true;
-    };
-
-    /**
-     * Accept a visitor
-     * @param {Function} visitor a visitor function called for each visit retrieving the current
-     * node as first parameter. The function may return a boolean value indicating whether to
-     * return visiting (true) or whether to cancel visiting (false). Not returning anything or
-     * returning anything else than a Boolean will be ignored.
-     * @param {Boolean} reverse - walk through children in reverse order
-     * @return {Boolean} result of visiting (false = canceled, true = went through)
-     */
-    GNode.prototype.acceptAny = function (visitor, reverse) {
-        if (visitor.call(null, this) === false) {
-            return false;
-        }
-
-        if (this.hasMixin(GNode.Container)) {
-            return this.acceptChildrenAny(visitor, reverse);
+            return this.acceptChildren(visitor, reverse, any);
         }
 
         return true;

@@ -453,12 +453,12 @@
             for (var i = 0; i < elems.length; ++i) {
                 var item = elems[i];
                 if (item.hasMixin(GNode.Container)) {
-                    item.acceptChildrenAny(function (node) {
+                    item.acceptChildren(function (node) {
                         if (!(node instanceof GElement)) {
                             return false;
                         }
                         alignExclusions.push(node);
-                    }.bind(this));
+                    }.bind(this), false, true);
                 }
             }
             if (alignExclusions.length) {
