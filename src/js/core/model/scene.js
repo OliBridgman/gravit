@@ -9,13 +9,14 @@
      * @mixes GEventTarget
      * @constructor
      */
-    function GScene() {
+    function GScene(workspace) {
         GElement.call(this);
         this._scene = this;
+        this._workspace = workspace;
         this._setDefaultProperties(GScene.MetaProperties);
     }
 
-    GNode.inheritAndMix("scene", GScene, GElement, [GNode.Container, GNode.Properties, GNode.Store, GEventTarget]);
+    GObject.inheritAndMix(GScene, GElement, [GNode.Container, GNode.Properties, GNode.Store, GEventTarget]);
 
     /**
      * The padding between pages
@@ -53,15 +54,7 @@
         /** The vertical grid size */
         gridSizeY: 10,
         /** Whether the grid is active or not */
-        gridActive: false,
-        /** Whether to use single or multi page mode */
-        singlePage: true,
-        /** Relative path to image assets */
-        pathImage: 'images',
-        /** Relative path to font assets */
-        pathFont: 'fonts',
-        /** Relative path to export assets */
-        pathExport: 'export'
+        gridActive: false
     };
 
     // -----------------------------------------------------------------------------------------------------------------
@@ -161,35 +154,12 @@
     };
 
     /**
-     * Returns the currently active page if any or null
-     * @return {GPage}
-     */
-    GScene.prototype.getActivePage = function () {
-        // TODO : Cache result
-        return this.querySingle('page:active');
-    };
-
-    /**
-     * Assigns a currently active page
-     * @param {GPage} page the page made active
-     */
-    GScene.prototype.setActivePage = function (page) {
-        for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
-            if (child instanceof GPage && child !== page) {
-                child.removeFlag(GNode.Flag.Active);
-            }
-        }
-
-        page.setFlag(GNode.Flag.Active);
-    };
-
-    /**
      * Returns the currently active layer if any or null
      * @return {GLayer}
      */
     GScene.prototype.getActiveLayer = function () {
         // TODO : Cache result
-        return this.querySingle('page:active layer:active');
+        return this.querySingle('layer:active');
     };
 
     /**
@@ -198,67 +168,14 @@
      * @param {GLayer} layer the layer made active
      */
     GScene.prototype.setActiveLayer = function (layer) {
-        // Make sure to activate parent page of layer, first
-        var layerPage = layer.getPage();
-        this.setActivePage(layerPage);
-
         // Now activate the layer
-        layerPage.acceptChildren(function (node) {
+        this.acceptChildren(function (node) {
             if (node instanceof GLayer && node !== layer) {
                 node.removeFlag(GNode.Flag.Active);
             }
         });
 
         layer.setFlag(GNode.Flag.Active);
-    };
-
-    /**
-     * Returns a point for a new page to be inserted
-     * @returns {GPoint}
-     */
-    GScene.prototype.getPageInsertPosition = function () {
-        // TODO : Figure better way to avoid any potential intersection of the page with others
-        for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
-            if (child instanceof GPage) {
-                return new GPoint(
-                    child.getProperty('x') + child.getProperty('w') + GScene.PAGE_SPACING,
-                    child.getProperty('y')
-                );
-            }
-        }
-        return new GPoint(0, 0);
-    };
-
-    /**
-     * Checks and returns wether a given page will intersect with
-     * any other page(s) with a given pageRect
-     * @param {GPage} page the page to test for intersection w/ others
-     * @param {GRect} pageRect the new page rect to test for intersection w/ others
-     */
-    GScene.prototype.willPageIntersectWithOthers = function (page, pageRect) {
-        pageRect = pageRect.expanded(GScene.PAGE_SPACING, GScene.PAGE_SPACING, GScene.PAGE_SPACING, GScene.PAGE_SPACING);
-        for (var child = this.getLastChild(); child !== null; child = child.getPrevious()) {
-            if (child instanceof GPage && child !== page) {
-                var currentPageRect = child.getGeometryBBox();
-                if (currentPageRect && currentPageRect.intersectsRect(pageRect)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
-
-    /** @override */
-    GScene.prototype.hitTest = function (location, transform, acceptor, stacked, level, tolerance, force, filter) {
-        // In single page mode go straight to active page
-        if (this.$singlePage) {
-            var activePage = this.getActivePage();
-            if (activePage) {
-                return activePage.hitTest(location, transform, acceptor, stacked, level, tolerance, force, filter);
-            }
-        }
-
-        return GElement.prototype.hitTest.call(this, location, transform, acceptor, stacked, level, tolerance, force, filter);
     };
 
     /**
@@ -280,12 +197,7 @@
         }
 
         for (var node = this.getFirstChild(); node != null; node = node.getNext()) {
-            if (node instanceof GPage) {
-                // Handle single-page mode if set
-                if (!this.$singlePage || node.hasFlag(GNode.Flag.Active)) {
-                    node.paint(context);
-                }
-            } else if (node instanceof GElement) {
+            if (node instanceof GElement) {
                 node.paint(context);
             }
         }

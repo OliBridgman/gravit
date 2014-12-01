@@ -77,19 +77,6 @@
         return lastLayer;
     };
 
-    /**
-     * Returns the owner page of this block if any
-     * @return {GPage}
-     */
-    GBlock.prototype.getPage = function () {
-        for (var p = this.getParent(); p !== null; p = p.getParent()) {
-            if (p instanceof GPage) {
-                return p;
-            }
-        }
-        return null;
-    };
-
     /** @override */
     GBlock.prototype._handleChange = function (change, args) {
         if (change === GNode._Change.Store) {

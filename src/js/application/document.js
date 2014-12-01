@@ -199,7 +199,7 @@
                     message: 'Convert the image to vectors?',
                     callback: function (value) {
                         if (value) {
-                            var page = this._scene.getActivePage();
+                            var page = this._scene instanceof GPage ? this._scene : null;
                             var layer = this._scene.getActiveLayer();
                             GIO.read('image/svg+xml', file, function (node) {
                                 if (node) {
@@ -207,8 +207,8 @@
                                     callback(node);
                                 }
                             }, {
-                                baseWidth: page.getProperty('w'),
-                                baseHeight: page.getProperty('h')
+                                baseWidth: page ? page.getProperty('w') : 1000,
+                                baseHeight: page ? page.getProperty('h') : 1000
                             });
                         } else {
                             addAsImage();
@@ -219,54 +219,6 @@
                 addAsImage();
             }
         }
-    };
-
-    /**
-     * Create and returns a new page
-     * @param {Boolean} [noUndo] if set, no undo takes place for adding the page
-     * @return {GPage}
-     */
-    GDocument.prototype.createNewPage = function (noUndo) {
-        var scene = this._scene;
-        var insertPos = this._scene.getPageInsertPosition();
-
-        // Create page
-        var page = new GPage();
-        page.setProperties([
-            'name',
-            'x',
-            'y',
-            'w',
-            'h',
-            'bck'
-        ], [
-            'Page ' + (scene.queryCount('> page') + 1).toString(),
-            insertPos.getX(),
-            insertPos.getY(),
-            800,
-            600,
-            GRGBColor.WHITE
-        ]);
-
-        // Add default layer
-        var layer = new GLayer();
-        // TODO : I18N
-        layer.setProperties(['name'], ['Background']);
-        page.appendChild(layer);
-
-        var addPageFunc = function () {
-            scene.appendChild(page);
-            scene.setActiveLayer(layer);
-        }
-
-        if (!noUndo) {
-            // TODO : I18N
-            GEditor.tryRunTransaction(scene, addPageFunc, 'Add new Page');
-        } else {
-            addPageFunc();
-        }
-
-        return page;
     };
 
     /**

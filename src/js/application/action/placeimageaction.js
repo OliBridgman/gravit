@@ -63,7 +63,7 @@
             .on('change', function (evt) {
                 var files = $(evt.target)[0].files;
                 if (files && files.length) {
-                    var imagePos = document.getScene().getActivePage().getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
+                    var imagePos = document.getScene().getGeometryBBox().getSide(GRect.Side.CENTER);
                     for (var i = 0; i < files.length; ++i) {
                         document.importFile(files[i], function (element) {
                             element.transform(new GTransform(1, 0, 0, 1, imagePos.getX(), imagePos.getY()));

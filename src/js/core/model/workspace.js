@@ -166,6 +166,13 @@
     GWorkspace.prototype._cursorConstraint = null;
 
     /**
+     * @returns {Number}
+     */
+    GWorkspace.prototype.getSnapDistance = function () {
+        return this._snapDistance;
+    };
+
+    /**
      * @returns {GSwatches}
      */
     GWorkspace.prototype.getSwatches = function () {
@@ -177,6 +184,14 @@
      */
     GWorkspace.prototype.getStyles = function () {
         return this._styles;
+    };
+
+    GWorkspace.prototype.getPages = function () {
+        return [];
+    };
+
+    GWorkspace.prototype.getPageName = function (pageId) {
+        return null;
     };
 
     /**

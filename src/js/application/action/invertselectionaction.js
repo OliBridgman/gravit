@@ -62,15 +62,8 @@
         var document = gApp.getActiveDocument();
         var scene = document.getScene();
 
-        var source = null;
-        if (scene.getProperty('singlePage')) {
-            source = scene.getActivePage();
-        } else {
-            source = scene;
-        }
-
         var selection = [];
-        source.accept(function (node) {
+        scene.accept(function (node) {
             if (node instanceof GItem && node.getParent() instanceof GLayer && !node.hasFlag(GNode.Flag.Selected)) {
                 selection.push(node);
             }

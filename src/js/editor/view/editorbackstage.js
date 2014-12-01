@@ -35,8 +35,9 @@
             context.dirtyMatcher.transform(this._view.getViewTransform());
         }
 
-        if (context.configuration.pagesVisible) {
-            this._renderPages(context);
+        var scene = this._view.getScene();
+        if (context.configuration.pageDecoration && scene instanceof GPage && scene.isPaintable(context)) {
+            this._renderPageDecoration(context);
         }
     };
 
@@ -57,26 +58,13 @@
 
     /**
      * @param context
-     * @private
-     */
-    GEditorBackStage.prototype._renderPages = function (context) {
-        // We'll leave our canvas in view coordinates for the background
-        var singlePage = this._view.getScene().getProperty('singlePage');
-        var transform = this._view.getWorldTransform();
-        for (var node = this._view.getScene().getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof GPage && node.isPaintable(context) && (!singlePage || node.hasFlag(GNode.Flag.Active))) {
-                this._renderPage(context, transform, node);
-            }
-        }
-    };
-
-    /**
-     * @param context
      * @param transform
      * @param page
      * @private
      */
-    GEditorBackStage.prototype._renderPage = function (context, transform, page) {
+    GEditorBackStage.prototype._renderPageDecoration = function (context) {
+        var page = this._view.getScene();
+        var transform = this._view.getWorldTransform();
         // Get page rectangle and transform it into world space
         var pageRect = new GRect(page.getProperty('x'), page.getProperty('y'), page.getProperty('w'), page.getProperty('h'));
         var marginRect = pageRect.expanded(-page.getProperty('ml'), -page.getProperty('mt'), -page.getProperty('mr'), -page.getProperty('mb'));

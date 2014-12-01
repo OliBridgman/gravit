@@ -70,7 +70,7 @@
 
     /** @override */
     GLayer.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GLayer || parent instanceof GPage;
+        return parent instanceof GLayer || parent instanceof GScene;
     };
 
     /** @override */

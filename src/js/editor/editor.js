@@ -253,12 +253,6 @@
     GEditor.prototype._storedSelection = null;
 
     /**
-     * @type {Array<{{page: GPage, selection: Array<*>}}>}
-     * @private
-     */
-    GEditor.prototype._pageSelections = null;
-
-    /**
      * @type {number}
      * @private
      */
@@ -356,11 +350,8 @@
             for (var i = 0; i < this._selection.length; ++i) {
                 var element = this._selection[i];
                 if (element instanceof GBlock) {
-                    var page = element.getPage();
                     var copyElem = element.clone();
                     if (copyElem) {
-                        copyElem.transform(
-                            new GTransform(1, 0, 0, 1, -page.getProperty('x'), -page.getProperty('y')));
                         selectionCopy.push(copyElem);
                     }
                 }
@@ -587,7 +578,7 @@
 
     /**
      * Delete current selection (if any). Note that this will only
-     * delete GItem based classes so that layers and/or pages
+     * delete GItem based classes so that layers
      * are not accidently deleted. Note also that this will not
      * delete items that are locked
      * @param {Boolean} [noTransaction] if true, will not create a
@@ -748,22 +739,14 @@
      * Temporarily store the current selection
      */
     GEditor.prototype.storeSelection = function () {
-        if (this._scene.getProperty('singlePage')) {
-            this._savePageSelection(this._scene.getActivePage(), true/*no-overwrite*/);
-        } else {
-            this._storedSelection = this._saveSelection();
-        }
+        this._storedSelection = this._saveSelection();
     };
 
     /**
      * Restore a temporarily stored selection
      */
     GEditor.prototype.restoreSelection = function () {
-        if (this._scene.getProperty('singlePage')) {
-            this._restorePageSelection(this._scene.getActivePage());
-        } else {
-            this._loadSelection(this._storedSelection);
-        }
+        this._loadSelection(this._storedSelection);
     };
 
     /**
@@ -979,9 +962,9 @@
      */
     GEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
-        var target = this._scene.querySingle('page:active layer:active');
+        var target = this._scene.querySingle('layer:active');
         if (!target) {
-            throw new Error('No active page/layer.');
+            throw new Error('No active layer.');
         }
 
         if (!noTransaction) {
@@ -1074,31 +1057,12 @@
     };
 
     /**
-     * Does various work when the mouse was pressed somewhere to update for
-     * example the currently active page. Does nothing on single page mode
+     * Does various work when the mouse was pressed somewhere
      * @param {GPoint} position the mouse position
      * @param {GTransform} transform optional transformation for the position
      */
     GEditor.prototype.updateByMousePosition = function (position, transformation) {
-        if (this._scene.getProperty('singlePage') === false) {
-            // TODO : Make this more efficient than hit-testing everything (aka iterate pages instead)
-            // Try to update the active page under mouse if any
-            var pageHits = this._scene.hitTest(position, transformation, function (hit) {
-                return hit instanceof GPage;
-            }.bind(this), false, 1/*one level deep only*/);
-
-            if (pageHits && pageHits.length === 1) {
-                for (var child = this._scene.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof GPage) {
-                        if (child === pageHits[0].element) {
-                            child.setFlag(GNode.Flag.Active);
-                        } else {
-                            child.removeFlag(GNode.Flag.Active);
-                        }
-                    }
-                }
-            }
-        }
+        // NO-OP
     };
 
     /**
@@ -1446,11 +1410,6 @@
                 this._closeEditor(evt.node);
             }
         }
-
-        if (evt.node instanceof GPage && this._scene.getProperty('singlePage') === true) {
-            // Remove saved page selection when removing the page and singlePage mode is turned on
-            this._removePageSelection(evt.node);
-        }
     };
 
     /**
@@ -1526,15 +1485,6 @@
                         editor.removeFlag(GElementEditor.Flag.Highlighted);
                     }
                     this._tryCloseEditor(evt.node);
-                }
-            } else if (evt.flag == GNode.Flag.Active) {
-                // In single page mode we'll save & restore page selections
-                if (evt.node instanceof GPage && this._scene.getProperty('singlePage') === true) {
-                    if (evt.set) {
-                        this._restorePageSelection(evt.node);
-                    } else {
-                        this._savePageSelection(evt.node, false, true/*check-overwrite*/);
-                    }
                 }
             }
         }
@@ -1716,79 +1666,6 @@
     GEditor.prototype._closeEditor = function (node) {
         this._finishEditorInlineEdit(node);
         GElementEditor.closeEditor(node);
-    };
-
-    /**
-     * Save the selection for a given page
-     * @param {GPage} page
-     * @param {Boolean} [noOverwrite] if set, won't overwrite
-     * the saved selection for the page on page change
-     * @param {Boolean} [checkOverwrite] if set, will not store
-     * the page selection if it has the noOverwrite flag set to true
-     * @private
-     */
-    GEditor.prototype._savePageSelection = function (page, noOverwrite, checkOverwrite) {
-        if (!this._pageSelections) {
-            this._pageSelections = [];
-        }
-
-        // Try to overwrite an existing selection
-        for (var i = 0; i < this._pageSelections.length; ++i) {
-            var sel = this._pageSelections[i];
-            if (sel.page === page) {
-                if (!checkOverwrite || !sel.noOverwrite) {
-                    sel.selection = this._saveSelection();
-                    sel.noOverwrite = noOverwrite;
-                }
-
-                // done here
-                return;
-            }
-        }
-
-        // Create new selection storage for page when coming here
-        this._pageSelections.push({
-            page: page,
-            selection: this._saveSelection()
-        });
-    };
-
-    /**
-     * Restore the selection for a given page
-     * @param {GPage} page
-     * @private
-     */
-    GEditor.prototype._restorePageSelection = function (page) {
-        if (this._pageSelections) {
-            for (var i = 0; i < this._pageSelections.length; ++i) {
-                var sel = this._pageSelections[i];
-                if (sel.page === page) {
-                    this._loadSelection(sel.selection);
-                    // done here
-                    return;
-                }
-            }
-        }
-
-        // No selection for page available so clear the current one
-        this.clearSelection();
-    };
-
-    /**
-     * Remove the stored selection for a given page
-     * @param {GPage} page
-     * @private
-     */
-    GEditor.prototype._removePageSelection = function (page) {
-        if (this._pageSelections) {
-            for (var i = 0; i < this._pageSelections.length; ++i) {
-                var sel = this._pageSelections[i];
-                if (sel.page === page) {
-                    this._pageSelections.splice(i, 1);
-                    break;
-                }
-            }
-        }
     };
 
     /**

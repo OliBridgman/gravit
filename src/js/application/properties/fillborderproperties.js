@@ -345,7 +345,7 @@
         this._panel.find('[data-property="_fpt"]')
             .gPatternPicker('value', fillPattern)
             .gPatternPicker('opacity', stylable.getProperty('_fop'))
-            .gPatternPicker('swatches', gApp.getActiveProject().getSwatches());
+            .gPatternPicker('swatches', stylable.getWorkspace().getSwatches());
 
         this._panel.find('[data-property="fill-type"]').gPatternTypePicker('value', !fillPattern ? null : fillPattern.constructor);
 
@@ -354,7 +354,7 @@
         this._panel.find('[data-property="_bpt"]')
             .gPatternPicker('value', stylable.getProperty('_bpt'))
             .gPatternPicker('opacity', stylable.getProperty('_bop'))
-            .gPatternPicker('swatches', gApp.getActiveProject().getSwatches());
+            .gPatternPicker('swatches', stylable.getWorkspace().getSwatches());
 
         this._panel.find('[data-property="_bw"]').val(GUtil.formatNumber(stylable.getProperty('_bw')));
 

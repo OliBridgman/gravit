@@ -328,7 +328,7 @@
         var referenceBox = null;
         var elements = this._elements.slice();
         var scene = this._document.getScene();
-        var activePage = scene.getActivePage();
+        var page = scene instanceof GPage ? scene : null;
         var activeLayer = scene.getActiveLayer();
         var alignTo = this._htmlElement.find('select[data-option="align-to"]').val();
 
@@ -337,14 +337,14 @@
                 referenceBox = activeLayer.getPaintBBox();
                 break;
             case GAlignPalette._AlignTo.Page:
-                referenceBox = activePage.getGeometryBBox();
+                referenceBox = page.getGeometryBBox();
                 break;
             case GAlignPalette._AlignTo.PageMargins:
-                referenceBox = activePage.getGeometryBBox().expanded(
-                    -activePage.getProperty('ml'),
-                    -activePage.getProperty('mt'),
-                    -activePage.getProperty('mr'),
-                    -activePage.getProperty('mb'));
+                referenceBox = page.getGeometryBBox().expanded(
+                    -page.getProperty('ml'),
+                    -page.getProperty('mt'),
+                    -page.getProperty('mr'),
+                    -page.getProperty('mb'));
                 break;
             case GAlignPalette._AlignTo.FirstElement:
                 referenceBox = elements[0];

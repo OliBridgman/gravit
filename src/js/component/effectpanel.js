@@ -54,7 +54,7 @@
                             modal: true
                         })
                         .gPatternPicker('types', [GColor, GGradient])
-                        .gPatternPicker('swatches', gApp.getActiveProject().getSwatches())
+                        .gPatternPicker('swatches', scene.getWorkspace().getSwatches())
                         .gPatternPicker('value', pattern)
                         .gPatternPicker('opacity', opacity)
                         .on('patternchange', function (evt, pattern, opacity) {
@@ -145,7 +145,7 @@
             openSettings: function (effect, assign, element) {
                 $.gPatternPicker.open({
                     target: element,
-                    swatches: gApp.getActiveProject().getSwatches(),
+                    swatches: effect.getWorkspace().getSwatches(),
                     types: [GColor, GGradient],
                     value: effect.getProperty('pat'),
                     opacity: effect.getProperty('opc'),

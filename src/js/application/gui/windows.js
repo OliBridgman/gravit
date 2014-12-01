@@ -170,8 +170,8 @@
             // TODO : Serialize/deserialize window settings instead
             window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom());
         } else {
-            // Otherwise let view zoom the active page
-            window.getView().zoomActivePage();
+            var paintBBox = document.getScene().getPaintBBox();
+            window.getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(GRect.Side.CENTER) : new GPoint(0, 0), 1.0);
         }
 
         return window;

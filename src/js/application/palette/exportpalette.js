@@ -191,8 +191,8 @@
         if (selection && selection.length === 1) {
             this._element = selection[0];
         } else if (this._document) {
-            // use active page as element if any
-            this._element = this._document.getScene().getActivePage();
+            // use scene as element
+            this._element = this._document.getScene();
         }
 
         this._updateExports();

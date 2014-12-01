@@ -53,13 +53,12 @@
      */
     GAddLayerAction.prototype.execute = function () {
         var scene = gApp.getActiveDocument().getScene();
-        var activePage = scene.getActivePage();
 
         // TODO : I18N
-        GEditor.tryRunTransaction(activePage, function () {
+        GEditor.tryRunTransaction(scene, function () {
             var layer = new GLayer();
             layer.setProperty('name', 'Layer ' + scene.queryCount('layer').toString());
-            activePage.appendChild(layer);
+            scene.appendChild(layer);
             scene.setActiveLayer(layer);
         }, ifLocale.get(this.getTitle()));
     };

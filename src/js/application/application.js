@@ -588,24 +588,6 @@
     };
 
     /**
-     * Create a new document and add it
-     * @return {GDocument}
-     */
-    GApplication.prototype.createNewDocument = function () {
-        // Create scene, add it and call add page to insert a default page
-        var scene = new GScene();
-
-
-        scene._setWorkspace(gApp.getActiveProject());
-
-        // Create and add our document now
-        var document = this.addDocument(scene);
-        document.createNewPage(true/*no-undo*/);
-
-        return document;
-    };
-
-    /**
      * Add a new document and open up a window for it
      * and mark the view as being active
      * @param {GScene} scene the scene to add the document from it
@@ -1077,11 +1059,6 @@
 
         // Add a window for the document making it activated by default
         var window = this._windows.addWindow(document);
-
-        // Fit page if set to singlePageMode
-        //if (document.getScene().getProperty('singlePage') === true) {
-        //    window.getView().zoomActivePage();
-        //}
     };
 
     /**

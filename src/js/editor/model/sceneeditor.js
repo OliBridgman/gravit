@@ -10,7 +10,6 @@
         GElementEditor.call(this, scene);
     };
     GObject.inherit(GSceneEditor, GElementEditor);
-    GElementEditor.exports(GSceneEditor, GScene);
 
     /**
      * @type {GTransformBox}

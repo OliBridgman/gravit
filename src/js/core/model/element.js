@@ -666,12 +666,9 @@
 
     /** @override */
     GElement.Stylable.prototype._getStyleMaskClipArea = function () {
-        // Clip to our page if attached and not in single mode
-        if (this._scene) {
-            var myPage = this.getPage();
-            if (myPage) {
-                return myPage.getPageClipBBox();
-            }
+        // If scene is a page, clip to it
+        if (this._scene && this._scene instanceof GPage) {
+            return this._scene.getPageClipBBox();
         }
         return null;
     };
@@ -1442,7 +1439,7 @@
      * @private
      */
     GElement.prototype._attachToParent = function (parent) {
-        if (parent._workspace || parent._scene) {
+        if (parent._workspace || parent._scene) {
             this.accept(function (node) {
                 node._setWorkspace(parent._workspace);
                 if (node instanceof GElement) {
@@ -1457,7 +1454,7 @@
      * @private
      */
     GElement.prototype._detachFromParent = function (parent) {
-        if (parent._workspace || parent._scene) {
+        if (parent._workspace || parent._scene) {
             this.accept(function (node) {
                 node._setWorkspace(null);
                 if (node instanceof GElement) {

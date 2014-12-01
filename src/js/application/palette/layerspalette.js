@@ -154,12 +154,9 @@
         this._layersTreeNodeMap = [];
 
         if (this._document) {
-            var activePage = this._document.getScene().getActivePage();
-            if (activePage) {
-                for (var child = activePage.getFirstChild(); child !== null; child = child.getNext()) {
-                    if (child instanceof GLayer) {
-                        this._insertLayer(child);
-                    }
+            for (var child = this._document.getScene().getFirstChild(); child !== null; child = child.getNext()) {
+                if (child instanceof GLayer) {
+                    this._insertLayer(child);
                 }
             }
         }
@@ -173,11 +170,11 @@
         // Either insert before or insert first but ensure to reverse order (last=top)
         var previousNode = layerOrItem.getPrevious() ? this._getLayerTreeNode(layerOrItem.getPrevious()) : null;
         if (previousNode) {
-            this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, previousNode);
+            this._layersTree.tree('addNodeBefore', {id: treeId, layerOrItem: layerOrItem}, previousNode);
         } else {
             var parent = layerOrItem.getParent();
-            var parentTreeNode = !parent || parent instanceof GPage ? null : this._getLayerTreeNode(parent);
-            var addBeforeNode =  null;
+            var parentTreeNode = !parent || parent instanceof GScene ? null : this._getLayerTreeNode(parent);
+            var addBeforeNode = null;
 
             if (parentTreeNode) {
                 if (parentTreeNode.children && parentTreeNode.children.length) {
@@ -191,7 +188,7 @@
             }
 
             if (addBeforeNode) {
-                this._layersTree.tree('addNodeBefore', { id: treeId, layerOrItem: layerOrItem }, addBeforeNode);
+                this._layersTree.tree('addNodeBefore', {id: treeId, layerOrItem: layerOrItem}, addBeforeNode);
             } else {
                 this._layersTree.tree('appendNode', {id: treeId, layerOrItem: layerOrItem}, parentTreeNode);
             }
@@ -268,10 +265,7 @@
      */
     GLayersPalette.prototype._afterNodeInsert = function (event) {
         if (event.node instanceof GLayer || event.node instanceof GItem) {
-            var activePage = this._document.getScene().getActivePage();
-            if (event.node.getPage() === activePage) {
-                this._insertLayer(event.node);
-            }
+            this._insertLayer(event.node);
         }
     };
 
@@ -318,10 +312,7 @@
      * @private
      */
     GLayersPalette.prototype._afterFlagChange = function (event) {
-        if (event.node instanceof GPage && event.flag === GNode.Flag.Active && event.set) {
-            // Page activeness change requires clearing layers
-            this._clear();
-        } else if (event.node instanceof GLayer && (event.flag === GNode.Flag.Active || event.flag === GNode.Flag.Selected || event.flag === GNode.Flag.Expanded)) {
+        if (event.node instanceof GLayer && (event.flag === GNode.Flag.Active || event.flag === GNode.Flag.Selected || event.flag === GNode.Flag.Expanded)) {
             this._updateLayer(event.node);
         } else if (event.node instanceof GItem && event.flag === GNode.Flag.Selected) {
             this._updateLayer(event.node);
@@ -359,8 +350,8 @@
             var parentOutlined = false;
 
             for (var p = layerOrItem.getParent(); p !== null; p = p.getParent()) {
-                // Stop on page root
-                if (p instanceof GPage) {
+                // Stop on root
+                if (p instanceof GScene) {
                     break;
                 }
 
@@ -537,7 +528,7 @@
                     .gPatternTarget()
                     .gPatternTarget('types', [GColor])
                     .gPatternTarget('value', layerOrItem.getProperty('cls'))
-                    .css('background',  GPattern.asCSSBackground(layerOrItem.getProperty('cls')))
+                    .css('background', GPattern.asCSSBackground(layerOrItem.getProperty('cls')))
                     .on('click', function (evt) {
                         evt.stopPropagation();
 
@@ -545,7 +536,7 @@
 
                         $.gPatternPicker.open({
                             target: $target,
-                            swatches: gApp.getActiveProject().getSwatches(),
+                            swatches: layerOrItem.getWorkspace().getSwatches(),
                             types: [GColor],
                             value: $target.gPatternTarget('value'),
                             changeCallback: patternChange
@@ -578,7 +569,7 @@
                 // Having dragged something inside requires to expand parent(s) and update 'em'
                 var rootParent = null;
                 for (var parent = moveInfo.parent; parent !== null; parent = parent.getParent()) {
-                    if (parent instanceof GPage) {
+                    if (parent instanceof GScene) {
                         break;
                     }
 
@@ -598,7 +589,7 @@
      * @private
      */
     GLayersPalette.prototype._getLayerTreeNodeMoveInfo = function (position, source, target) {
-        target = target || this._document.getScene().getActivePage();
+        target = target || this._document.getScene();
 
         if (source && target && position !== 'none') {
             var parent = null;

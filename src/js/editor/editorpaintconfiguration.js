@@ -11,10 +11,10 @@
     GObject.inherit(GEditorPaintConfiguration, GScenePaintConfiguration);
 
     /**
-     * Whether to render pages or not
+     * Whether to render page decoration or not
      * @type {Boolean}
      */
-    GEditorPaintConfiguration.prototype.pagesVisible = true;
+    GEditorPaintConfiguration.prototype.pageDecoration = true;
 
     /**
      * Whether to render the grid or not if it is active

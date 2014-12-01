@@ -18,7 +18,6 @@
 
         gravit.palettes.push(
             new GLayersPalette(),
-            //new GPagesPalette(),
             new GAlignPalette(),
             new GTransformPalette(),
             new GExportPalette(),
@@ -59,14 +58,6 @@
                 group: 'select2',
                 keys: ['A', '1'],
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M3.5,18.5v18l5-7h9L3.5,18.5z M7.5,27.5l-3,4.5V20.5l9,7H7.5z"/>\n</svg>'
-            },
-            {
-                instance: new GPageTool(),
-                title: 'Page',
-                category: GApplication.TOOL_CATEGORY_SELECT,
-                group: 'select3',
-                keys: ['D'],
-                icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.5 18.5 18 18">\n<path stroke="none" d="M15.5,18.5v10h-1v-9h-7v3h-3v10h3v1h-4v-12l3-3H15.5z M8.5,25.5v11l3.5-4h5.5L8.5,25.5z"/>\n</svg>'
             },
             {
                 instance: new GLayerTool(),
@@ -263,9 +254,6 @@
             new GOutlineAction(),
             new GOffsetAction(),
 
-            new GAddPageAction(),
-            new GDeletePageAction(),
-
             new GAddLayerAction(),
             new GDeleteLayerAction(),
 
@@ -277,7 +265,6 @@
             // View
             new GOriginalViewAction(),
             new GFitSelectionAction(),
-            new GFitCurrentPageAction(),
             new GFitCurrentLayerAction(),
             new GFitAllAction(),
             new GMagnificationAction(6, null),
@@ -297,7 +284,6 @@
             new GPaintModeAction(GScenePaintConfiguration.PaintMode.Output),
 
             new GPixelPreviewAction(),
-            new GShowAllPagesAction(),
 
             new GShowGridAction(),
             new GShowRulersAction(),

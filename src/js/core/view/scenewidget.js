@@ -14,7 +14,6 @@
 
         this._viewOffset = [0, 0, 0, 0];
         this._viewMargin = [0, 0, 0, 0];
-        this._pageConfigurations = [];
 
         // TODO : Move all transformation / view stuff into viewConfiguration!!
         if (!this._viewConfiguration) {
@@ -23,11 +22,6 @@
 
         // Initialize our stages
         this._initStages();
-
-        // Subscribe to some scene events
-        scene.addEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        scene.addEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
     }
 
     GObject.inherit(GSceneWidget, GWidget);
@@ -152,12 +146,6 @@
      * @private
      */
     GSceneWidget.prototype._viewConfiguration = null;
-
-    /**
-     * @type {Array<*>}
-     * @private
-     */
-    GSceneWidget.prototype._pageConfigurations = null;
 
     /** @override */
     GSceneWidget.prototype.resize = function (width, height) {
@@ -376,33 +364,6 @@
     };
 
     /**
-     * Zoom to the active page if any. This will either reload
-     * a saved view configuration for the page or it will fit
-     * it into the screen depending on the options
-     */
-    GSceneWidget.prototype.zoomActivePage = function () {
-        var activePage = this._scene.getActivePage();
-        if (activePage) {
-            // Look for an existing configuration
-            var pageConfig = this._getOrCreatePageConfig(activePage, false);
-            if (pageConfig) {
-                // ok, restore and return
-                this.transform(pageConfig.scrollX, pageConfig.scrollY, pageConfig.zoom);
-            } else {
-                // Coming here means we'll do a default action
-                var pageBBox = activePage.getPageClipBBox();
-                if (pageBBox && !pageBBox.isEmpty()) {
-                    if (GSceneWidget.options.defaultFitActivePage) {
-                        this.zoomAll(pageBBox, false);
-                    } else {
-                        this.zoomAtCenter(pageBBox.getSide(GRect.Side.CENTER), 1.0);
-                    }
-                }
-            }
-        }
-    };
-
-    /**
      * Scroll the view by a given subtract value
      * @param {Number} dx horizontal subtract
      * @param {Number} dy vertical subtract
@@ -476,10 +437,6 @@
      * Called to release this view
      */
     GSceneWidget.prototype.release = function () {
-        this._scene.removeEventListener(GNode.AfterFlagChangeEvent, this._afterFlagChange, this);
-        this._scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-        this._scene.removeEventListener(GNode.AfterRemoveEvent, this._afterRemove, this);
-
         if (this._stages) {
             for (var i = 0; i < this._stages.length; ++i) {
                 this._stages[i].release();
@@ -518,83 +475,6 @@
      */
     GSceneWidget.prototype._initStages = function () {
         this.addStage(new GSceneStage(this));
-    };
-
-    /**
-     * @param page
-     * @param autoCreate
-     * @private
-     */
-    GSceneWidget.prototype._getOrCreatePageConfig = function (page, autoCreate) {
-        var result = null;
-        for (var i = 0; i < this._pageConfigurations.length; ++i) {
-            if (this._pageConfigurations[i].page === page) {
-                result = this._pageConfigurations[i];
-                break;
-            }
-        }
-
-        if (!result && autoCreate) {
-            result = {
-                page: page
-            };
-            this._pageConfigurations.push(result);
-        }
-
-        return result;
-    };
-
-    /**
-     * @param {GNode.AfterFlagChangeEvent} event
-     * @private
-     */
-    GSceneWidget.prototype._afterFlagChange = function (event) {
-        // Handle single page mode and active page changing
-        if (this._scene.getProperty('singlePage')) {
-            if (event.node instanceof GPage && event.flag === GNode.Flag.Active) {
-                this.invalidate();
-
-                if (event.set) {
-                    this.zoomActivePage();
-                } else {
-                    // save existing page configuration before changing to another one
-                    var pageConfig = this._getOrCreatePageConfig(event.node, true);
-                    pageConfig.scrollX = this._scrollX;
-                    pageConfig.scrollY = this._scrollY;
-                    pageConfig.zoom = this._zoom;
-                }
-            }
-        }
-    };
-
-    /**
-     * @param {GNode.AfterPropertiesChangeEvent} event
-     * @private
-     */
-    GSceneWidget.prototype._afterPropertiesChange = function (event) {
-        // Handle single page mode change
-        if (event.node === this._scene && event.properties.indexOf('singlePage') >= 0) {
-            this.zoomActivePage();
-
-            // Invalidate all in any case
-            this.invalidate();
-        }
-    };
-
-    /**
-     * @param {GNode.AfterRemoveEvent} event
-     * @private
-     */
-    GSceneWidget.prototype._afterRemove = function (event) {
-        // Removing page must clear our page configuration for it
-        if (event.node instanceof GPage) {
-            for (var i = 0; i < this._pageConfigurations.length; ++i) {
-                if (this._pageConfigurations[i].page === event.node) {
-                    this._pageConfigurations.splice(i, 1);
-                    break;
-                }
-            }
-        }
     };
 
     /** @override */

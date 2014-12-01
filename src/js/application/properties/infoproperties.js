@@ -381,14 +381,6 @@
      * @private
      */
     GInfoProperties.prototype._getDelta = function () {
-        var scene = this._document.getScene();
-        if (scene.getProperty('singlePage') === true) {
-            var activePage = scene.getActivePage();
-            if (activePage) {
-                return activePage.getGeometryBBox().getSide(GRect.Side.TOP_LEFT);
-            }
-        }
-
         return new GPoint(0, 0);
     }
 

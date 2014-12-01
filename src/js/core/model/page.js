@@ -1,17 +1,16 @@
 (function (_) {
     /**
-     * An element representing a page
+     * A page scene
      * @class GPage
-     * @extends GBlock
-     * @mixes GNode.Container
+     * @extends GScene
      * @mixes GNode.Reference
      * @constructor
      */
-    function GPage() {
-        GBlock.call(this);
+    function GPage(workspace) {
+        GScene.call(this, workspace);
         this._setDefaultProperties(GPage.GeometryProperties, GPage.VisualProperties);
     };
-    GNode.inheritAndMix("page", GPage, GBlock, [GNode.Container, GNode.Reference]);
+    GNode.inheritAndMix("page", GPage, GScene, [GNode.Reference]);
 
     /**
      * The geometry properties of a page with their default values
@@ -19,9 +18,6 @@
     GPage.GeometryProperties = {
         /** Master-Page reference */
         msref: null,
-        /** Page position */
-        x: 0,
-        y: 0,
         /** Page size */
         w: 0,
         h: 0,
@@ -94,13 +90,13 @@
     GPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
         paintConfig.pagesClip = true;
-        return GBlock.prototype._paintToBitmap(context);
+        return GScene.prototype._paintToBitmap(context);
     };
 
     /** @override */
     GPage.prototype._paint = function (context) {
         var canvas = context.canvas;
-        
+
         // Figure if we have any contents
         var hasContents = false;
         for (var child = this.getFirstChild(); child !== null; child = child.getNext()) {
@@ -120,7 +116,7 @@
         var canvasTransform = canvas.resetTransform();
 
         // Get page rectangle and transform it into world space
-        var pageRect = new GRect(this.$x, this.$y, this.$w, this.$h);
+        var pageRect = new GRect(0, 0, this.$w, this.$h);
         var transformedPageRect = canvasTransform.mapRect(pageRect).toAlignedRect();
         var x = transformedPageRect.getX(), y = transformedPageRect.getY(), w = transformedPageRect.getWidth(), h = transformedPageRect.getHeight();
 
@@ -151,25 +147,7 @@
 
         // Paint master page if any
         if (masterPage) {
-            var canvasTransform = canvas.getTransform(true);
-            var mx = masterPage.getProperty('x');
-            var my = masterPage.getProperty('y');
-            var dx = this.$x - mx;
-            var dy = this.$y - my;
-            var masterTransform = new GTransform(1, 0, 0, 1, dx, dy);
-
-            // Prepare master paint:
-            // 1.) Translate canvas to our own x,y coordinates
-            // 2.) Reverse translate dirty areas with our own x,y coordinates
-            canvas.setTransform(canvasTransform.preMultiplied(masterTransform));
-            context.dirtyMatcher.transform(new GTransform(1, 0, 0, 1, -dx, -dy));
-
-            // Let our master paint now
             masterPage.paint(context);
-
-            // Restore in reverse order of preparation
-            context.dirtyMatcher.transform(masterTransform);
-            canvas.setTransform(canvasTransform);
         }
 
         // Paint contents if any
@@ -184,13 +162,8 @@
     };
 
     /** @override */
-    GPage.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GScene;
-    };
-
-    /** @override */
     GPage.prototype._calculateGeometryBBox = function () {
-        return new GRect(this.$x, this.$y, this.$w, this.$h);
+        return new GRect(0, 0, this.$w, this.$h);
     };
 
     /** @override */
@@ -201,7 +174,7 @@
             bbox = bbox.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
         }
 
-        var superBBox = GBlock.prototype._calculatePaintBBox.call(this);
+        var superBBox = GScene.prototype._calculatePaintBBox.call(this);
 
         return superBBox ? superBBox.united(bbox) : bbox;
     };
@@ -218,7 +191,7 @@
             return new GElement.HitResultInfo(this);
         }
 
-        return GBlock.prototype._detailHitTest.call(this, location, transform, tolerance, force);
+        return GScene.prototype._detailHitTest.call(this, location, transform, tolerance, force);
     };
 
     /** @override */
@@ -236,9 +209,6 @@
             if (this.hasFlag(GNode.Flag.Active)) {
                 args.__active = true;
             }
-        } else if (change === GNode._Change.PrepareRestore) {
-            // Ugly hack to prevent transforming children when restoring
-            this.__restoring = true;
         } else if (change === GNode._Change.Restore) {
             this.restoreProperties(args, GPage.GeometryProperties);
             this.restoreProperties(args, GPage.VisualProperties, function (property, value) {
@@ -252,7 +222,6 @@
             if (args.__active) {
                 this.setFlag(GNode.Flag.Active);
             }
-            delete this.__restoring;
         } else if (change === GElement._Change.WorkspaceAttached) {
             var masterPage = this._workspace.getReference(this.$msref);
             if (masterPage) {
@@ -266,26 +235,6 @@
         }
 
         if (this._handleGeometryChangeForProperties(change, args, GPage.GeometryProperties)) {
-            if (change === GNode._Change.BeforePropertiesChange && !this.__restoring) {
-                // Check for position change in page
-                var xIndex = args.properties.indexOf('x');
-                var yIndex = args.properties.indexOf('y');
-                if (xIndex >= 0 || yIndex >= 0) {
-                    // Changing x and/or y requires translating all direct children
-                    var dx = xIndex >= 0 ? args.values[xIndex] - this.$x : 0;
-                    var dy = yIndex >= 0 ? args.values[yIndex] - this.$y : 0;
-
-                    if (dx !== 0 || dy !== 0) {
-                        var transform = new GTransform(1, 0, 0, 1, dx, dy);
-                        for (var child = this.getFirstChild(true); child != null; child = child.getNext(true)) {
-                            if (child instanceof GElement && child.hasMixin(GElement.Transform)) {
-                                child.transform(transform);
-                            }
-                        }
-                    }
-                }
-            }
-
             if (args.properties.indexOf('msref') >= 0) {
                 var masterPage = this.getMasterPage();
                 if (masterPage) {
@@ -315,19 +264,14 @@
                 if (clipBBox && !clipBBox.isEmpty() && clipBBox.intersectsRect(area)) {
                     this._workspace.visitLinks(this, function (link) {
                         if (link instanceof GPage && link.isPaintable()) {
-                            // Move invalidation area relative to the linked page and let the
-                            // page invalidate the area which by itself triggers more invalidations
-                            // when the linked page is also a master
-                            var dx = link.getProperty('x') - this.$x;
-                            var dy = link.getProperty('y') - this.$y;
-                            link._requestInvalidationArea(area.translated(dx, dy));
+                            link._requestInvalidationArea(area);
                         }
                     }.bind(this));
                 }
             }
         }
 
-        GBlock.prototype._handleChange.call(this, change, args);
+        GScene.prototype._handleChange.call(this, change, args);
     };
 
     _.GPage = GPage;

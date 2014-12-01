@@ -73,15 +73,8 @@
             var editor = gApp.getActiveDocument().getEditor();
             var scene = gApp.getActiveDocument().getScene();
 
-            var source = null;
-            if (scene.getProperty('singlePage')) {
-                source = scene.getActivePage();
-            } else {
-                source = scene;
-            }
-
             var selection = [];
-            source.accept(function (node) {
+            scene.accept(function (node) {
                 if (node instanceof GItem && node.getParent() instanceof GLayer) {
                     selection.push(node);
                 }

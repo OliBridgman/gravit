@@ -7,7 +7,6 @@
      * @constructor
      */
     function GPageProperties() {
-        this._pages = [];
     };
     GObject.inherit(GPageProperties, GProperties);
 
@@ -95,10 +94,10 @@
     GPageProperties.prototype._document = null;
 
     /**
-     * @type {Array<GPage>}
+     * @type {GPage}
      * @private
      */
-    GPageProperties.prototype._pages = null;
+    GPageProperties.prototype._page = null;
 
     /** @override */
     GPageProperties.prototype.init = function (panel) {
@@ -356,33 +355,21 @@
     GPageProperties.prototype.update = function (document, elements) {
         if (this._document) {
             this._document.getScene().removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().removeEventListener(GNode.AfterInsertEvent, this._updatePages, this);
-            this._document.getScene().removeEventListener(GNode.AfterRemoveEvent, this._updatePages, this);
+            this._document.getScene().removeEventListener(GNode.AfterInsertEvent, this._updatePage, this);
+            this._document.getScene().removeEventListener(GNode.AfterRemoveEvent, this._updatePage, this);
             this._document = null;
         }
 
-        this._pages = [];
-
-        // Special case: if only scene is in node selection,
-        // then select the currently active page by default
-        if (elements.length === 1 && elements[0] instanceof GScene) {
-            var activePage = elements[0].getActivePage();
-            if (activePage) {
-                this._pages.push(activePage);
-            }
-        } else {
-            for (var i = 0; i < elements.length; ++i) {
-                if (elements[i] instanceof GPage) {
-                    this._pages.push(elements[i]);
-                }
-            }
+        this._page = null;
+        if (elements.length == 1 && elements[0] instanceof GPage) {
+            this._page = elements[0];
         }
 
-        if (this._pages.length === elements.length) {
+        if (this._page) {
             this._document = document;
             this._document.getScene().addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
-            this._document.getScene().addEventListener(GNode.AfterInsertEvent, this._updatePages, this);
-            this._document.getScene().addEventListener(GNode.AfterRemoveEvent, this._updatePages, this);
+            this._document.getScene().addEventListener(GNode.AfterInsertEvent, this._updatePage, this);
+            this._document.getScene().addEventListener(GNode.AfterRemoveEvent, this._updatePage, this);
             this._updateProperties();
             return true;
         } else {
@@ -395,8 +382,7 @@
      * @private
      */
     GPageProperties.prototype._afterPropertiesChange = function (event) {
-        // Update ourself if our first element is changed or the scene's unit
-        if (this._pages.length > 0 && (this._pages[0] === event.node || (event.node instanceof GScene && event.properties.indexOf('unit') >= 0))) {
+        if (this._page === event.node) {
             this._updateProperties();
         }
     };
@@ -407,22 +393,21 @@
     GPageProperties.prototype._updateProperties = function () {
         // We'll always read properties of first page
         var scene = this._document.getScene();
-        var page = this._pages[0];
 
-        this._updatePages();
+        this._updatePage();
 
-        this._panel.find('select[data-property="msref"]').val(page.getProperty('msref'));
-        this._panel.find('input[data-property="bl"]').val(page.getProperty('bl'));
+        this._panel.find('select[data-property="msref"]').val(this._page.getProperty('msref'));
+        this._panel.find('input[data-property="bl"]').val(this._page.getProperty('bl'));
         this._panel.find('[data-property="bck"]')
-            .gPatternPicker('value', page.getProperty('bck'))
-            .gPatternPicker('opacity', page.getProperty('bop'))
-            .gPatternPicker('swatches', gApp.getActiveProject().getSwatches());
-        this._panel.find('input[data-property="w"]').val(scene.pointToString(page.getProperty('w')));
-        this._panel.find('input[data-property="h"]').val(scene.pointToString(page.getProperty('h')));
-        this._panel.find('input[data-property="mt"]').val(scene.pointToString(page.getProperty('mt')));
-        this._panel.find('input[data-property="mb"]').val(scene.pointToString(page.getProperty('mb')));
-        this._panel.find('input[data-property="ml"]').val(scene.pointToString(page.getProperty('ml')));
-        this._panel.find('input[data-property="mr"]').val(scene.pointToString(page.getProperty('mr')));
+            .gPatternPicker('value', this._page.getProperty('bck'))
+            .gPatternPicker('opacity', this._page.getProperty('bop'))
+            .gPatternPicker('swatches', this._page.getWorkspace().getSwatches());
+        this._panel.find('input[data-property="w"]').val(scene.pointToString(this._page.getProperty('w')));
+        this._panel.find('input[data-property="h"]').val(scene.pointToString(this._page.getProperty('h')));
+        this._panel.find('input[data-property="mt"]').val(scene.pointToString(this._page.getProperty('mt')));
+        this._panel.find('input[data-property="mb"]').val(scene.pointToString(this._page.getProperty('mb')));
+        this._panel.find('input[data-property="ml"]').val(scene.pointToString(this._page.getProperty('ml')));
+        this._panel.find('input[data-property="mr"]').val(scene.pointToString(this._page.getProperty('mr')));
 
         this._selectSizePreset();
     };
@@ -430,7 +415,7 @@
     /**
      * @private
      */
-    GPageProperties.prototype._updatePages = function () {
+    GPageProperties.prototype._updatePage = function () {
         var scene = this._document.getScene();
 
         var select = this._panel.find('select[data-property="msref"]');
@@ -443,11 +428,15 @@
             .text('')
             .appendTo(select);
 
-        for (var node = scene.getFirstChild(); node !== null; node = node.getNext()) {
-            if (node instanceof GPage && this._pages.indexOf(node) < 0) {
+        // TODO : Add master page references from project
+
+        var project = gApp.getActiveProject();
+        var pages = project.getPages();
+        for (var i = 0; i < pages.length; ++i) {
+            if (pages[i] !== this._page.getReferenceId()) {
                 $('<option></option>')
-                    .attr('value', node.getReferenceId())
-                    .text(node.getLabel())
+                    .attr('value', pages[i])
+                    .text(project.getPageName(pages[i]))
                     .appendTo(select);
             }
         }
@@ -456,19 +445,18 @@
     };
 
     GPageProperties.prototype._selectSizePreset = function () {
-        var page = this._pages[0];
         var foundPreset = false;
         var presetSelector = this._panel.find('[data-property="size-preset"]');
 
-        var w = page.getProperty('w');
-        var h = page.getProperty('h');
+        var w = this._page.getProperty('w');
+        var h = this._page.getProperty('h');
 
         for (var i = 0; i < GPageProperties.SIZE_PRESETS.length; ++i) {
             var group = GPageProperties.SIZE_PRESETS[i];
             for (var k = 0; k < group.sizes.length; ++k) {
                 var size = group.sizes[k];
-                var sw = page.getScene().stringToPoint(size.width);
-                var sh = page.getScene().stringToPoint(size.height);
+                var sw = this._page.getScene().stringToPoint(size.width);
+                var sh = this._page.getScene().stringToPoint(size.height);
                 if (sw === w && sh === h) {
                     presetSelector.val(i.toString() + ',' + k.toString());
                     foundPreset = true;
@@ -500,9 +488,7 @@
         var editor = this._document.getEditor();
         editor.beginTransaction();
         try {
-            for (var i = 0; i < this._pages.length; ++i) {
-                this._pages[i].setProperties(properties, values);
-            }
+            this._page.setProperties(properties, values);
         } finally {
             // TODO : I18N
             editor.commitTransaction('Modify Page Properties');
