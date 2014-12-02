@@ -35,6 +35,7 @@ ifLocale.setValues(GGroup, GLocale.Language.English, ["name"], ["Group"]);
 ifLocale.setValues(GScene, GLocale.Language.English, ["name"], ["Scene"]);
 ifLocale.setValues(GPolygon, GLocale.Language.English, ["name"], ["Polygon"]);
 ifLocale.setValues(GPage, GLocale.Language.English, ["name"], ["Page"]);
+ifLocale.setValues(GCanvas, GLocale.Language.English, ["name"], ["Canvas"]);
 ifLocale.setValues(GPath, GLocale.Language.English, ["name"], ["Path"]);
 ifLocale.setValues(GCompoundPath, GLocale.Language.English, ["name"], ["Compound Path"]);
 ifLocale.setValues(GText, GLocale.Language.English, ["name"], ["Text"]);

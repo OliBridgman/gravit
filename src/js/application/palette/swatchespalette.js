@@ -79,7 +79,7 @@
                 if (files && files.length) {
                     GIO.read('application/x-adobe-ase', files[0], function (result) {
                         if (result && result.colors) {
-                            var swatches = this._document.getScene().getWorkspace().getSwatches();
+                            var swatches = this._project.getSwatches();
                             for (var i = 0; i < result.colors.length; ++i) {
                                 var swatch = result.colors[i];
                                 var pattern = null;
@@ -100,7 +100,7 @@
                     }.bind(this));
                 }
                 $(evt.target).val('');
-            })
+            }.bind(this))
             .appendTo(htmlElement);
 
         this._swatchPanel = $('<div></div>')
