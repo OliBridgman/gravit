@@ -171,7 +171,11 @@
             window.getView().transform(sourceView.getScrollX(), sourceView.getScrollY(), sourceView.getZoom());
         } else {
             var paintBBox = document.getScene().getPaintBBox();
-            window.getView().zoomAtCenter(paintBBox && !paintBBox.isEmpty() ? paintBBox.getSide(GRect.Side.CENTER) : new GPoint(0, 0), 1.0);
+            if (!paintBBox || paintBBox.isEmpty()) {
+                window.getView().zoomAt(new GPoint(0, 0), 1.0);
+            } else {
+                window.getView().zoomAtCenter(paintBBox.getSide(GRect.Side.CENTER), 1.0);
+            }
         }
 
         return window;
