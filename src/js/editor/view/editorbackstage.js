@@ -42,10 +42,6 @@
                 this._renderPageDecoration(context);
             }
         }
-        else if (scene instanceof GCanvas) {
-            // Canvas is infinite so paint a regular white background
-            context.canvas.fillCanvas(GRGBColor.WHITE);
-        }
     };
 
     /**
