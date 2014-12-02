@@ -103,7 +103,7 @@
 
     /** @override */
     GShape.prototype.validateInsertion = function (parent, reference) {
-        return parent instanceof GLayer || parent instanceof GGroup || parent instanceof GShape;
+        return parent instanceof GLayer || parent instanceof GGroup || parent instanceof GShape || parent instanceof GScene;
     };
 
     /** @override */

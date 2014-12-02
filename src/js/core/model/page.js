@@ -89,7 +89,7 @@
     /** @override */
     GPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
-        paintConfig.pagesClip = true;
+        paintConfig.clipToPage = true;
         return GScene.prototype._paintToBitmap(context);
     };
 
@@ -135,7 +135,7 @@
         }
 
         // If we have contents test if we shall clip to our extents
-        if (hasContents && masterPage || context.configuration.isPagesClip()) {
+        if (hasContents && masterPage || context.configuration.isClipToPage()) {
             // Include bleeding in clipping coordinates if any
             var bl = this.$bl || 0;
             canvas.clipRect(x - bl, y - bl, w + bl * 2, h + bl * 2);

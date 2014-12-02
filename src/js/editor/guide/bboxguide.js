@@ -1,23 +1,23 @@
 (function (_) {
     /**
-     * The grid guide
+     * The bbox guide
      * @param {GGuides} guides
-     * @class GShapeBoxGuide
+     * @class GBBoxGuide
      * @extends GGuide
      * @mixes GGuide.Visual
      * @mixes GGuide.Map
      * @constructor
      */
-    function GShapeBoxGuide(guides) {
+    function GBBoxGuide(guides) {
         GGuide.call(this, guides);
     }
 
-    GObject.inheritAndMix(GShapeBoxGuide, GGuide, [GGuide.Map]);
+    GObject.inheritAndMix(GBBoxGuide, GGuide, [GGuide.Map]);
 
-    GShapeBoxGuide.GUIDE_MARGIN = 20;
+    GBBoxGuide.GUIDE_MARGIN = 20;
 
     /** @override */
-    GShapeBoxGuide.prototype.map = function (x, y, useMargin) {
+    GBBoxGuide.prototype.map = function (x, y, useMargin) {
         var resX = null;
         var resY = null;
         var guideX = null;
@@ -27,18 +27,18 @@
         var result = null;
         var delta;
         var snapDistance = this._scene.getWorkspace().getSnapDistance();
-        var margin = useMargin ? GShapeBoxGuide.GUIDE_MARGIN : 0;
+        var margin = useMargin ? GBBoxGuide.GUIDE_MARGIN : 0;
 
-        var _snap = function (shape) {
+        var _snap = function (item) {
             if (this._exclusions && this._exclusions.length) {
                 for (var i = 0; i < this._exclusions.length; ++i) {
-                    if (this._exclusions[i] == shape) {
+                    if (this._exclusions[i] == item) {
                         return;
                     }
                 }
             }
 
-            var bBox = shape.getGeometryBBox();
+            var bBox = item.getGeometryBBox();
             if (bBox && !bBox.isEmpty()) {
                 var tl = bBox.getSide(GRect.Side.TOP_LEFT);
                 var br = bBox.getSide(GRect.Side.BOTTOM_RIGHT);
@@ -124,10 +124,8 @@
             }
         }.bind(this);
 
-        var layer = this._scene.getActiveLayer();
-
-        layer.accept(function (node) {
-            if (node instanceof GShape && node.getParent() instanceof GLayer) {
+        this._scene.accept(function (node) {
+            if (node instanceof GItem && !(node.getParent() instanceof GItem)) {
                 _snap(node);
             }
         });
@@ -143,11 +141,11 @@
     };
 
     /** @override */
-    GShapeBoxGuide.prototype.isMappingAllowed = function (detail) {
+    GBBoxGuide.prototype.isMappingAllowed = function (detail) {
         return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
-    GShapeBoxGuide.prototype.useExclusions = function (exclusions) {
+    GBBoxGuide.prototype.useExclusions = function (exclusions) {
         var node;
         this._exclusions = [];
         for (var i = 0; i < exclusions.length; ++i) {
@@ -159,10 +157,10 @@
     };
 
     /** @override */
-    GShapeBoxGuide.prototype.toString = function () {
-        return "[Object GShapeBoxGuide]";
+    GBBoxGuide.prototype.toString = function () {
+        return "[Object GBBoxGuide]";
     };
 
-    _.GShapeBoxGuide = GShapeBoxGuide;
+    _.GBBoxGuide = GBBoxGuide;
 })(this);
 

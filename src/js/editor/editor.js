@@ -964,10 +964,7 @@
      */
     GEditor.prototype.insertElements = function (elements, noInitial, noTransaction) {
         // Our target is always the currently active layer
-        var target = this._scene.querySingle('layer:active');
-        if (!target) {
-            throw new Error('No active layer.');
-        }
+        var target = this._scene.querySingle('layer:active') || this._scene;
 
         if (!noTransaction) {
             this.beginTransaction();

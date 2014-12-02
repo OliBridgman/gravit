@@ -36,8 +36,15 @@
         }
 
         var scene = this._view.getScene();
-        if (context.configuration.pageDecoration && scene instanceof GPage && scene.isPaintable(context)) {
-            this._renderPageDecoration(context);
+
+        if (scene instanceof GPage) {
+            if (context.configuration.pageDecoration && scene.isPaintable(context)) {
+                this._renderPageDecoration(context);
+            }
+        }
+        else if (scene instanceof GCanvas) {
+            // Canvas is infinite so paint a regular white background
+            context.canvas.fillCanvas(GRGBColor.WHITE);
         }
     };
 

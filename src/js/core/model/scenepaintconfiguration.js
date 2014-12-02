@@ -64,10 +64,10 @@
     GScenePaintConfiguration.prototype.pixelMode = false;
 
     /**
-     * Whether to clip pages or not
+     * Whether to clip to page bounds or not
      * @type {Boolean}
      */
-    GScenePaintConfiguration.prototype.pagesClip = false;
+    GScenePaintConfiguration.prototype.clipToPage = false;
 
     /**
      * Whether to show guides or not
@@ -149,11 +149,11 @@
     };
 
     /**
-     * Tests and returns wether pages should be clipped or not
+     * Tests and returns whether to clip to page or not
      * @param context
      */
-    GScenePaintConfiguration.prototype.isPagesClip = function (context) {
-        return (this.pagesClip || this.paintMode === GScenePaintConfiguration.PaintMode.Output);
+    GScenePaintConfiguration.prototype.isClipToPage = function (context) {
+        return (this.clipToPage || this.paintMode === GScenePaintConfiguration.PaintMode.Output);
     };
 
     /** @override */

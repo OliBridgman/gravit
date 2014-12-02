@@ -337,9 +337,15 @@
                 referenceBox = activeLayer.getPaintBBox();
                 break;
             case GAlignPalette._AlignTo.Page:
+                if (!page) {
+                    return null;
+                }
                 referenceBox = page.getGeometryBBox();
                 break;
             case GAlignPalette._AlignTo.PageMargins:
+                if (!page) {
+                    return null;
+                }
                 referenceBox = page.getGeometryBBox().expanded(
                     -page.getProperty('ml'),
                     -page.getProperty('mt'),

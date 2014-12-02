@@ -12,7 +12,7 @@
         this._counter = 0;
         this._visuals = [];
 
-        this._addGuide(new GShapeBoxGuide(this));
+        this._addGuide(new GBBoxGuide(this));
         this._addGuide(new GPageGuide(this));
         this._addGuide(new GGridGuide(this));
         this._addGuide(new GUnitGuide(this));
