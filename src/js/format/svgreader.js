@@ -1457,6 +1457,7 @@
             d = d.replace(/([^\s])([MmZzLlHhVvCcSsQqTtAa])/gm, '$1 $2'); // separate commands from points
             d = d.replace(/([0-9])([+\-])/gm, '$1 $2'); // separate digits when no comma
             d = d.replace(/(\.[0-9]*)(\.)/gm, '$1 $2'); // separate digits when no comma
+            d = d.replace(/(\.[0-9]*)(\.)/gm, '$1 $2'); // separate digits when no comma: Need to repeat this step to split correctly multiple occurences one by one
             d = d.replace(/([Aa](\s+[0-9]+){3})\s+([01])\s*([01])/gm, '$1 $3 $4 '); // shorthand elliptical arc path syntax
             d = svg.compressSpaces(d); // compress multiple spaces
             d = svg.trim(d);

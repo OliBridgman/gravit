@@ -155,7 +155,10 @@
         for (var parentNode = element.getParent(); parentNode !== null; parentNode = parentNode.getParent()) {
             var parentEditor = GElementEditor.getEditor(parentNode);
             if (!parentEditor) {
-                parentEditor = GElementEditor.openEditor(parentNode);
+                try {
+                    parentEditor = GElementEditor.openEditor(parentNode);
+                } catch (e) {
+                }
             }
             if (parentEditor) {
                 // Figure the right insertion point using element comparison
