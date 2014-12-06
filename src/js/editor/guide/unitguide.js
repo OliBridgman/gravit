@@ -13,18 +13,28 @@
 
     GObject.inheritAndMix(GUnitGuide, GGuide, [GGuide.Map, GGuide.DetailMap]);
 
+    GUnitGuide.ID = 'guide.unit';
+
+    /** @override */
+    GUnitGuide.prototype.getId = function () {
+        return GUnitGuide.ID;
+    };
+
     /** @override */
     GUnitGuide.prototype.map = function (x, y) {
-        // Snap to units if desired
-        if (this._scene.getProperty('unitSnap') === true) {
-            var valueX = GMath.round(x, true);
-            var valueY = GMath.round(y, true);
-            return {
-                x: {value: valueX, guide: null, delta: Math.abs(x - valueX)},
-                y: {value: valueY, guide: null, delta: Math.abs(y - valueY)}};
-        }
+        var valueX = GMath.round(x, true);
+        var valueY = GMath.round(y, true);
+        return {
+            x: {value: valueX, guide: null, delta: Math.abs(x - valueX)},
+            y: {value: valueY, guide: null, delta: Math.abs(y - valueY)}
+        };
 
         return null;
+    };
+
+    /** @override */
+    GUnitGuide.prototype.isMappingAllowed = function (enabled, detail) {
+        return detail !== GGuide.DetailMap.Mode.DetailOffFilterOn;
     };
 
     /** @override */

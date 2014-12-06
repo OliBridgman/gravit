@@ -39,8 +39,6 @@
         /** The unit used externally */
         unit: GLength.Unit.PT,
         /** Whether to snap to units or not */
-        unitSnap: true,
-        /** The snap distance */
         snapDist: 5,
         /** The pick distance */
         pickDist: 3,

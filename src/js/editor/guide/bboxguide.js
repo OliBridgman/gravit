@@ -14,7 +14,14 @@
 
     GObject.inheritAndMix(GBBoxGuide, GGuide, [GGuide.Map]);
 
+    GBBoxGuide.ID = 'guide.bbox';
+
     GBBoxGuide.GUIDE_MARGIN = 20;
+
+    /** @override */
+    GBBoxGuide.prototype.getId = function () {
+        return GBBoxGuide.ID;
+    };
 
     /** @override */
     GBBoxGuide.prototype.map = function (x, y, useMargin) {
@@ -138,11 +145,6 @@
         }
 
         return result;
-    };
-
-    /** @override */
-    GBBoxGuide.prototype.isMappingAllowed = function (detail) {
-        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     GBBoxGuide.prototype.useExclusions = function (exclusions) {

@@ -12,6 +12,7 @@
         this._styles = new GStyles(this);
         this._version = GWorkspace.VERSION;
         this._unit = GLength.Unit.PT;
+        this._guides = null;
         this._snapDistance = 5;
         this._pickDistance = 3;
         this._cursorDistanceSmall = 1;
@@ -131,6 +132,13 @@
     GWorkspace.prototype._unit = null;
 
     /**
+     * The guides in use
+     * @type {Array<String>}
+     * @private
+     */
+    GWorkspace.prototype._guides = null;
+
+    /**
      * The snap distance
      * @type {Number}
      * @private
@@ -164,6 +172,20 @@
      * @private
      */
     GWorkspace.prototype._cursorConstraint = null;
+
+    /**
+     * @returns {Array<String>}
+     */
+    GWorkspace.prototype.getGuides = function () {
+        return this._guides;
+    };
+
+    /**
+     * @param {Array<String>} guides
+     */
+    GWorkspace.prototype.setGuides = function (guides) {
+        this._guides = guides ? guides.slice() : null;
+    };
 
     /**
      * @returns {Number}

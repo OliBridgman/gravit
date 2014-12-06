@@ -12,25 +12,6 @@
 
     GObject.inherit(GGuide, GObject);
 
-    /**
-     * @type {GGuides}
-     * @private
-     */
-    GGuide.prototype._guides = null;
-
-    /**
-     * @type {GScene}
-     * @private
-     */
-    GGuide.prototype._scene = null;
-
-    /**
-     * Array of elements, which should be excluded from snapping to them
-     * @type {Array}
-     * @private
-     */
-    GGuide.prototype._exclusions = null;
-
     // -----------------------------------------------------------------------------------------------------------------
     // GGuide.Visual Mixin
     // -----------------------------------------------------------------------------------------------------------------
@@ -113,17 +94,32 @@
     /**
      * Called to check for each guide if mapping is allowed at the current moment. It may be blocked due to
      * key modifiers like CTRL, and so on.
+     * @param {Boolean} enabled specifies whether this guide is enabled or not
      * @param {GGuide.DetailMap.Mode} detail - allow depending on detail mode settings and DetailMap mixin;
      * if detail is not specified, considered the default value GGuide.DetailMap.Mode.FilterOff
      * @returns {Boolean}
      */
-    GGuide.Map.prototype.isMappingAllowed = function (detail) {
+    GGuide.Map.prototype.isMappingAllowed = function (enabled, detail) {
         var res = true;
+
         if (detail === GGuide.DetailMap.Mode.DetailOnFilterOn) {
             res = this.hasMixin(GGuide.DetailMap);
         } else if (detail === GGuide.DetailMap.Mode.DetailOffFilterOn) {
             res = false;
         }
+
+        if (res) {
+            // No mapping if we're enabled and meta key is hold ...
+            if (enabled && ifPlatform.modifiers.metaKey) {
+                res = false;
+            }
+
+            // ... or if we're disabled and meta key is not hold
+            if (!enabled && !ifPlatform.modifiers.metaKey) {
+                res = false;
+            }
+        }
+
         return res;
     };
 
@@ -133,8 +129,35 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GGuide
+    // GGuide Class
     // -----------------------------------------------------------------------------------------------------------------
+
+    /**
+     * @type {GGuides}
+     * @private
+     */
+    GGuide.prototype._guides = null;
+
+    /**
+     * @type {GScene}
+     * @private
+     */
+    GGuide.prototype._scene = null;
+
+    /**
+     * Array of elements, which should be excluded from snapping to them
+     * @type {Array}
+     * @private
+     */
+    GGuide.prototype._exclusions = null;
+
+    /**
+     * Returns the unique id for this guide
+     * @return {String}
+     */
+    GGuide.prototype.getId = function () {
+        throw new Error('Not Implemented.')
+    };
 
     /**
      * Use the passed list of elements as exclusions from snapping to them

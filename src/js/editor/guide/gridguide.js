@@ -14,7 +14,14 @@
 
     GObject.inheritAndMix(GGridGuide, GGuide, [GGuide.Visual, GGuide.Map, GGuide.DetailMap]);
 
+    GGridGuide.ID = 'guide.grid';
+
     GGridGuide.MIN_CELL_SPACE = 10;
+
+    /** @override */
+    GGridGuide.prototype.getId = function () {
+        return GGridGuide.ID;
+    };
 
     /** @override */
     GGridGuide.prototype.paint = function (transform, context) {
@@ -71,11 +78,6 @@
         }
 
         return result;
-    };
-
-    /** @override */
-    GGridGuide.prototype.isMappingAllowed = function (detail) {
-        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     /** @override */

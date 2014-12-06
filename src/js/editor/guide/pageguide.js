@@ -14,6 +14,13 @@
 
     GObject.inheritAndMix(GPageGuide, GGuide, [GGuide.Map]);
 
+    GPageGuide.ID = 'guide.page';
+
+    /** @override */
+    GPageGuide.prototype.getId = function () {
+        return GPageGuide.ID;
+    };
+
     /** @override */
     GPageGuide.prototype.map = function (x, y) {
         var snapDistance = this._scene.getWorkspace().getSnapDistance();
@@ -77,11 +84,6 @@
         }
 
         return result;
-    };
-
-    /** @override */
-    GPageGuide.prototype.isMappingAllowed = function (detail) {
-        return GGuide.Map.prototype.isMappingAllowed.call(this, detail) && !ifPlatform.modifiers.metaKey;
     };
 
     GPageGuide.prototype.useExclusions = function (exclusions) {

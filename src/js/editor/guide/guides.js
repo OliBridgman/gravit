@@ -49,6 +49,10 @@
         return "[Event GGuides.InvalidationRequestEvent]";
     };
 
+    // -----------------------------------------------------------------------------------------------------------------
+    // GGuides Class
+    // -----------------------------------------------------------------------------------------------------------------
+
     /**
      * @type {GScene}
      * @private
@@ -158,7 +162,7 @@
         var targPts = [];
         for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
-            if (guide.isMappingAllowed(detail)) {
+            if (guide.isMappingAllowed(this._isGuideEnabled(guide), detail)) {
                 res = guide.map(point.getX(), point.getY(), true);
                 if (res) {
                     if (res.x && resX === null) {
@@ -213,13 +217,13 @@
      */
     GGuides.prototype.mapRect = function (rect) {
         /*
-            The algorithm is the following:
-            1) For the guide with the first priority try to snap top left, top right, bottom right, bottom left, center:
-              - if more than 1 snaps, then select the closest snap point and return
-              - if 1 snap - snap and return
-              - if no snaps, try to snap horizontally: top, bottom, center; vertically: left, right, center
-            2) If on the step 1 no snaps or just horizontal of vertical,
-             try to find the same way missed snap with the guides with next priorities
+         The algorithm is the following:
+         1) For the guide with the first priority try to snap top left, top right, bottom right, bottom left, center:
+         - if more than 1 snaps, then select the closest snap point and return
+         - if 1 snap - snap and return
+         - if no snaps, try to snap horizontally: top, bottom, center; vertically: left, right, center
+         2) If on the step 1 no snaps or just horizontal of vertical,
+         try to find the same way missed snap with the guides with next priorities
          */
 
         var resRect = rect;
@@ -238,7 +242,7 @@
         var visuals = [];
         for (var i = 0; i < this._guides.length && (!resX.length || !resY.length); ++i) {
             guide = this._guides[i];
-            if (guide.isMappingAllowed()) {
+            if (guide.isMappingAllowed(this._isGuideEnabled(guide))) {
                 // For Unit guide we map only top left corner
                 for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                     var pivot = pivots[j];
@@ -298,7 +302,7 @@
             var yMax = br.getY();
             for (var i = 0; i < this._guides.length && (!resX.length || !resY.length); ++i) {
                 guide = this._guides[i];
-                if (guide.isMappingAllowed()) {
+                if (guide.isMappingAllowed(this._isGuideEnabled(guide))) {
                     // For Unit guide we map only top left corner
                     for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                         var pivot = pivots[j];
@@ -442,7 +446,7 @@
         var snapZonesAllowed = false;
         for (var i = 0; i < this._guides.length && !snapZonesAllowed; ++i) {
             var guide = this._guides[i];
-            if (guide.isMappingAllowed() && !(guide instanceof GUnitGuide)) {
+            if (guide.isMappingAllowed(this._isGuideEnabled(guide)) && !(guide instanceof GUnitGuide)) {
                 snapZonesAllowed = true;
             }
         }
@@ -520,6 +524,16 @@
      */
     GGuides.prototype._addGuide = function (guide) {
         this._guides.push(guide);
+    };
+
+    /**
+     * @param {GGuide} guide
+     * @return {Boolean}
+     * @private
+     */
+    GGuides.prototype._isGuideEnabled = function (guide) {
+        var guides = this._scene.getWorkspace().getGuides();
+        return guides && (guide.length === 0 || guides.indexOf(guide.getId()) >= 0);
     };
 
     /** @override */
