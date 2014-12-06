@@ -52,7 +52,7 @@
     /** @override */
     GPath.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GLayer || parent instanceof GScene || parent instanceof GGroup ||
-            parent instanceof GShape || parent instanceof GCompoundPath.AnchorPaths;
+            parent instanceof GShape || parent instanceof GCompoundPath.Paths;
     };
 
     /**

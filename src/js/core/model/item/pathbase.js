@@ -159,7 +159,7 @@
         } else if (pathes.length > 1) {
             var compound = new GCompoundPath();
             for (var i = 0; i < pathes.length; ++i) {
-                compound.getAnchorPaths().appendChild(pathes[i]);
+                compound.getPaths().appendChild(pathes[i]);
             }
             return compound;
         } else {

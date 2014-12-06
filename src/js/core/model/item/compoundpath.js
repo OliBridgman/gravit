@@ -14,10 +14,10 @@
             this.$evenodd = evenOdd;
         }
 
-        // Add anchor paths
-        this._anchorPaths = new GCompoundPath.AnchorPaths();
-        this.appendChild(this._anchorPaths);
-        this._anchorPaths._removalAllowed = false;
+        // Add paths
+        this._paths = new GCompoundPath.Paths();
+        this.appendChild(this._paths);
+        this._paths._removalAllowed = false;
     }
 
     GNode.inherit("compoundpath", GCompoundPath, GShape);
@@ -31,32 +31,32 @@
     };
 
     // -----------------------------------------------------------------------------------------------------------------
-    // GCompoundPath.AnchorPaths Class
+    // GCompoundPath.Paths Class
     // -----------------------------------------------------------------------------------------------------------------
     /**
-     * @class GCompoundPath.AnchorPaths
+     * @class GCompoundPath.Paths
      * @extends GNode
      * @mixes GNode.Container
      * @constructor
      */
-    GCompoundPath.AnchorPaths = function () {
+    GCompoundPath.Paths = function () {
     };
-    GObject.inheritAndMix(GCompoundPath.AnchorPaths, GNode, [GNode.Container]);
+    GObject.inheritAndMix(GCompoundPath.Paths, GNode, [GNode.Container]);
 
     /**
-     * Used to disallow anchor paths removal
+     * Used to disallow paths removal
      * @type {Boolean}
      * @private
      */
-    GCompoundPath.AnchorPaths.prototype._removalAllowed = false;
+    GCompoundPath.Paths.prototype._removalAllowed = false;
 
     /** @override */
-    GCompoundPath.AnchorPaths.prototype.validateInsertion = function (parent, reference) {
+    GCompoundPath.Paths.prototype.validateInsertion = function (parent, reference) {
         return parent instanceof GCompoundPath;
     };
 
     /** @override */
-    GCompoundPath.AnchorPaths.prototype.validateRemoval = function () {
+    GCompoundPath.Paths.prototype.validateRemoval = function () {
         return this._removalAllowed ? this._removalAllowed : false;
     };
 
@@ -64,7 +64,7 @@
      * Serializes all points into a stream array
      * @return {Array<*>}
      */
-    GCompoundPath.AnchorPaths.prototype.serialize = function () {
+    GCompoundPath.Paths.prototype.serialize = function () {
         var stream = [];
         for (var pt = this.getFirstChild(); pt !== null; pt = pt.getNext()) {
             stream.push(GNode.serialize(pt));
@@ -76,7 +76,7 @@
      * Deserializes all points from a stream array
      * @param {Array<*>} stream
      */
-    GCompoundPath.AnchorPaths.prototype.deserialize = function (stream) {
+    GCompoundPath.Paths.prototype.deserialize = function (stream) {
         for (var i = 0; i < stream.length; ++i) {
             //var pt = new GPath();
             var pt = GNode.deserialize(stream[i]);
@@ -84,7 +84,7 @@
         }
     };
 
-    GCompoundPath.AnchorPaths.prototype._handleChange = function (change, args) {
+    GCompoundPath.Paths.prototype._handleChange = function (change, args) {
         var compoundPath = this._parent;
 
         if (compoundPath) {
@@ -113,20 +113,20 @@
 
 
     /** @override */
-    GCompoundPath.AnchorPaths.prototype.toString = function () {
-        return "[Object GCompoundPath.AnchorPaths]";
+    GCompoundPath.Paths.prototype.toString = function () {
+        return "[Object GCompoundPath.Paths]";
     };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GCompoundPath Class
     // -----------------------------------------------------------------------------------------------------------------
 
-    GCompoundPath.prototype._anchorPaths = null;
+    GCompoundPath.prototype._paths = null;
     GCompoundPath.prototype._currentPath = null;
 
     /** @override */
     GCompoundPath.prototype.rewindVertices = function (index) {
-        this._currentPath = this._anchorPaths.getFirstChild();
+        this._currentPath = this._paths.getFirstChild();
         if (index === 0 && this._currentPath) {
             for (var pt = this._currentPath; pt != null; pt = pt.getNext()) {
                 pt.rewindVertices(0);
@@ -151,11 +151,11 @@
     };
 
     /**
-     * Return the anchor paths of the compound path
-     * @returns {GCompoundPath.AnchorPaths}
+     * Return the paths of the compound path
+     * @returns {GCompoundPath.Paths}
      */
-    GCompoundPath.prototype.getAnchorPaths = function () {
-        return this._anchorPaths;
+    GCompoundPath.prototype.getPaths = function () {
+        return this._paths;
     };
 
     /** @override */
@@ -163,7 +163,7 @@
         this._handleVisualChangeForProperties(change, args, GCompoundPath.VisualProperties);
         if (change == GNode._Change.AfterFlagChange) {
             var flagArgs = args;
-            this._currentPath = this._anchorPaths.getFirstChild();
+            this._currentPath = this._paths.getFirstChild();
             if (flagArgs.set == true) {
                 for (var pt = this._currentPath; pt != null; pt = pt.getNext()) {
                     pt.setFlag(flagArgs.flag);
@@ -176,17 +176,17 @@
         }
         if (change === GNode._Change.Store) {
             this.storeProperties(args, GCompoundPath.VisualProperties);
-            args.paths = this._anchorPaths.serialize();
+            args.paths = this._paths.serialize();
         } else if (change === GNode._Change.Restore) {
             this.restoreProperties(args, GCompoundPath.VisualProperties);
             if (args.hasOwnProperty('paths')) {
-                this._anchorPaths.deserialize(args.paths);
+                this._paths.deserialize(args.paths);
             }
         } else if (change === GNode._Change.ParentAttached || change === GNode._Change.ParentDetach) {
-            if (this._anchorPaths) {
-                this._anchorPaths._detachFromParent(this);
+            if (this._paths) {
+                this._paths._detachFromParent(this);
                 if (change === GNode._Change.ParentAttached) {
-                    this._anchorPaths._attachToParent(this);
+                    this._paths._attachToParent(this);
                 }
             }
         }
@@ -197,7 +197,7 @@
     /** @override */
     GCompoundPath.prototype.setTransform = function (transform) {
         this.setProperty('trf', transform);
-        for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._paths.getFirstChild(); pt != null; pt = pt.getNext()) {
             pt.setTransform(transform);
         }
     };
@@ -208,7 +208,7 @@
         try {
             GShape.prototype.transform.call(this, transform);
             if (transform && !transform.isIdentity()) {
-                for (var pt = this._anchorPaths.getFirstChild(); pt != null; pt = pt.getNext()) {
+                for (var pt = this._paths.getFirstChild(); pt != null; pt = pt.getNext()) {
                     pt.transform(transform);
                 }
             }
@@ -219,9 +219,9 @@
 
     /** @override */
     GCompoundPath.prototype._calculateGeometryBBox = function () {
-        // Sum up our anchor pathes
+        // Sum up our pathes
         var result = null;
-        for (var node = this._anchorPaths.getFirstChild(); node != null; node = node.getNext()) {
+        for (var node = this._paths.getFirstChild(); node != null; node = node.getNext()) {
             var childBBox = node.getGeometryBBox();
             if (childBBox && !childBBox.isEmpty()) {
                 result = result ? result.united(childBBox) : childBBox;

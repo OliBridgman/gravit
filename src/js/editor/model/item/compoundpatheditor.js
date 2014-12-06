@@ -92,9 +92,9 @@
 
     /** @override */
     GCompoundPathEditor.prototype._detach = function () {
-        // Ensure to de-select all selected anchor points when detaching
-        for (var anchorPath = this._element.getAnchorPaths().getFirstChild(); anchorPath != null; anchorPath = anchorPath.getNext()) {
-            anchorPath.removeFlag(GNode.Flag.Selected);
+        // Ensure to de-select all selected paths when detaching
+        for (var path = this._element.getPaths().getFirstChild(); path != null; path = path.getNext()) {
+            path.removeFlag(GNode.Flag.Selected);
         }
 
         var scene = this._element.getScene();
@@ -121,7 +121,7 @@
     /** @override */
     GCompoundPathEditor.prototype._getPartInfoAt = function (location, transform, tolerance) {
         var res = null;
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             res = pathEditor._getPartInfoAt(location, transform, tolerance);
             if (res) {
@@ -147,7 +147,7 @@
             // Paint either outlined or highlighted (highlighted has a higher precedence)
             context.canvas.strokeVertices(this.hasFlag(GElementEditor.Flag.Highlighted) ? context.highlightOutlineColor : context.selectionOutlineColor, 1);
 
-            for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+            for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
                 var pathEditor = GElementEditor.openEditor(pt);
                 pathEditor._prePaint(transform, context);
             }
@@ -156,7 +156,7 @@
 
     /** @override */
     GCompoundPathEditor.prototype._postPaint = function (transform, context) {
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             pathEditor._postPaint(transform, context);
         }
@@ -214,7 +214,7 @@
 
     /** override */
     GCompoundPathEditor.prototype.updatePartSelectionUnderCollision = function (toggle, collisionArea) {
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             pathEditor.updatePartSelectionUnderCollision(toggle, collisionArea);
         }
@@ -224,7 +224,7 @@
     GCompoundPathEditor.prototype.isDeletePartsAllowed = function () {
         var res = false;
         if (this.hasFlag(GElementEditor.Flag.Selected)) {
-            for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
+            for (var pt = this._element.getPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
                 var pathEditor = GElementEditor.openEditor(pt);
                 res = pathEditor.isDeletePartsAllowed();
             }
@@ -234,7 +234,7 @@
 
     /** override */
     GCompoundPathEditor.prototype.deletePartsSelected = function () {
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             if (pathEditor.isDeletePartsAllowed()) {
                 pathEditor.deletePartsSelected();
@@ -246,7 +246,7 @@
     GCompoundPathEditor.prototype.isAlignPartsAllowed = function () {
         var res = false;
         if (this.hasFlag(GElementEditor.Flag.Selected)) {
-            for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
+            for (var pt = this._element.getPaths().getFirstChild(); pt != null && !res; pt = pt.getNext()) {
                 var pathEditor = GElementEditor.openEditor(pt);
                 res = pathEditor.isAlignPartsAllowed();
             }
@@ -256,7 +256,7 @@
 
     /** override */
     GCompoundPathEditor.prototype.alignParts = function (alignType, posX, posY) {
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.openEditor(pt);
             if (pathEditor.isAlignPartsAllowed()) {
                 pathEditor.alignParts(alignType, posX, posY);
@@ -273,7 +273,7 @@
         if (evt.type == GElement.GeometryChangeEvent.Type.Before || evt.type == GElement.GeometryChangeEvent.Type.After) {
             var invalidate = evt.element == this._element;
             if (!invalidate && evt.element instanceof GPath) {
-                for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null && !invalidate; pt = pt.getNext()) {
+                for (var pt = this._element.getPaths().getFirstChild(); pt != null && !invalidate; pt = pt.getNext()) {
                     if (pt == evt.element) {
                         invalidate = true;
                     }
@@ -293,7 +293,7 @@
         if ((this._flags & flag) == 0) {
             this.requestInvalidation();
             this._flags = this._flags | flag;
-            for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+            for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
                 var pathEditor = GElementEditor.openEditor(pt);
                 pathEditor.setFlag(flag);
             }
@@ -306,7 +306,7 @@
         if ((this._flags & flag) != 0) {
             this.requestInvalidation();
             this._flags = this._flags & ~flag;
-            for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+            for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
                 var pathEditor = GElementEditor.openEditor(pt);
                 pathEditor.removeFlag(flag);
             }
@@ -315,7 +315,7 @@
     };
 
     GCompoundPathEditor.prototype.releasePathPreview = function () {
-        for (var pt = this._element.getAnchorPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
+        for (var pt = this._element.getPaths().getFirstChild(); pt != null; pt = pt.getNext()) {
             var pathEditor = GElementEditor.getEditor(pt);
             if (pathEditor) {
                 pathEditor.releasePathPreview();

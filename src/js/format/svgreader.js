@@ -1083,7 +1083,7 @@
                 this.baseSetSceneContext(ctx, node);
 
                 if (node instanceof GCompoundPath) {
-                    for (var path = node.getAnchorPaths().getFirstChild(); path !== null; path = path.getNext()) {
+                    for (var path = node.getPaths().getFirstChild(); path !== null; path = path.getNext()) {
                         this._setPathSceneContext(ctx, path);
                     }
                 } else {

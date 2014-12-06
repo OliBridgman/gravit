@@ -1107,7 +1107,7 @@
     /** @override */
     GPathEditor.prototype.validateSelectionChange = function () {
         var elemParent = this._element.getParent();
-        if (elemParent && elemParent instanceof GCompoundPath.AnchorPaths) {
+        if (elemParent && elemParent instanceof GCompoundPath.Paths) {
             return false;
         }
         return true;

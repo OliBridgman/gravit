@@ -263,7 +263,7 @@
 
                 this._cpathes.push(cpath);
 
-                for (var path = cpath.getAnchorPaths().getFirstChild(); path !== null; path = path.getNext()) {
+                for (var path = cpath.getPaths().getFirstChild(); path !== null; path = path.getNext()) {
                     for (var ap = path.getAnchorPoints().getFirstChild(); ap !== null; ap = ap.getNext()) {
                         if (ap.hasFlag(GNode.Flag.Selected)) {
                             this._points.push(ap);
