@@ -153,28 +153,27 @@
         // hierarchy up until we've found a valid editor parent. This
         // might overjump nodes in tree that do not have an editor.
         for (var parentNode = element.getParent(); parentNode !== null; parentNode = parentNode.getParent()) {
-            var parentEditor = GElementEditor.getEditor(parentNode);
-            if (!parentEditor) {
-                try {
+            if (parentNode instanceof GElement) {
+                var parentEditor = GElementEditor.getEditor(parentNode);
+                if (!parentEditor) {
                     parentEditor = GElementEditor.openEditor(parentNode);
-                } catch (e) {
                 }
-            }
-            if (parentEditor) {
-                // Figure the right insertion point using element comparison
-                var referenceEditor = null;
-                for (var nextNode = element.getNext(); nextNode != null; nextNode = nextNode.getNext()) {
-                    var nextEditor = GElementEditor.getEditor(nextNode);
-                    if (nextEditor) {
-                        referenceEditor = nextEditor;
-                        break;
+                if (parentEditor) {
+                    // Figure the right insertion point using element comparison
+                    var referenceEditor = null;
+                    for (var nextNode = element.getNext(); nextNode != null; nextNode = nextNode.getNext()) {
+                        var nextEditor = GElementEditor.getEditor(nextNode);
+                        if (nextEditor) {
+                            referenceEditor = nextEditor;
+                            break;
+                        }
                     }
+
+                    parentEditor.insertEditor(editor, referenceEditor);
+
+                    // Done here, found a parent editor
+                    break;
                 }
-
-                parentEditor.insertEditor(editor, referenceEditor);
-
-                // Done here, found a parent editor
-                break;
             }
         }
 
