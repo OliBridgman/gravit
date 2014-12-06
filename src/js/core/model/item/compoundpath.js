@@ -182,7 +182,15 @@
             if (args.hasOwnProperty('paths')) {
                 this._anchorPaths.deserialize(args.paths);
             }
+        } else if (change === GNode._Change.ParentAttached || change === GNode._Change.ParentDetach) {
+            if (this._anchorPaths) {
+                this._anchorPaths._detachFromParent(this);
+                if (change === GNode._Change.ParentAttached) {
+                    this._anchorPaths._attachToParent(this);
+                }
+            }
         }
+
         GShape.prototype._handleChange.call(this, change, args);
     };
 
