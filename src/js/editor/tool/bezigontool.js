@@ -79,7 +79,7 @@
                     }
                 }
 
-                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, clickPt, this._view.getWorldTransform(), GEditor.options.pickDistance)) {
                     this._setCursorForPosition(GCursor.PenEnd);
                     this._startTransaction(GPathTool.Transaction.ModifyPathProperties);
                     // Close path
@@ -99,7 +99,7 @@
                             prevPt = this._pathRef.getAnchorPoints().getFirstChild();
                         }
                     }
-                    if (prevPt && this._pathEditor.hitAnchorPoint(prevPt, clickPt, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                    if (prevPt && this._pathEditor.hitAnchorPoint(prevPt, clickPt, this._view.getWorldTransform(), GEditor.options.pickDistance)) {
                         this._makePointMajor(prevPt);
                         this._editPt = this._pathEditor.getPathPointPreview(prevPt);
                         this._pathEditor.requestInvalidation();
@@ -160,7 +160,7 @@
                     otherPt = this._pathRef.getAnchorPoints().getLastChild();
                 }
 
-                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), GEditor.options.pickDistance)) {
                     this._setCursorForPosition(GCursor.PenEnd);
                 } else {
                     this._setCursorForPosition(GCursor.Pen);
@@ -223,7 +223,7 @@
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
-            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
+            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, GEditor.options.pickDistance) ) {
                 if (this._transactionType == GPathTool.Transaction.NoTransaction) {
                     this._startTransaction(GPathTool.Transaction.ModifyPathProperties);
                 } else {

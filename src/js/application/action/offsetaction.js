@@ -27,6 +27,13 @@
         return GOffsetAction.TITLE;
     };
 
+    /**
+     * @override
+     */
+    GOffsetAction.prototype.getGroup = function () {
+        return "structure/modify";
+    };
+
     /** @override */
     GOffsetAction.prototype._dialogPromptMessage = function () {
         return "Enter a positive value for offset or negative for inset:";

@@ -13,47 +13,9 @@
         GElement.call(this);
         this._scene = this;
         this._workspace = workspace;
-        this._setDefaultProperties(GScene.MetaProperties);
     }
 
     GObject.inheritAndMix(GScene, GElement, [GNode.Container, GNode.Properties, GNode.Store, GEventTarget]);
-
-    /**
-     * The padding between pages
-     * @type {number}
-     */
-    GScene.PAGE_SPACING = 10;
-
-    /**
-     * The current version of scenes
-     * @type {Number}
-     */
-    GScene.VERSION = 1;
-
-    /**
-     * The meta properties of a scene and their defaults
-     */
-    GScene.MetaProperties = {
-        /** Version of the scene */
-        version: GScene.VERSION,
-        /** The unit used externally */
-        unit: GLength.Unit.PT,
-        /** Whether to snap to units or not */
-        snapDist: 5,
-        /** The pick distance */
-        pickDist: 3,
-        /** The cursor distance (small and big) */
-        crDistSmall: 1,
-        crDistBig: 10,
-        /** The cursor constraint in radians */
-        crConstraint: 0,
-        /** The horizontal grid size */
-        gridSizeX: 10,
-        /** The vertical grid size */
-        gridSizeY: 10,
-        /** Whether the grid is active or not */
-        gridActive: false
-    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GScene.InvalidationRequestEvent Event
@@ -80,13 +42,13 @@
     };
 
     /**
-     * Converts a string into a length with the document's unit.
+     * Converts a string into a length with the workspace's unit.
      * @param {string} string a number, a length or an equation
      * @returns {GLength} a length in document units or null
      * if string couldn't be parsed
      */
     GScene.prototype.stringToLength = function (string) {
-        return GLength.parseEquation(string, this.$unit);
+        return GLength.parseEquation(string, this._workspace.getSetting('unit'));
     };
 
     /**
@@ -104,16 +66,16 @@
     };
 
     /**
-     * Converts a length into a string with the document's unit.
+     * Converts a length into a string with the workspace's unit.
      * @param {GLength} length the length to convert
      * @returns {string} the resulting string without unit postfix
      */
     GScene.prototype.lengthToString = function (length) {
-        return GUtil.formatNumber(length.toUnit(this.$unit));
+        return GUtil.formatNumber(length.toUnit(this._workspace.getSetting('unit')));
     };
 
     /**
-     * Converts a point value into a string with the document's unit.
+     * Converts a point value into a string with the workspace's unit.
      * @param {Number} value the value in points to convert
      * @returns {string} the resulting string without unit postfix
      */
@@ -203,17 +165,6 @@
         if (context.configuration.clipArea) {
             context.canvas.resetClip();
         }
-    };
-
-    /** @override */
-    GScene.prototype._handleChange = function (change, args) {
-        if (change === GNode._Change.Store) {
-            this.storeProperties(args, GScene.MetaProperties);
-        } else if (change === GNode._Change.Restore) {
-            this.restoreProperties(args, GScene.MetaProperties);
-        }
-
-        GElement.prototype._handleChange.call(this, change, args);
     };
 
     _.GScene = GScene;

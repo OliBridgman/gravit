@@ -10,23 +10,17 @@
         this._links = {};
         this._swatches = new GSwatches(this);
         this._styles = new GStyles(this);
-        this._version = GWorkspace.VERSION;
-        this._unit = GLength.Unit.PT;
-        this._guides = null;
-        this._snapDistance = 5;
-        this._pickDistance = 3;
-        this._cursorDistanceSmall = 1;
-        this._cursorDistanceBig = 10;
-        this._cursorConstraint = 0;
+        this._settings = GUtil.mergeObjects({}, GWorkspace.SETTINGS);
     }
 
     GObject.inherit(GWorkspace, GEventTarget);
 
-    /**
-     * The current version of the workspace
-     * @type {Number}
-     */
-    GWorkspace.VERSION = 1;
+    GWorkspace.SETTINGS = {
+        /** Version of the project */
+        version: 1,
+        /** The unit used externally */
+        unit: GLength.Unit.PX
+    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GWorkspace.ReferenceEvent Event
@@ -118,80 +112,29 @@
     GWorkspace.prototype._styles = null;
 
     /**
-     * Version of the workspace
-     * @type {Number}
+     * Project settings
+     * @type {*}
      * @private
      */
-    GWorkspace.prototype._version = null;
+    GWorkspace.prototype._settings = null;
 
     /**
-     * The unit used externally
-     * @type {Number}
-     * @private
+     * Get a settings
+     * @param {String} setting
+     * @returns {*}
      */
-    GWorkspace.prototype._unit = null;
-
-    /**
-     * The guides in use
-     * @type {Array<String>}
-     * @private
-     */
-    GWorkspace.prototype._guides = null;
-
-    /**
-     * The snap distance
-     * @type {Number}
-     * @private
-     */
-    GWorkspace.prototype._snapDistance = null;
-
-    /**
-     * The pick distance
-     * @type {Number}
-     * @private
-     */
-    GWorkspace.prototype._pickDistance = null;
-
-    /**
-     * The cursor small distance
-     * @type {Number}
-     * @private
-     */
-    GWorkspace.prototype._cursorDistanceSmall = null;
-
-    /**
-     * The cursor big distance
-     * @type {Number}
-     * @private
-     */
-    GWorkspace.prototype._cursorDistanceBig = null;
-
-    /**
-     * The cursor constraint in radians
-     * @type {Number}
-     * @private
-     */
-    GWorkspace.prototype._cursorConstraint = null;
-
-    /**
-     * @returns {Array<String>}
-     */
-    GWorkspace.prototype.getGuides = function () {
-        return this._guides;
+    GWorkspace.prototype.getSetting = function (setting) {
+        return this._settings.hasOwnProperty(setting) ? this._settings[setting] : null;
     };
 
     /**
-     * @param {Array<String>} guides
+     * Assign a settings
+     * @param {String} setting
+     * @param {*} value
+     * @returns {*}
      */
-    GWorkspace.prototype.setGuides = function (guides) {
-        this._guides = guides ? guides.slice() : null;
-    };
-
-    /**
-     * @returns {Number}
-     */
-    GWorkspace.prototype.getSnapDistance = function () {
-        return this._snapDistance;
+    GWorkspace.prototype.setSetting = function (setting, value) {
+        // TODO
     };
 
     /**
@@ -214,48 +157,6 @@
 
     GWorkspace.prototype.getPageName = function (pageId) {
         return null;
-    };
-
-    /**
-     * Converts a string into a length with the document's unit.
-     * @param {string} string a number, a length or an equation
-     * @returns {GLength} a length in document units or null
-     * if string couldn't be parsed
-     */
-    GWorkspace.prototype.stringToLength = function (string) {
-        return GLength.parseEquation(string, this.$unit);
-    };
-
-    /**
-     * Converts a string into a point value with the document's unit.
-     * @param {string} string a number, a length or an equation
-     * @returns {Number} a length in points or null
-     * if string couldn't be parsed
-     */
-    GWorkspace.prototype.stringToPoint = function (string) {
-        var length = this.stringToLength(string);
-        if (length) {
-            return length.toPoint();
-        }
-        return null;
-    };
-
-    /**
-     * Converts a length into a string with the document's unit.
-     * @param {GLength} length the length to convert
-     * @returns {string} the resulting string without unit postfix
-     */
-    GWorkspace.prototype.lengthToString = function (length) {
-        return GUtil.formatNumber(length.toUnit(this.$unit));
-    };
-
-    /**
-     * Converts a point value into a string with the document's unit.
-     * @param {Number} value the value in points to convert
-     * @returns {string} the resulting string without unit postfix
-     */
-    GWorkspace.prototype.pointToString = function (value) {
-        return this.lengthToString(new GLength(value));
     };
 
     /**

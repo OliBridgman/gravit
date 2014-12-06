@@ -375,7 +375,7 @@
                 var cl = aPt.getProperty('cl');
                 var cr = aPt.getProperty('cr');
 
-                var pickDist = this._element.getScene().getProperty('pickDist');
+                var pickDist = GEditor.options.pickDistance;
                 if (cr == null || cr < pickDist * 2) {
                     idType = GPathEditor.PartType.RightShoulder;
                 } else if (cl == null || cl < pickDist * 2) {
@@ -696,7 +696,7 @@
                 return result;
             } else if (this.hasFlag(GElementEditor.Flag.Detail)) {
                 // In detail mode we're able to select segments so hit test for one here
-                var pathHitResult = this._element.pathHitTest(location, transform, false, this._element.getScene().getProperty('pickDist'));
+                var pathHitResult = this._element.pathHitTest(location, transform, false, GEditor.options.pickDistance);
                 if (pathHitResult) {
                     var hitRes = pathHitResult.data;
                     var apLeft = this._element.getAnchorPoints().getChildByIndex(hitRes.segment - 1);
@@ -1215,7 +1215,7 @@
         basePt = transformToApply.mapPoint(basePt);
         var constrPt = GMath.convertToConstrain(
             basePt.getX(), basePt.getY(), position.getX(), position.getY(),
-            this._element.getScene().getProperty('crConstraint'));
+            GEditor.options.cursorConstraint);
 
         return constrPt;
     };

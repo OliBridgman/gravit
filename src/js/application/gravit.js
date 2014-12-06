@@ -30,7 +30,7 @@
         );
 
         gravit.sidebars.push(
-            //new GDocumentSidebar()
+            new GProjectSidebar()
         );
 
         // Register default tools
@@ -248,11 +248,11 @@
             new GSliceFromSelectionAction(),
 
             new GConvertToPathAction(),
+            new GOutlineAction(),
+            new GOffsetAction(),
             new GJoinPathsAction(),
             new GSplitPathsAction(),
             new GReverseOrderAction(),
-            new GOutlineAction(),
-            new GOffsetAction(),
 
             new GAddLayerAction(),
             new GDeleteLayerAction(),
@@ -287,6 +287,7 @@
 
             new GShowGridAction(),
             new GShowRulersAction(),
+            new GToggleSnapAction(),
 
             // Window
             new GNewWindowAction()

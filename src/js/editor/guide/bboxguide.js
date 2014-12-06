@@ -24,7 +24,7 @@
     };
 
     /** @override */
-    GBBoxGuide.prototype.map = function (x, y, useMargin) {
+    GBBoxGuide.prototype.map = function (x, y, useMargin, snapDistance) {
         var resX = null;
         var resY = null;
         var guideX = null;
@@ -33,7 +33,6 @@
         var deltaY = null;
         var result = null;
         var delta;
-        var snapDistance = this._scene.getWorkspace().getSnapDistance();
         var margin = useMargin ? GBBoxGuide.GUIDE_MARGIN : 0;
 
         var _snap = function (item) {

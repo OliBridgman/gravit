@@ -52,7 +52,6 @@
      */
     GProject.prototype.open = function (done) {
         gHost.openDirectoryFile(this._directory, projectFile, false, false, function (file) {
-            alert('ready_to_read_project_file');
             this.syncSwatches(function () {
                 this.syncStyles(done);
             }.bind(this));
@@ -96,7 +95,6 @@
      */
     GProject.prototype.save = function (done) {
         gHost.openDirectoryFile(this._directory, projectFile, true, true, function (file) {
-            alert('ready_to_write_project_file');
             gHost.putFileContents(file, JSON.stringify({
                 test: 'bla',
                 moreStuff: 123

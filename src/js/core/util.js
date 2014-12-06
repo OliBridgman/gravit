@@ -9,6 +9,23 @@
     };
 
     /**
+     * Code to merge all properties from source that
+     * do not exist on target into the target and
+     * returns the target
+     * @param {*} target
+     * @param {*} source
+     * @return {*} the target
+     */
+    GUtil.mergeObjects = function (target, source) {
+        for (var prop in source) {
+            if (source.hasOwnProperty(prop) && !target.hasOwnProperty(prop)) {
+                target[prop] = source[prop];
+            }
+        }
+        return target;
+    };
+
+    /**
      * This is equal to the Array.indexOf function except that for
      * comparing the values in the array, the GUtil.equals function
      * is used instead

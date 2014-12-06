@@ -15,7 +15,7 @@ ifLocale.setValues(GFitAllAction, GLocale.Language.English, ["title"], ["Fit All
 ifLocale.setValues(GFitCurrentLayerAction, GLocale.Language.English, ["title"], ["Fit Layer"]);
 ifLocale.setValues(GFitSelectionAction, GLocale.Language.English, ["title"], ["Fit Selection"]);
 ifLocale.setValues(GGroupAction, GLocale.Language.English, ["title"], ["Group Selection"]);
-ifLocale.setValues(GJoinPathsAction, GLocale.Language.English, ["title"], ["Join Paths"]);
+ifLocale.setValues(GJoinPathsAction, GLocale.Language.English, ["title"], ["Join Path"]);
 ifLocale.setValues(GPlaceImageAction, GLocale.Language.English, ["title"], ["Place Image..."]);
 ifLocale.setValues(GInvertSelectionAction, GLocale.Language.English, ["title"], ["Invert Selection"]);
 ifLocale.setValues(GLayerTypeAction, GLocale.Language.English, ["title"], ["%name% Layer"]);
@@ -23,9 +23,9 @@ ifLocale.setValues(GNewProjectAction, GLocale.Language.English, ["title"], ["New
 ifLocale.setValues(GNewWindowAction, GLocale.Language.English, ["title"], ["New Window"]);
 ifLocale.setValues(GOpenProjectAction, GLocale.Language.English, ["title"], ["Open Project..."]);
 ifLocale.setValues(GArrangeAction, GLocale.Language.English, ["title.send-front", "title.bring-forward", "title.send-backward", "title.send-back"], ["Send To Front", "Bring Forward", "Send Backward", "Send To Back"]);
-ifLocale.setValues(GOffsetAction, GLocale.Language.English, ["title"], ["Create Offset Path"]);
+ifLocale.setValues(GOffsetAction, GLocale.Language.English, ["title"], ["Expand/Shrink"]);
 ifLocale.setValues(GOriginalViewAction, GLocale.Language.English, ["title"], ["Original-View"]);
-ifLocale.setValues(GOutlineAction, GLocale.Language.English, ["title"], ["Create Outline Path"]);
+ifLocale.setValues(GOutlineAction, GLocale.Language.English, ["title"], ["Convert to Outline"]);
 ifLocale.setValues(GPaintModeAction, GLocale.Language.English, ["title"], ["%name% View"]);
 ifLocale.setValues(GPasteAction, GLocale.Language.English, ["title"], ["Paste"]);
 ifLocale.setValues(GPasteInPlaceAction, GLocale.Language.English, ["title"], ["Paste In Place"]);
@@ -33,16 +33,17 @@ ifLocale.setValues(GPasteInsideAction, GLocale.Language.English, ["title"], ["Pa
 ifLocale.setValues(GPasteStyleAction, GLocale.Language.English, ["title"], ["Paste Style"]);
 ifLocale.setValues(GPixelPreviewAction, GLocale.Language.English, ["title"], ["Pixel Preview"]);
 ifLocale.setValues(GRedoAction, GLocale.Language.English, ["title"], ["Redo"]);
-ifLocale.setValues(GReverseOrderAction, GLocale.Language.English, ["title"], ["Reverse Order in Path"]);
+ifLocale.setValues(GReverseOrderAction, GLocale.Language.English, ["title"], ["Reverse Order"]);
 ifLocale.setValues(GSaveAction, GLocale.Language.English, ["title"], ["Save"]);
 ifLocale.setValues(GSaveAllAction, GLocale.Language.English, ["title"], ["Save All"]);
 ifLocale.setValues(GSaveAsAction, GLocale.Language.English, ["title"], ["Save As..."]);
 ifLocale.setValues(GShowRulersAction, GLocale.Language.English, ["title"], ["Show Rulers"]);
 ifLocale.setValues(GSelectAllAction, GLocale.Language.English, ["title"], ["Select All"]);
 ifLocale.setValues(GShowGridAction, GLocale.Language.English, ["title"], ["Show Grid"]);
-ifLocale.setValues(GSliceFromSelectionAction, GLocale.Language.English, ["title"], ["Create Slice from Selection"]);
+ifLocale.setValues(GSliceFromSelectionAction, GLocale.Language.English, ["title"], ["Slice from Selection"]);
 ifLocale.setValues(GSnapUnitAction, GLocale.Language.English, ["title.full", "title.half"], ["Snap to full units", "Snap to half units"]);
-ifLocale.setValues(GSplitPathsAction, GLocale.Language.English, ["title"], ["Split Paths at selected points"]);
+ifLocale.setValues(GSplitPathsAction, GLocale.Language.English, ["title"], ["Split Path"]);
+ifLocale.setValues(GToggleSnapAction, GLocale.Language.English, ["title"], ["Use Snapping"]);
 ifLocale.setValues(GTransformAction, GLocale.Language.English, ["title.rotate-45-left", "title.rotate-90-left", "title.rotate-180-left", "title.rotate-45-right", "title.rotate-90-right", "title.rotate-180-right", "title.flip-vertical", "title.flip-horizontal"], ["Rotate 45° Left", "Rotate 90° Left", "Rotate 180° Left", "Rotate 45° Right", "Rotate 90° Right", "Rotate 180° Right", "Flip Vertical", "Flip Horizontal"]);
 ifLocale.setValues(GUndoAction, GLocale.Language.English, ["title"], ["Undo"]);
 ifLocale.setValues(GUngroupAction, GLocale.Language.English, ["title"], ["Ungroup Selection"]);
@@ -61,13 +62,13 @@ ifLocale.setValues(GTransformPalette, GLocale.Language.English, ["title"], ["Tra
 ifLocale.setValues(GPropertiesPanel, GLocale.Language.English, ["title"], ["Properties"]);
 
 // Sidebar
-ifLocale.setValues(GDocumentSidebar, GLocale.Language.English, ["title"], ["Document Settings"]);
+ifLocale.setValues(GProjectSidebar, GLocale.Language.English, ["title"], ["Project"]);
 
 ifLocale.setValues(GApplication, GLocale.Language.English, [
         // Actions
         "category.file",
         "category.edit",
-        "category.modify", "category.modify.arrange", "category.modify.align", "category.modify.transform", "category.modify.paths", "category.modify.page", "category.modify.layer",
+        "category.modify", "category.modify.arrange", "category.modify.align", "category.modify.transform", "category.modify.path", "category.modify.layer",
         "category.arrange", "category.arrange.transform",
         "category.view", "category.view.magnification",
         "category.help",
@@ -82,7 +83,7 @@ ifLocale.setValues(GApplication, GLocale.Language.English, [
         // Actions
         "File",
         "Edit",
-        "Modify", "Modify/Arrange", "Modify/Align", "Modify/Transform", "Modify/Paths", "Modify/Page", "Modify/Layer",
+        "Modify", "Modify/Arrange", "Modify/Align", "Modify/Transform", "Modify/Path", "Modify/Layer",
         "Arrange", "Arrange/Transform",
         "View",
         "View/Magnification",

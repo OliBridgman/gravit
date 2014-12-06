@@ -25,11 +25,11 @@
 
     /** @override */
     GGridGuide.prototype.paint = function (transform, context) {
-        if (this._scene.getProperty('gridActive') && context.configuration.gridVisible) {
+        if (this._scene instanceof GCanvas && this._scene.getProperty('ga') && context.configuration.gridVisible) {
             // Calculate optical cell-size
             var scale  = transform.getScaleFactor();
-            var szWScene = this._scene.getProperty('gridSizeX');
-            var szHScene = this._scene.getProperty('gridSizeY');
+            var szWScene = this._scene.getProperty('gx');
+            var szHScene = this._scene.getProperty('gy');
             var szW = szWScene * scale;
             var szH = szHScene * scale;
 
@@ -67,9 +67,9 @@
     GGridGuide.prototype.map = function (x, y) {
         var result = null;
 
-        if (this._scene.getProperty('gridActive')) {
-            var gsx = this._scene.getProperty('gridSizeX');
-            var gsy = this._scene.getProperty('gridSizeY');
+        if (this._scene instanceof GCanvas && this._scene.getProperty('ga')) {
+            var gsx = this._scene.getProperty('gx');
+            var gsy = this._scene.getProperty('gy');
             var valueX = Math.round(x / gsx) * gsx;
             var valueY = Math.round(y / gsy) * gsy;
             result = {

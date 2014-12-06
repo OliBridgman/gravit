@@ -123,7 +123,7 @@
                 // If we've extracted a type, then try to let an editor handle it now
                 if (type !== null) {
                     // Try to gather a stacked hit list underneath drop position
-                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, this._scene.getProperty('pickDist'), true, this._dropHitFilter);
+                    var stackedHits = this._scene.hitTest(position, this.getWorldTransform(), null, true, -1, GEditor.options.pickDistance, true, this._dropHitFilter);
 
                     // If we had have one or more hits, iterate them
                     var acceptedDrop = false;

@@ -34,8 +34,11 @@
     GObject.inherit(GEditor, GEventTarget);
 
     GEditor.options = {
-        /** Maximum number of undo-steps */
+        /**
+         * Maximum number of undo-steps
+         */
         maxUndoSteps: 20,
+
         /**
          * Specifies whether changing the exact properties will
          * be merged into a previous undo step with the same
@@ -48,7 +51,19 @@
         /**
          * The default units to shift when cloning the selection
          */
-        cloneShift: 10
+        cloneShift: 10,
+
+        /**
+         * The pick distance
+         */
+        pickDistance: 3,
+
+        /** The cursor distance (small and big) */
+        cursorDistanceSmall: 1,
+        cursorDistanceBig: 10,
+
+        /** The cursor constraint in radians */
+        cursorConstraint: 0
     };
 
     /**

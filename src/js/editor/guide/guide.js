@@ -85,9 +85,10 @@
      * @param {Number} x
      * @param {Number} y
      * @param {Boolean} useMargin
+     * @param {Number} snapDistance
      * @return {{x: {value: Number, guide: GPoint|Array<GPoint>, delta: Number}, y: {value: Number, guide: GPoint|Array<GPoint>, delta: Number}}}
      */
-    GGuide.Map.prototype.map = function (x, y, useMargin) {
+    GGuide.Map.prototype.map = function (x, y, useMargin, snapDistance) {
         // NO-OP
     };
 

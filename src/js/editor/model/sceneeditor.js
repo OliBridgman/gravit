@@ -232,7 +232,7 @@
                 pInfo.data = this._transformBox.getRotationSegment(location, transform);
             }
         } else {
-            pInfo = this._transformBox.getPartInfoAt(location, transform, this._element.getProperty('pickDist'));
+            pInfo = this._transformBox.getPartInfoAt(location, transform, GEditor.options.pickDistance);
         }
 
         if (!this._mouseInfo || this._mouseInfo.id != pInfo.id || this._mouseInfo.data != pInfo.data) {
@@ -315,7 +315,7 @@
             guides.beginMap();
             var rStep = ratioStep;
             if (!rStep && this._tBoxMode == GSceneEditor.TBoxMode.SKEW) {
-                rStep = this._element.getProperty('gridSizeX');
+                rStep = 10;
             }
             var transform = this._transformBox.calculateTransformation(this._tBoxData,
                 startPos, curPos, guides, option, ratio, rStep);

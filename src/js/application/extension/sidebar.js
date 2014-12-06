@@ -24,7 +24,6 @@
      * @param {JQuery} htmlElement the panel to put the sidebar into
      */
     GSidebar.prototype.init = function (htmlElement) {
-        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
     };
 
     /**

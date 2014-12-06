@@ -164,7 +164,7 @@
             var transform = this._pathRef.getTransform();
             location = transform ? transform.mapPoint(location) : location;
 
-            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, this._scene.getProperty('pickDist')) ) {
+            if (otherPt && this._pathEditor.hitAnchorPoint(otherPt, location, null, GEditor.options.pickDistance) ) {
                 // Close preview path
                 this._dpathRef = this._pathEditor.getPathPreview(true);
                 if (this._mode == GPathTool.Mode.Append) {
@@ -240,7 +240,7 @@
                 } else { // this._mode == GPathTool.Mode.Prepend
                     otherPt = this._pathRef.getAnchorPoints().getLastChild();
                 }
-                if (this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                if (this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), GEditor.options.pickDistance)) {
                     this._setCursorForPosition(GCursor.PenEnd);
                 } else {
                     this._setCursorForPosition(GCursor.Pen);
@@ -496,7 +496,7 @@
                         }
                         //this._makePointMajor(this._refPt);
                         if (otherPt && otherPt != this._refPt &&
-                            this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), this._scene.getProperty('pickDist'))) {
+                            this._pathEditor.hitAnchorPoint(otherPt, newPos, this._view.getWorldTransform(), GEditor.options.pickDistance)) {
 
                             this._setCursorForPosition(GCursor.PenEnd);
                         } else {

@@ -82,6 +82,9 @@ $(window).load(function () {
             // Let host start
             gHost.start();
 
+            // TODO : Load settings
+            GGuides.options.guides = [];
+
             // Layout our app
             gApp.relayout();
 

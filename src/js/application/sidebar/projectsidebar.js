@@ -1,51 +1,51 @@
 (function (_) {
     /**
-     * The pages & layers sidebar
-     * @class GDocumentSidebar
+     * The project sidebar
+     * @class GProjectSidebar
      * @extends GSidebar
      * @constructor
      */
-    function GDocumentSidebar() {
+    function GProjectSidebar() {
         GSidebar.call(this);
     }
 
-    GObject.inherit(GDocumentSidebar, GSidebar);
+    GObject.inherit(GProjectSidebar, GSidebar);
 
-    GDocumentSidebar.ID = "document";
-    GDocumentSidebar.TITLE = new GLocale.Key(GDocumentSidebar, "title");
+    GProjectSidebar.ID = "project";
+    GProjectSidebar.TITLE = new GLocale.Key(GProjectSidebar, "title");
 
     /**
      * @type {JQuery}
      * @private
      */
-    GDocumentSidebar.prototype._htmlElement = null;
+    GProjectSidebar.prototype._htmlElement = null;
 
     /**
-     * @type {GDocument}
+     * @type {GProject}
      * @private
      */
-    GDocumentSidebar.prototype._document = null;
+    GProjectSidebar.prototype._project = null;
 
     /** @override */
-    GDocumentSidebar.prototype.getId = function () {
-        return GDocumentSidebar.ID;
+    GProjectSidebar.prototype.getId = function () {
+        return GProjectSidebar.ID;
     };
 
     /** @override */
-    GDocumentSidebar.prototype.getTitle = function () {
-        return GDocumentSidebar.TITLE;
+    GProjectSidebar.prototype.getTitle = function () {
+        return GProjectSidebar.TITLE;
     };
 
     /** @override */
-    GDocumentSidebar.prototype.getIcon = function () {
-        return '<span class="fa fa-fw fa-file-text-o"></span>';
+    GProjectSidebar.prototype.getIcon = function () {
+        return '<span class="fa fa-fw" style="height: 1em; background: url(/assets/application/icon/icon_72x72.png) no-repeat center center/1em"></span>';
     };
 
     /** @override */
-    GDocumentSidebar.prototype.init = function (htmlElement) {
+    GProjectSidebar.prototype.init = function (htmlElement) {
         GSidebar.prototype.init.call(this, htmlElement);
 
-        gApp.addEventListener(GApplication.DocumentEvent, this._documentEvent, this);
+        gApp.addEventListener(GApplication.ProjectEvent, this._projectEvent, this);
 
         this._htmlElement = htmlElement;
 
@@ -58,13 +58,6 @@
                     .gUnit()
                     .on('change', function () {
                         self._assignProperty(property, $(this).val());
-                    });
-            } else if (property === 'unitSnap') {
-                return $('<input>')
-                    .attr('type', 'checkbox')
-                    .attr('data-property', property)
-                    .on('change', function () {
-                        self._assignProperty(property, $(this).is(':checked'));
                     });
             } else if (property === 'gridSizeX' || property === 'gridSizeY') {
                 return $('<input>')
@@ -139,6 +132,72 @@
             }
         }.bind(this);
 
+        $('<table></table>')
+            .addClass('g-form')
+            .css({
+                'margin': '5px auto'
+            })
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Unit:'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('unit'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Grid:'))
+                .append($('<td></td>')
+                    .append(_createInput('gridSizeX')
+                        // TODO : I18N
+                        .attr('title', 'Horizontal Grid-Size'))
+                    .append(_createInput('gridSizeY')
+                        // TODO : I18N
+                        .attr('title', 'Vertical Grid-Size')))
+                .append($('<td></td>')
+                    .attr('colspan', '2')
+                    .append(_createInput('gridActive')
+                        .attr('title', 'Show Grid'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('Cursor:'))
+                .append($('<td></td>')
+                    .append(_createInput('crDistSmall')
+                        // TODO : I18N
+                        .attr('title', 'Small Distance when moving via Arrow-Keys'))
+                    .append(_createInput('crDistBig')
+                        // TODO : I18N
+                        .attr('title', 'Large Distance when moving via Arrow-Keys')))
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .text('°'))
+                .append($('<td></td>')
+                    .append(_createInput('crConstraint')
+                        // TODO : I18N
+                        .attr('title', 'Constraints when moving via Shift in Degrees'))))
+            .append($('<tr></tr>')
+                .append($('<td></td>')
+                    .addClass('label')
+                    // TODO : I18N
+                    .html('<span class="fa fa-arrows"></span> / <span class="fa fa-magnet"></span>'))
+                .append($('<td></td>')
+                    .attr('colspan', '3')
+                    .append(_createInput('pickDist')
+                        // TODO : I18N
+                        .attr('title', 'Pick Distance in Pixels'))
+                    .append(_createInput('snapDist')
+                        // TODO : I18N
+                        .attr('title', 'Snap Distance'))))
+            .appendTo(htmlElement);
+
+
+        /*
         $('<table></table>')
             .addClass('g-form')
             .css({
@@ -249,43 +308,30 @@
                         // TODO : I18N
                         .attr('title', 'Path for exported assets'))))
             .appendTo(htmlElement);
+        */
     };
 
     /** @override */
-    GDocumentSidebar.prototype.isEnabled = function () {
-        return !!this._document;
+    GProjectSidebar.prototype.isEnabled = function () {
+        return !!this._project;
     };
 
-    GDocumentSidebar.prototype._documentEvent = function (event) {
-        if (event.type === GApplication.DocumentEvent.Type.Activated) {
-            this._document = event.document;
-            var scene = this._document.getScene();
-            scene.addEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+    GProjectSidebar.prototype._projectEvent = function (event) {
+        if (event.type === GApplication.ProjectEvent.Type.Activated) {
+            this._project = event.project;
             this._updateProperties();
             this.trigger(GPalette.UPDATE_EVENT);
-        } else if (event.type === GApplication.DocumentEvent.Type.Deactivated) {
-            var scene = this._document.getScene();
-            this._document = null;
-            scene.removeEventListener(GNode.AfterPropertiesChangeEvent, this._afterPropertiesChange, this);
+        } else if (event.type === GApplication.ProjectEvent.Type.Deactivated) {
+            this._project = null;
             this.trigger(GPalette.UPDATE_EVENT);
-        }
-    };
-
-    /**
-     * @param {GNode.AfterPropertiesChangeEvent} event
-     * @private
-     */
-    GDocumentSidebar.prototype._afterPropertiesChange = function (event) {
-        if (event.node === this._document.getScene()) {
-            this._updateProperties();
         }
     };
 
     /**
      * @private
      */
-    GDocumentSidebar.prototype._updateProperties = function () {
-        var scene = this._document.getScene();
+    GProjectSidebar.prototype._updateProperties = function () {
+        /*
         this._htmlElement.find('select[data-property="unit"]').val(scene.getProperty('unit'));
         this._htmlElement.find('input[data-property="unitSnap"]').prop('checked', scene.getProperty('unitSnap'));
         this._htmlElement.find('input[data-property="gridSizeX"]').val(scene.pointToString(scene.getProperty('gridSizeX')));
@@ -300,37 +346,13 @@
         this._htmlElement.find('input[data-property="pathImage"]').val(scene.getProperty('pathImage'));
         this._htmlElement.find('input[data-property="pathFont"]').val(scene.getProperty('pathFont'));
         this._htmlElement.find('input[data-property="pathExport"]').val(scene.getProperty('pathExport'));
-    };
-
-    /**
-     * @param {String} property
-     * @param {*} value
-     * @private
-     */
-    GDocumentSidebar.prototype._assignProperty = function (property, value) {
-        this._assignProperties([property], [value]);
-    };
-
-    /**
-     * @param {Array<String>} properties
-     * @param {Array<*>} values
-     * @private
-     */
-    GDocumentSidebar.prototype._assignProperties = function (properties, values) {
-        var editor = this._document.getEditor();
-        editor.beginTransaction();
-        try {
-            this._document.getScene().setProperties(properties, values);
-        } finally {
-            // TODO : I18N
-            editor.commitTransaction('Modify Document Properties');
-        }
+        */
     };
 
     /** @override */
-    GDocumentSidebar.prototype.toString = function () {
-        return "[Object GDocumentSidebar]";
+    GProjectSidebar.prototype.toString = function () {
+        return "[Object GProjectSidebar]";
     };
 
-    _.GDocumentSidebar = GDocumentSidebar;
+    _.GProjectSidebar = GProjectSidebar;
 })(this);

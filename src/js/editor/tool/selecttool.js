@@ -221,7 +221,7 @@
             }
             // Transform box always returns non-null partInfo
             this._editorMovePartInfo = sceneEditor.getTBoxPartInfoAt(event.client,
-                this._view.getWorldTransform(), this._scene.getProperty('pickDist'));
+                this._view.getWorldTransform(), GEditor.options.pickDistance);
         } else {
             // Reset to select mode here
             this._updateMode(GSelectTool._Mode.Select);
@@ -240,7 +240,7 @@
                     var partInfo = docEditor.getPartInfoAt(event.client, this._view.getWorldTransform(), function (editor) {
                         // Ensure to allow selected editors for part, only
                         return editor.hasFlag(GElementEditor.Flag.Selected);
-                    }.bind(this), this._scene.getProperty('pickDist'));
+                    }.bind(this), GEditor.options.pickDistance);
 
                     if (partInfo) {
                         var editor = partInfo.editor;
@@ -282,7 +282,7 @@
                     if (selection[i] instanceof GElement) {
                         element = selection[i];
                         hitRes = element.hitTest(event.client, this._view.getWorldTransform(), null,
-                            stacked, -1, this._scene.getProperty('pickDist'), true);
+                            stacked, -1, GEditor.options.pickDistance, true);
                     }
                 }
             }
@@ -290,7 +290,7 @@
                 selectableElements.push(element);
             } else {
                 var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
-                    stacked, -1, this._scene.getProperty('pickDist'), false, this._selectFilter);
+                    stacked, -1, GEditor.options.pickDistance, false, this._selectFilter);
 
                 // Convert element hits if any into an array of pure elements
                 // and gather the selectable elements from it
@@ -534,7 +534,7 @@
                 }
 
                 var crDistance = ifPlatform.modifiers.shiftKey ?
-                    this._scene.getProperty('crDistBig') : this._scene.getProperty('crDistSmall');
+                    GEditor.options.cursorDistanceBig : GEditor.options.cursorDistanceSmall;
 
                 var dx = 0;
                 var dy = 0;
@@ -657,9 +657,8 @@
             } else {
                 if (ifPlatform.modifiers.shiftKey) {
                     // Calculate move delta by locking our vector to 45° steps starting with constraint
-                    var crConstraint = this._scene.getProperty('crConstraint');
                     position = GMath.convertToConstrain(this._moveStart.getX(), this._moveStart.getY(),
-                        position.getX(), position.getY(), crConstraint);
+                        position.getX(), position.getY(), GEditor.options.cursorConstraint);
                 }
 
                 position = this._view.getViewTransform().mapPoint(position);
@@ -743,7 +742,7 @@
                 partInfo = docEditor.getPartInfoAt(mouse, this._view.getWorldTransform(), function (editor) {
                     // Ensure to allow selected editors for part, only
                     return editor.hasFlag(GElementEditor.Flag.Selected);
-                }.bind(this), this._scene.getProperty('pickDist'));
+                }.bind(this), GEditor.options.pickDistance);
 
                 if (partInfo !== this._editorUnderMouseInfo) {
                     this._editorUnderMouseInfo = partInfo;
@@ -763,7 +762,7 @@
             var stacked = false;
             if (selection && selection.length == 1 && selection[0] instanceof GItem) {
                 hitRes = selection[0].hitTest(mouse, this._view.getWorldTransform(), null,
-                    stacked, -1, this._scene.getProperty('pickDist'), true);
+                    stacked, -1, GEditor.options.pickDistance, true);
                 if (hitRes) {
                     item = selection[0];
                 }

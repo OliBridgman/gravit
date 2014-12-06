@@ -22,8 +22,7 @@
     };
 
     /** @override */
-    GPageGuide.prototype.map = function (x, y) {
-        var snapDistance = this._scene.getWorkspace().getSnapDistance();
+    GPageGuide.prototype.map = function (x, y, useMargin, snapDistance) {
         var resX = null;
         var resY = null;
         var guideX = null;

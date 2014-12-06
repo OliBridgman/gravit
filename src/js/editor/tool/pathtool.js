@@ -688,7 +688,7 @@
         this._pathEditor.releasePathPreview();
         this._pathEditor.requestInvalidation();
 
-        var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
+        var partInfo = this._pathEditor.getPartInfoAt(eventPt, this._view.getWorldTransform(), null, GEditor.options.pickDistance);
         if (partInfo) {
             this._pathEditor = partInfo.editor;
             this._pathRef = this._pathEditor.getPath();
@@ -789,7 +789,7 @@
                 this._checkPathEditor();
             }
             if (this._pathEditor) {
-                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform(), null, this._scene.getProperty('pickDist'));
+                var partInfo = this._pathEditor.getPartInfoAt(clickPt, this._view.getWorldTransform(), null, GEditor.options.pickDistance);
                 if (partInfo && partInfo.id.type == GPathEditor.PartType.Point) {
                     var anchorPt = partInfo.id.point;
                     var pathRef = partInfo.editor.getPath();

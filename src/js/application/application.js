@@ -86,8 +86,7 @@
     GApplication.CATEGORY_MODIFY_ARRANGE = new GLocale.Key(GApplication, "category.modify.arrange");
     GApplication.CATEGORY_MODIFY_ALIGN = new GLocale.Key(GApplication, "category.modify.align");
     GApplication.CATEGORY_MODIFY_TRANSFORM = new GLocale.Key(GApplication, "category.modify.transform");
-    GApplication.CATEGORY_MODIFY_PATHS = new GLocale.Key(GApplication, "category.modify.paths");
-    GApplication.CATEGORY_MODIFY_PAGE = new GLocale.Key(GApplication, "category.modify.page");
+    GApplication.CATEGORY_MODIFY_PATH = new GLocale.Key(GApplication, "category.modify.path");
     GApplication.CATEGORY_MODIFY_LAYER = new GLocale.Key(GApplication, "category.modify.layer");
     GApplication.CATEGORY_VIEW = new GLocale.Key(GApplication, "category.view");
     GApplication.CATEGORY_VIEW_MAGNIFICATION = new GLocale.Key(GApplication, "category.view.magnification");

@@ -61,7 +61,7 @@
 
         if (!this._shape) {
             var elementHits = this._scene.hitTest(event.client, this._view.getWorldTransform(), null,
-                false, -1, this._scene.getProperty('pickDist'));
+                false, -1, GEditor.options.pickDistance);
 
             if (elementHits && elementHits.length && elementHits[0].element instanceof GText) {
                 this._textUnderMouse = elementHits[0].element;

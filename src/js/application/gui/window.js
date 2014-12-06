@@ -144,7 +144,7 @@
             // Gather all element hits underneath cursor and update our menu
             var elementHits = this._document.getScene().hitTest(this._contextMenuClientPosition, this._view.getWorldTransform(), function (hit) {
                 return true;
-            }.bind(this), true, -1, this._document.getScene().getProperty('pickDist'), true);
+            }.bind(this), true, -1, GEditor.options.pickDistance, true);
 
             if (elementHits && elementHits.length > 0) {
                 selectItem.setEnabled(true);

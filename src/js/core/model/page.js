@@ -2,15 +2,15 @@
     /**
      * A page scene
      * @class GPage
-     * @extends GScene
+     * @extends GCanvas
      * @mixes GNode.Reference
      * @constructor
      */
     function GPage(workspace) {
-        GScene.call(this, workspace);
+        GCanvas.call(this, workspace);
         this._setDefaultProperties(GPage.GeometryProperties, GPage.VisualProperties);
     };
-    GNode.inheritAndMix("page", GPage, GScene, [GNode.Reference]);
+    GNode.inheritAndMix("page", GPage, GCanvas, [GNode.Reference]);
 
     /**
      * The geometry properties of a page with their default values
@@ -90,7 +90,7 @@
     GPage.prototype._paintToBitmap = function (context) {
         // Enable page clipping
         paintConfig.clipToPage = true;
-        return GScene.prototype._paintToBitmap(context);
+        return GCanvas.prototype._paintToBitmap(context);
     };
 
     /** @override */
@@ -174,7 +174,7 @@
             bbox = bbox.expanded(this.$bl, this.$bl, this.$bl, this.$bl);
         }
 
-        var superBBox = GScene.prototype._calculatePaintBBox.call(this);
+        var superBBox = GCanvas.prototype._calculatePaintBBox.call(this);
 
         return superBBox ? superBBox.united(bbox) : bbox;
     };
@@ -191,7 +191,7 @@
             return new GElement.HitResultInfo(this);
         }
 
-        return GScene.prototype._detailHitTest.call(this, location, transform, tolerance, force);
+        return GCanvas.prototype._detailHitTest.call(this, location, transform, tolerance, force);
     };
 
     /** @override */
@@ -204,11 +204,6 @@
                 }
                 return value;
             });
-
-            // Store activeness flag which is special to pages and layers
-            if (this.hasFlag(GNode.Flag.Active)) {
-                args.__active = true;
-            }
         } else if (change === GNode._Change.Restore) {
             this.restoreProperties(args, GPage.GeometryProperties);
             this.restoreProperties(args, GPage.VisualProperties, function (property, value) {
@@ -217,11 +212,6 @@
                 }
                 return value;
             });
-
-            // Restore activeness flag which is special to pages and layers
-            if (args.__active) {
-                this.setFlag(GNode.Flag.Active);
-            }
         } else if (change === GElement._Change.WorkspaceAttached) {
             var masterPage = this._workspace.getReference(this.$msref);
             if (masterPage) {
@@ -271,7 +261,7 @@
             }
         }
 
-        GScene.prototype._handleChange.call(this, change, args);
+        GCanvas.prototype._handleChange.call(this, change, args);
     };
 
     _.GPage = GPage;

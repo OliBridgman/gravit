@@ -31,14 +31,14 @@
      * @override
      */
     GReverseOrderAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY_PATHS;
+        return GApplication.CATEGORY_MODIFY_PATH;
     };
 
     /**
      * @override
      */
     GReverseOrderAction.prototype.getGroup = function () {
-        return "structure/modify";
+        return "structure/path";
     };
 
     /** @override */

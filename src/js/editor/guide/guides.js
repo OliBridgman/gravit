@@ -20,11 +20,22 @@
 
     GObject.inherit(GGuides, GEventTarget);
 
-    /**
-     * The length of snap zone lines in pixels
-     * @type {Number}
-     */
-    GGuides.VISUALS_LENGTH = 10;
+    GGuides.options = {
+        /**
+         * The snap distance
+         */
+        snapDistance: 5,
+
+        /**
+         * The length of snap zone lines in pixels
+         */
+        visualsLength: 10,
+
+        /**
+         * List of enabled guides
+         */
+        guides: null
+    };
 
     // -----------------------------------------------------------------------------------------------------------------
     // GGuides.InvalidationRequestEvent Event
@@ -163,7 +174,7 @@
         for (var i = 0; i < this._guides.length && (resX === null || resY === null); ++i) {
             guide = this._guides[i];
             if (guide.isMappingAllowed(this._isGuideEnabled(guide), detail)) {
-                res = guide.map(point.getX(), point.getY(), true);
+                res = guide.map(point.getX(), point.getY(), true, GGuides.options.snapDistance);
                 if (res) {
                     if (res.x && resX === null) {
                         resX = res.x.value;
@@ -246,7 +257,7 @@
                 // For Unit guide we map only top left corner
                 for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                     var pivot = pivots[j];
-                    res = guide.map(pivot.getX(), pivot.getY());
+                    res = guide.map(pivot.getX(), pivot.getY(), false, GGuides.options.snapDistance);
                     if (res) {
                         if (res.x) {
                             if (!resX.length) {
@@ -306,7 +317,7 @@
                     // For Unit guide we map only top left corner
                     for (var j = 0; j < sides.length && (j == 0 || !(guide instanceof GUnitGuide)); ++j) {
                         var pivot = pivots[j];
-                        res = guide.map(pivot.getX(), pivot.getY());
+                        res = guide.map(pivot.getX(), pivot.getY(), false, GGuides.options.snapDistance);
                         if (res) {
                             if (res.x) {
                                 if (res.x.delta === 0 && (!resX.length || resX[0].idx === i)) {
@@ -450,7 +461,7 @@
                 snapZonesAllowed = true;
             }
         }
-        var pDst = this._scene.getProperty('pickDist');
+        var pDst = GEditor.options.pickDistance;
         if (snapZonesAllowed && bBox && !bBox.isEmpty() && bBox.expanded(pDst, pDst, pDst, pDst).containsPoint(location)) {
             visLines = [];
             var side = bBox.getClosestSideName(location);
@@ -463,9 +474,9 @@
             var vis2 = null;
 
             var horV;
-            if (shapeWidth > GGuides.VISUALS_LENGTH * 2) {
-                horV = GGuides.VISUALS_LENGTH;
-            } else if (shapeWidth > GGuides.VISUALS_LENGTH) {
+            if (shapeWidth > GGuides.options.visualsLength * 2) {
+                horV = GGuides.options.visualsLength;
+            } else if (shapeWidth > GGuides.options.visualsLength) {
                 horV = shapeWidth / 2;
             } else {
                 horV = shapeWidth;
@@ -489,9 +500,9 @@
             visLines.push([new GPoint(x1, y1), new GPoint(x2, y2)]);
 
             var vertV;
-            if (shapeHeight > GGuides.VISUALS_LENGTH * 2) {
-                vertV = GGuides.VISUALS_LENGTH;
-            } else if (shapeHeight > GGuides.VISUALS_LENGTH) {
+            if (shapeHeight > GGuides.options.visualsLength * 2) {
+                vertV = GGuides.options.visualsLength;
+            } else if (shapeHeight > GGuides.options.visualsLength) {
                 vertV = shapeHeight / 2;
             } else {
                 vertV = shapeHeight;
@@ -532,8 +543,8 @@
      * @private
      */
     GGuides.prototype._isGuideEnabled = function (guide) {
-        var guides = this._scene.getWorkspace().getGuides();
-        return guides && (guide.length === 0 || guides.indexOf(guide.getId()) >= 0);
+        var guides = GGuides.options.guides;
+        return guides && (guides.length === 0 || guides.indexOf(guide.getId()) >= 0);
     };
 
     /** @override */

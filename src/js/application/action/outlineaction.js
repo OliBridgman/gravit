@@ -31,7 +31,7 @@
      * @override
      */
     GOutlineAction.prototype.getCategory = function () {
-        return GApplication.CATEGORY_MODIFY_PATHS;
+        return GApplication.CATEGORY_MODIFY_PATH;
     };
 
     /**
