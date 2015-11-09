@@ -1,9 +1,11 @@
 .idea
-.tmp
 .sass-cache
+.tmp
 node_modules
 node-webkit
-bower_components
-build
-dist
+app
+lib
 tmp
+dist
+src/bower_components
+src/style/*.css

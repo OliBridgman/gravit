@@ -1,0 +1,16 @@
+@import '../../variables';
+
+.panel-properties {
+  padding: 0px;
+
+  .properties-panels {
+    height: 100%;
+
+    > .properties-panel-content {
+      position: relative;
+      height: 100%;
+      float: left;
+      border-right: 1px solid $borderColor;
+    }
+  }
+}

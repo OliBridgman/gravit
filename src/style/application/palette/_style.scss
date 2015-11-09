@@ -1,0 +1,98 @@
+@import '../../variables';
+
+.palette-style {
+  padding: 0px;
+
+  .style-selector {
+    padding: 5px 5px 0px 5px;
+  }
+
+  .style-settings {
+    width: 100%;
+    padding: 5px 0px;
+
+    > div {
+      display: table-cell;
+      vertical-align: middle;
+
+      &.visibility {
+        padding-left: 5px;
+        padding-right: 7px;
+        text-align: center;
+
+        > span {
+          cursor: pointer;
+        }
+      }
+
+      &:last-child {
+        padding-right: 5px;
+      }
+    }
+  }
+
+  .style-entries-panel {
+    > .style-entries-panel-table {
+      width: 100%;
+
+      > div {
+        position: relative;
+        padding: 5px 0px;
+        background: $baseColor;
+
+        &:not(:last-child) {
+          border-bottom: 1px solid $darkShadowColor;
+        }
+
+        &:not(:first-child) {
+          border-top: 1px solid $lightShadowColor;
+        }
+
+        &.drag {
+          opacity: 0.5 !important;
+          cursor: pointer;
+        }
+
+        &.drop {
+            background: $dragColor;
+            &, * {
+              color: $dragTextColor;
+          }
+        }
+
+        > .drag-overlay {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          right: 0px;
+          bottom: 0px;
+        }
+
+        > div:not(.drag-overlay) {
+          display: table-cell;
+
+          vertical-align: middle;
+
+          &.visibility {
+            padding-left: 5px;
+            padding-right: 7px;
+            text-align: center;
+
+            > span {
+              cursor: pointer;
+            }
+          }
+
+          &.contents {
+            padding-right: 5px;
+            width: 100%;
+
+            > :first-child {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}

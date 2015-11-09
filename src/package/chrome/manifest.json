@@ -1,0 +1,24 @@
+{
+    "name": "%name%",
+    "description": "%description%",
+    "version": "%version%",
+    "manifest_version": 2,
+    "minimum_chrome_version": "36",
+    "app": {
+        "background": {
+            "scripts": ["background.js"]
+        }
+    },
+    "icons": {
+        "16": "assets/application/icon/icon_16x16.png",
+        "128": "assets/application/icon/icon_128x128.png"
+    },
+    "permissions": [
+        "clipboardRead",
+        "clipboardWrite",
+        {
+            "fileSystem": ["write", "retainEntries", "directory"]
+        },
+        "storage"
+    ]
+}

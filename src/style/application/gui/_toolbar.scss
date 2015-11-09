@@ -1,0 +1,79 @@
+@import "compass/css3/box-sizing";
+@import '../../variables';
+
+#toolbar {
+  @include box-sizing(border-box);
+  position: absolute;
+  width: 33px; // + border size
+  background: $baseColor;
+  border-right: 1px solid $darkShadowColor;
+  border-top: 3px solid $darkColor;
+
+  > div.section {
+    padding: 0px 2px;
+
+    > button {
+      position: relative;
+      padding: 0px;
+      margin: 1px 0px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      box-shadow: none;
+
+      > .fa-caret-down {
+        position: absolute;
+        bottom: 0.5px;
+        right: 0.5px;
+        font-size: 10px;
+        transform: rotate(-45deg);
+      }
+
+      &:active, &.g-active {
+        background: $activeColor;
+
+        &, * {
+          color: $activeTextColor;
+        }
+
+        svg {
+          fill: $activeTextColor;
+          stroke: $activeTextColor;
+        }
+      }
+    }
+
+    &.sidebars {
+      border-bottom: 3px solid $darkColor;
+    }
+
+    &.toolpanel {
+      > button {
+        border: none;
+      }
+    }
+  }
+}
+
+.toolbar-tool-button {
+  display: table-cell;
+  width: 100%;
+  text-align: left;
+  padding: 5px;
+  height: 28px;
+  border: none;
+  box-shadow: none;
+
+  &.g-hover {
+    background: $activeColor;
+
+    &, * {
+      color: $activeTextColor;
+    }
+
+    svg {
+      fill: $activeTextColor;
+      stroke: $activeTextColor;
+    }
+  }
+}

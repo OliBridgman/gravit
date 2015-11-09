@@ -1,0 +1,67 @@
+@import '../variables';
+
+.g-swatch-panel {
+  .placeholder {
+    padding: 4px;
+  }
+
+  .swatch-block {
+    float: left;
+    margin: 1px;
+
+    &.selected {
+      border: 1px solid $selectedColor;
+      margin: 0px;
+    }
+
+    &.drop {
+      border: 1px solid $dragColor;
+      margin: 0px;
+    }
+
+    .swatch-name {
+      display: none;
+      font: $font;
+    }
+
+    * {
+      pointer-events: none;
+    }
+  }
+
+  &.g-swatch-list {
+    .swatch-block {
+      float: none;
+      padding: 2px;
+
+      &.selected {
+        border: none;
+        background: $selectedColor;
+        color: $selectedTextColor;
+        margin: 1px;
+      }
+
+      &.drop {
+        border: none;
+        background: $dragColor;
+        color: $dragTextColor;
+        margin: 1px;
+      }
+
+      .swatch-content {
+        display: table-row;
+        width: 100%;
+
+        > div {
+          display: table-cell;
+          vertical-align: middle;
+        }
+
+        .swatch-name {
+          width: 100%;
+          padding: 0px 5px;
+        }
+      }
+    }
+  }
+}

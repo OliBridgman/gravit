@@ -3,375 +3,399 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
+    <title>Gravit Dev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
 
-    <!-- build:css(tmp) gravit.css -->
-    <link rel="stylesheet" href="gravit.css">
+    <link href="bower_components/font-awesome/css/font-awesome.css" rel="stylesheet">
+
+    <!-- build:css editor/style/gravit.editor.css -->
+    <link rel="stylesheet" href="style/editor.css">
     <!-- endbuild -->
-</head>
+    <!-- build:css component/style/gravit.component.css -->
+    <link rel="stylesheet" href="style/component.css">
+    <!-- endbuild -->
+    <!-- build:css application/style/gravit.application.css -->
+    <link rel="stylesheet" href="style/application.css">
+    <!-- endbuild -->
 <body>
 
-<script src="../bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/jquery/dist/jquery.js"></script>
 
 <!-- ############################################################## -->
-<!-- # Infinity Libs ############################################## -->
+<!-- # Gravit Core Libs ########################################### -->
 <!-- ############################################################## -->
-<!-- build:js infinity-libraries.js -->
-<script src="../bower_components/jqtree/tree.jquery.js"></script>
+<!-- build:js core/js/gravit.core.libs.js -->
+<script src="bower_components/opentype.js/dist/opentype.js"></script>
 
-<script src="../bower_components/mousetrap/mousetrap.js"></script>
+<script src="bower_components/rangy/rangy-core.js"></script>
+<script src="bower_components/rangy/rangy-cssclassapplier.js"></script>
+<script src="bower_components/rangy/rangy-selectionsaverestore.js"></script>
 
-<script src="../bower_components/opentype.js/opentype.js"></script>
+<script src="bower_components/pako/dist/pako.js"></script>
 
-<script src="../bower_components/rangy/rangy-core.js"></script>
-<script src="../bower_components/rangy/rangy-cssclassapplier.js"></script>
-<script src="../bower_components/rangy/rangy-selectionsaverestore.js"></script>
+<script src="bower_components/Blob.js/Blob.js"></script>
+<script src="bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
 
-<script src="../bower_components/pako/dist/pako.js"></script>
-
-<script src="../bower_components/color-thief/src/color-thief.js"></script>
-
-<script src="../bower_components/uri.js/src/URI.js"></script>
-
-<script src="../bower_components/Blob.js/Blob.js"></script>
-<script src="../bower_components/canvas-toBlob.js/canvas-toBlob.js"></script>
+<script src="bower_components/jdataview/dist/browser/jdataview.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
-<!-- # Infinity Core ############################################## -->
+<!-- # Gravit Core ################################################ -->
 <!-- ############################################################## -->
-<!-- build:js infinity-core.js -->
+<!-- build:js core/js/gravit.core.js -->
 <!-- Core -->
-<script src="infinity/core/object.js"></script>
-<script src="infinity/core/system.js"></script>
-<script src="infinity/core/cursor.js"></script>
-<script src="infinity/core/key.js"></script>
-<script src="infinity/core/locale.js"></script>
-<script src="infinity/core/math.js"></script>
-<script src="infinity/core/util.js"></script>
-<!-- Event -->
-<script src="infinity/event/event.js"></script>
-<script src="infinity/event/eventtarget.js"></script>
-<script src="infinity/event/inputevent.js"></script>
-<script src="infinity/event/keyevent.js"></script>
-<script src="infinity/event/mouseevent.js"></script>
+<script src="js/core/object.js"></script>
+<script src="js/core/event.js"></script>
+<script src="js/core/eventtarget.js"></script>
+<script src="js/core/system.js"></script>
+<script src="js/core/key.js"></script>
+<script src="js/core/locale.js"></script>
+<script src="js/core/math.js"></script>
+<script src="js/core/util.js"></script>
+<script src="js/core/reader.js"></script>
+<script src="js/core/io.js"></script>
+<script src="js/core/platform.js"></script>
 <!-- Geometry -->
-<script src="infinity/geometry/length.js"></script>
-<script src="infinity/geometry/point.js"></script>
-<script src="infinity/geometry/rect.js"></script>
-<script src="infinity/geometry/transform.js"></script>
+<script src="js/core/geometry/length.js"></script>
+<script src="js/core/geometry/point.js"></script>
+<script src="js/core/geometry/rect.js"></script>
+<script src="js/core/geometry/transform.js"></script>
 <!-- Vertex -->
-<script src="infinity/vertex/vertex.js"></script>
-<script src="infinity/vertex/vertexsource.js"></script>
-<script src="infinity/vertex/vertextarget.js"></script>
-<script src="infinity/vertex/vertexcontainer.js"></script>
-<script src="infinity/vertex/vertexinfo.js"></script>
-<script src="infinity/vertex/vertexpixelaligner.js"></script>
-<script src="infinity/vertex/vertextransformer.js"></script>
-<script src="infinity/vertex/vertexoffsetter.js"></script>
+<script src="js/core/vertex/vertex.js"></script>
+<script src="js/core/vertex/vertexsource.js"></script>
+<script src="js/core/vertex/vertextarget.js"></script>
+<script src="js/core/vertex/vertexcontainer.js"></script>
+<script src="js/core/vertex/vertexinfo.js"></script>
+<script src="js/core/vertex/vertexpixelaligner.js"></script>
+<script src="js/core/vertex/vertextransformer.js"></script>
+<script src="js/core/vertex/vertexoffsetter.js"></script>
+<!-- Bitmap -->
+<script src="js/core/bitmap/filter/colorgradingfilter.js"></script>
+<script src="js/core/bitmap/filter/colormatrixfilter.js"></script>
+<script src="js/core/bitmap/filter/colortransformfilter.js"></script>
+<script src="js/core/bitmap/filter/stackblurfilter.js"></script>
+<script src="js/core/bitmap/bitmap.js"></script>
+<!-- Pattern -->
+<script src="js/core/pattern/pattern.js"></script>
+<script src="js/core/pattern/background.js"></script>
+<script src="js/core/pattern/color.js"></script>
+<script src="js/core/pattern/rgbcolor.js"></script>
+<script src="js/core/pattern/cmykcolor.js"></script>
+<script src="js/core/pattern/gradient.js"></script>
+<script src="js/core/pattern/lineargradient.js"></script>
+<script src="js/core/pattern/radialgradient.js"></script>
 <!-- Paint -->
-<script src="infinity/paint/pattern.js"></script>
-<script src="infinity/paint/annotation.js"></script>
-<script src="infinity/paint/bitmap.js"></script>
-<script src="infinity/paint/font.js"></script>
-<script src="infinity/paint/colorspace.js"></script>
-<script src="infinity/paint/color.js"></script>
-<script src="infinity/paint/colorprofile.js"></script>
-<script src="infinity/paint/dirtylist.js"></script>
-<script src="infinity/paint/gradient.js"></script>
-<script src="infinity/paint/paintcanvas.js"></script>
-<script src="infinity/paint/paintconfiguration.js"></script>
-<script src="infinity/paint/paintcontext.js"></script>
-<!-- Scene -->
-<script src="infinity/scene/node.js"></script>
-<script src="infinity/scene/element.js"></script>
-<script src="infinity/scene/block.js"></script>
-<script src="infinity/scene/item.js"></script>
-<script src="infinity/scene/scene.js"></script>
-<script src="infinity/scene/scenepaintconfiguration.js"></script>
-<script src="infinity/scene/selector.js"></script>
-<script src="infinity/scene/style/style.js"></script>
-<script src="infinity/scene/style/sharedstyle.js"></script>
-<script src="infinity/scene/style/appliedstyle.js"></script>
-<script src="infinity/scene/style/inlinestyle.js"></script>
-<script src="infinity/scene/style/linkedstyle.js"></script>
-<script src="infinity/scene/style/styleset.js"></script>
-<script src="infinity/scene/style/styleentry.js"></script>
-<script src="infinity/scene/style/filterentry.js"></script>
-<script src="infinity/scene/style/effectentry.js"></script>
-<script src="infinity/scene/style/paintentry.js"></script>
-<script src="infinity/scene/style/veffectentry.js"></script>
-<script src="infinity/scene/style/effect/shadoweffect.js"></script>
-<script src="infinity/scene/style/filter/blurfilter.js"></script>
-<script src="infinity/scene/style/paint/patternpaint.js"></script>
-<script src="infinity/scene/style/paint/areapaint.js"></script>
-<script src="infinity/scene/style/paint/fillpaint.js"></script>
-<script src="infinity/scene/style/paint/strokepaint.js"></script>
-<script src="infinity/scene/style/veffect/offsetveffect.js"></script>
-<script src="infinity/scene/structure/page.js"></script>
-<script src="infinity/scene/structure/layer.js"></script>
-<script src="infinity/scene/structure/slice.js"></script>
-<script src="infinity/scene/structure/swatch.js"></script>
-<script src="infinity/scene/shape/shape.js"></script>
-<script src="infinity/scene/shape/shapeset.js"></script>
-<script src="infinity/scene/shape/pathbase.js"></script>
-<script src="infinity/scene/shape/image.js"></script>
-<script src="infinity/scene/shape/polygon.js"></script>
-<script src="infinity/scene/shape/rectangle.js"></script>
-<script src="infinity/scene/shape/ellipse.js"></script>
-<script src="infinity/scene/shape/path.js"></script>
-<script src="infinity/scene/shape/text.js"></script>
+<script src="js/core/paint/annotation.js"></script>
+<script src="js/core/paint/font.js"></script>
+<script src="js/core/paint/dirtylist.js"></script>
+<script src="js/core/paint/paintcanvas.js"></script>
+<script src="js/core/paint/paintconfiguration.js"></script>
+<script src="js/core/paint/paintcontext.js"></script>
+<!-- Model -->
+<script src="js/core/model/node.js"></script>
+<script src="js/core/model/stylable.js"></script>
+<script src="js/core/model/element.js"></script>
+<script src="js/core/model/block.js"></script>
+<script src="js/core/model/layer.js"></script>
+<script src="js/core/model/item.js"></script>
+<script src="js/core/model/scene.js"></script>
+<script src="js/core/model/scenepaintconfiguration.js"></script>
+<script src="js/core/model/selector.js"></script>
+<script src="js/core/model/canvas.js"></script>
+<script src="js/core/model/page.js"></script>
+<script src="js/core/model/swatch.js"></script>
+<script src="js/core/model/swatches.js"></script>
+<script src="js/core/model/style.js"></script>
+<script src="js/core/model/styles.js"></script>
+<script src="js/core/model/workspace.js"></script>
+<script src="js/core/model/effect/effect.js"></script>
+<script src="js/core/model/effect/blureffect.js"></script>
+<script src="js/core/model/effect/colorgradingeffect.js"></script>
+<script src="js/core/model/effect/colormatrixeffect.js"></script>
+<script src="js/core/model/effect/colortransformeffect.js"></script>
+<script src="js/core/model/effect/dropshadoweffect.js"></script>
+<script src="js/core/model/effect/innershadoweffect.js"></script>
+<script src="js/core/model/effect/overlayeffect.js"></script>
+<script src="js/core/model/item/group.js"></script>
+<script src="js/core/model/item/shape.js"></script>
+<script src="js/core/model/item/pathbase.js"></script>
+<script src="js/core/model/item/image.js"></script>
+<script src="js/core/model/item/polygon.js"></script>
+<script src="js/core/model/item/rectangle.js"></script>
+<script src="js/core/model/item/ellipse.js"></script>
+<script src="js/core/model/item/path.js"></script>
+<script src="js/core/model/item/text.js"></script>
+<script src="js/core/model/item/compoundpath.js"></script>
+<script src="js/core/model/item/slice.js"></script>
 <!-- View -->
-<script src="infinity/view/stage.js"></script>
-<script src="infinity/view/scenestage.js"></script>
-<script src="infinity/view/widget.js"></script>
-<script src="infinity/view/view.js"></script>
-<!-- Root -->
-<script src="infinity/platform.js"></script>
+<script src="js/core/view/cursor.js"></script>
+<script src="js/core/view/inputevent.js"></script>
+<script src="js/core/view/keyevent.js"></script>
+<script src="js/core/view/mouseevent.js"></script>
+<script src="js/core/view/stage.js"></script>
+<script src="js/core/view/scenestage.js"></script>
+<script src="js/core/view/widget.js"></script>
+<script src="js/core/view/scenewidget.js"></script>
 <!-- I18N -->
-<script src="infinity/i18n/i18n_en.js"></script>
-<script src="infinity/i18n/i18n_de.js"></script>
+<script src="js/core/i18n/i18n_en.js"></script>
+<script src="js/core/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
 <!-- ############################################################## -->
-<!-- # Infinity-Editor ################################################### -->
+<!-- # Gravit Format ############################################## -->
 <!-- ############################################################## -->
-<!-- build:js infinity-editor.js -->
+<!-- build:js format/js/gravit.format.js -->
+<script src="js/format/acvreader.js"></script>
+<script src="js/format/asereader.js"></script>
+<script src="js/format/svgreader.js"></script>
+<!-- endbuild -->
+
+<!-- ############################################################## -->
+<!-- # Gravit Editor ############################################## -->
+<!-- ############################################################## -->
+<!-- build:js editor/js/gravit.editor.js -->
 <!-- Guide -->
-<script src="infinity-editor/guide/guides.js"></script>
-<script src="infinity-editor/guide/guide.js"></script>
-<script src="infinity-editor/guide/gridguide.js"></script>
-<script src="infinity-editor/guide/unitguide.js"></script>
-<script src="infinity-editor/guide/pageguide.js"></script>
-<script src="infinity-editor/guide/shapeboxguide.js"></script>
+<script src="js/editor/guide/guides.js"></script>
+<script src="js/editor/guide/guide.js"></script>
+<script src="js/editor/guide/gridguide.js"></script>
+<script src="js/editor/guide/unitguide.js"></script>
+<script src="js/editor/guide/pageguide.js"></script>
+<script src="js/editor/guide/bboxguide.js"></script>
 <!-- Editor -->
-<script src="infinity-editor/scene/transformbox.js"></script>
-<script src="infinity-editor/scene/elementeditor.js"></script>
-<script src="infinity-editor/scene/blockeditor.js"></script>
-<script src="infinity-editor/scene/sceneeditor.js"></script>
-<script src="infinity-editor/scene/shape/shapeeditor.js"></script>
-<script src="infinity-editor/scene/shape/shapeseteditor.js"></script>
-<script src="infinity-editor/scene/shape/pathbaseeditor.js"></script>
-<script src="infinity-editor/scene/shape/texteditor.js"></script>
-<script src="infinity-editor/scene/shape/ellipseeditor.js"></script>
-<script src="infinity-editor/scene/shape/rectangleeditor.js"></script>
-<script src="infinity-editor/scene/shape/polygoneditor.js"></script>
-<script src="infinity-editor/scene/shape/patheditor.js"></script>
-<script src="infinity-editor/scene/shape/imageeditor.js"></script>
-<script src="infinity-editor/scene/structure/pageeditor.js"></script>
-<script src="infinity-editor/scene/structure/layereditor.js"></script>
-<script src="infinity-editor/scene/structure/sliceeditor.js"></script>
+<script src="js/editor/model/transformbox.js"></script>
+<script src="js/editor/model/elementeditor.js"></script>
+<script src="js/editor/model/blockeditor.js"></script>
+<script src="js/editor/model/layereditor.js"></script>
+<script src="js/editor/model/sceneeditor.js"></script>
+<script src="js/editor/model/pageeditor.js"></script>
+<script src="js/editor/model/canvaseditor.js"></script>
+<script src="js/editor/model/item/groupeditor.js"></script>
+<script src="js/editor/model/item/shapeeditor.js"></script>
+<script src="js/editor/model/item/pathbaseeditor.js"></script>
+<script src="js/editor/model/item/texteditor.js"></script>
+<script src="js/editor/model/item/ellipseeditor.js"></script>
+<script src="js/editor/model/item/rectangleeditor.js"></script>
+<script src="js/editor/model/item/polygoneditor.js"></script>
+<script src="js/editor/model/item/patheditor.js"></script>
+<script src="js/editor/model/item/imageeditor.js"></script>
+<script src="js/editor/model/item/compoundpatheditor.js"></script>
+<script src="js/editor/model/item/sliceeditor.js"></script>
 <!-- Tool -->
-<script src="infinity-editor/tool/tool.js"></script>
-<script src="infinity-editor/tool/toolmanager.js"></script>
-<script src="infinity-editor/tool/selecttool.js"></script>
-<script src="infinity-editor/tool/marqueetool.js"></script>
-<script src="infinity-editor/tool/shapetool.js"></script>
-<script src="infinity-editor/tool/subselecttool.js"></script>
-<script src="infinity-editor/tool/lassotool.js"></script>
-<script src="infinity-editor/tool/layertool.js"></script>
-<script src="infinity-editor/tool/handtool.js"></script>
-<script src="infinity-editor/tool/zoomtool.js"></script>
-<script src="infinity-editor/tool/pathtool.js"></script>
-<script src="infinity-editor/tool/pentool.js"></script>
-<script src="infinity-editor/tool/bezigontool.js"></script>
-<script src="infinity-editor/tool/linetool.js"></script>
-<script src="infinity-editor/tool/rectangletool.js"></script>
-<script src="infinity-editor/tool/ellipsetool.js"></script>
-<script src="infinity-editor/tool/polygontool.js"></script>
-<script src="infinity-editor/tool/texttool.js"></script>
-<script src="infinity-editor/tool/pointertool.js"></script>
-<script src="infinity-editor/tool/pagetool.js"></script>
-<script src="infinity-editor/tool/transformtool.js"></script>
-<script src="infinity-editor/tool/slicetool.js"></script>
+<script src="js/editor/tool/tool.js"></script>
+<script src="js/editor/tool/toolmanager.js"></script>
+<script src="js/editor/tool/selecttool.js"></script>
+<script src="js/editor/tool/marqueetool.js"></script>
+<script src="js/editor/tool/shapetool.js"></script>
+<script src="js/editor/tool/subselecttool.js"></script>
+<script src="js/editor/tool/lassotool.js"></script>
+<script src="js/editor/tool/layertool.js"></script>
+<script src="js/editor/tool/handtool.js"></script>
+<script src="js/editor/tool/zoomtool.js"></script>
+<script src="js/editor/tool/pathtool.js"></script>
+<script src="js/editor/tool/pentool.js"></script>
+<script src="js/editor/tool/bezigontool.js"></script>
+<script src="js/editor/tool/linetool.js"></script>
+<script src="js/editor/tool/rectangletool.js"></script>
+<script src="js/editor/tool/ellipsetool.js"></script>
+<script src="js/editor/tool/polygontool.js"></script>
+<script src="js/editor/tool/texttool.js"></script>
+<script src="js/editor/tool/pointertool.js"></script>
+<script src="js/editor/tool/transformtool.js"></script>
+<script src="js/editor/tool/slicetool.js"></script>
 <!-- View -->
-<script src="infinity-editor/view/editorbackstage.js"></script>
-<script src="infinity-editor/view/editorscenestage.js"></script>
-<script src="infinity-editor/view/editortoolstage.js"></script>
-<script src="infinity-editor/view/editorfrontstage.js"></script>
-<script src="infinity-editor/view/editorview.js"></script>
+<script src="js/editor/view/editorbackstage.js"></script>
+<script src="js/editor/view/editorscenestage.js"></script>
+<script src="js/editor/view/editortoolstage.js"></script>
+<script src="js/editor/view/editorfrontstage.js"></script>
+<script src="js/editor/view/editorwidget.js"></script>
 <!-- Root -->
-<script src="infinity-editor/editor.js"></script>
-<script src="infinity-editor/editorpaintconfiguration.js"></script>
+<script src="js/editor/editor.js"></script>
+<script src="js/editor/editorpaintconfiguration.js"></script>
 <!-- I18N -->
-<script src="infinity-editor/i18n/i18n_en.js"></script>
-<script src="infinity-editor/i18n/i18n_de.js"></script>
+<script src="js/editor/i18n/i18n_en.js"></script>
+<script src="js/editor/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
 
-<!-- build:js gravit.js -->
-<!-- Component -->
-<script src="application/component/autoedit.js"></script>
-<script src="application/component/panel.js"></script>
-<script src="application/component/patterntarget.js"></script>
-<script src="application/component/colorbutton.js"></script>
-<script src="application/component/colorpanel.js"></script>
-<script src="application/component/cornertype.js"></script>
-<script src="application/component/blendmode.js"></script>
-<script src="application/component/unit.js"></script>
-<script src="application/component/gradienteditor.js"></script>
-<script src="application/component/overlay.js"></script>
-<script src="application/component/pivot.js"></script>
-<script src="application/component/stylepanel.js"></script>
-<script src="application/component/swatchpanel.js"></script>
-<script src="application/component/menu.js"></script>
-<script src="application/component/menubar.js"></script>
-<script src="application/component/menuitem.js"></script>
-<script src="application/component/menubutton.js"></script>
+<!-- ############################################################## -->
+<!-- # Gravit Component ########################################### -->
+<!-- ############################################################## -->
+<!-- build:js component/js/gravit.component.js -->
+<script src="js/component/autoedit.js"></script>
+<script src="js/component/panel.js"></script>
+<script src="js/component/patterntarget.js"></script>
+<script src="js/component/patterneditor.js"></script>
+<script src="js/component/patternpicker.js"></script>
+<script src="js/component/patterntypepicker.js"></script>
+<script src="js/component/coloreditor.js"></script>
+<script src="js/component/cornertypepicker.js"></script>
+<script src="js/component/blendmode.js"></script>
+<script src="js/component/unit.js"></script>
+<script src="js/component/gradienteditor.js"></script>
+<script src="js/component/overlay.js"></script>
+<script src="js/component/pivot.js"></script>
+<script src="js/component/effectpanel.js"></script>
+<script src="js/component/stylepanel.js"></script>
+<script src="js/component/swatchpanel.js"></script>
+<script src="js/component/menu.js"></script>
+<script src="js/component/menubar.js"></script>
+<script src="js/component/menuitem.js"></script>
+<script src="js/component/menubutton.js"></script>
+<!-- endbuild -->
+
+
+<!-- ############################################################## -->
+<!-- # Gravit Application Libraries ############################### -->
+<!-- ############################################################## -->
+<!-- build:js application/js/gravit.application.libs.js -->
+<script src="bower_components/jqtree/tree.jquery.js"></script>
+
+<script src="bower_components/mousetrap/mousetrap.js"></script>
+
+<script src="bower_components/color-thief/src/color-thief.js"></script>
+
+<script src="bower_components/uri.js/src/URI.js"></script>
+
+<script src="bower_components/vex/js/vex.js"></script>
+<script src="bower_components/vex/js/vex.dialog.js"></script>
+<!-- endbuild -->
+
+
+<!-- ############################################################## -->
+<!-- # Gravit Application ######################################### -->
+<!-- ############################################################## -->
+<!-- build:js application/js/gravit.application.js -->
 <!-- Extension -->
-<script src="application/extension/action.js"></script>
-<script src="application/extension/colormatcher.js"></script>
-<script src="application/extension/exporter.js"></script>
-<script src="application/extension/module.js"></script>
-<script src="application/extension/view.js"></script>
-<script src="application/extension/palette.js"></script>
-<script src="application/extension/panel.js"></script>
-<script src="application/extension/properties.js"></script>
-<script src="application/extension/sidebar.js"></script>
-<script src="application/extension/storage.js"></script>
-<script src="application/extension/styleentry.js"></script>
-<script src="application/extension/transformer.js"></script>
-<!-- Workspace -->
-<script src="application/workspace/header.js"></script>
-<script src="application/workspace/palettes.js"></script>
-<script src="application/workspace/panels.js"></script>
-<script src="application/workspace/sidebars.js"></script>
-<script src="application/workspace/toolbar.js"></script>
-<script src="application/workspace/window.js"></script>
-<script src="application/workspace/windows.js"></script>
-<!-- Util -->
-<script src="application/util/ciede2000.js"></script>
-<script src="application/util/image.js"></script>
-<script src="application/util/selectors.js"></script>
-<!-- Root -->
-<script src="application/shell.js"></script>
-<script src="application/application.js"></script>
-<script src="application/document.js"></script>
-<script src="application/bootstrap.js"></script>
-<!-- I18N -->
-<script src="application/i18n/i18n_en.js"></script>
-<script src="application/i18n/i18n_de.js"></script>
-<!-- ############# -->
-<!-- BEGIN: GRAVIT-AddOn -->
-<!-- ############# -->
+<script src="js/application/extension/action.js"></script>
+<script src="js/application/extension/exporter.js"></script>
+<script src="js/application/extension/module.js"></script>
+<script src="js/application/extension/view.js"></script>
+<script src="js/application/extension/palette.js"></script>
+<script src="js/application/extension/panel.js"></script>
+<script src="js/application/extension/properties.js"></script>
+<script src="js/application/extension/sidebar.js"></script>
+<script src="js/application/extension/storage.js"></script>
 <!-- Action -->
-<script src="gravit/action/addlayeraction.js"></script>
-<script src="gravit/action/deletelayeraction.js"></script>
-<script src="gravit/action/addpageaction.js"></script>
-<script src="gravit/action/alignaction.js"></script>
-<script src="gravit/action/cloneaction.js"></script>
-<script src="gravit/action/closeaction.js"></script>
-<script src="gravit/action/closeallaction.js"></script>
-<script src="gravit/action/copyaction.js"></script>
-<script src="gravit/action/copyattributesaction.js"></script>
-<script src="gravit/action/cutaction.js"></script>
-<script src="gravit/action/deleteaction.js"></script>
-<script src="gravit/action/deletepageaction.js"></script>
-<script src="gravit/action/distributeaction.js"></script>
-<script src="gravit/action/duplicateaction.js"></script>
-<script src="gravit/action/fitallaction.js"></script>
-<script src="gravit/action/fitcurrentlayeraction.js"></script>
-<script src="gravit/action/fitcurrentpageaction.js"></script>
-<script src="gravit/action/fitselectionaction.js"></script>
-<script src="gravit/action/groupaction.js"></script>
-<script src="gravit/action/placeimageaction.js"></script>
-<script src="gravit/action/invertselectionaction.js"></script>
-<script src="gravit/action/layertypeaction.js"></script>
-<script src="gravit/action/magnificationaction.js"></script>
-<script src="gravit/action/newaction.js"></script>
-<script src="gravit/action/newwindowaction.js"></script>
-<script src="gravit/action/openaction.js"></script>
-<script src="gravit/action/arrangeaction.js"></script>
-<script src="gravit/action/originalviewaction.js"></script>
-<script src="gravit/action/pixelpreviewaction.js"></script>
-<script src="gravit/action/paintmodeaction.js"></script>
-<script src="gravit/action/pasteaction.js"></script>
-<script src="gravit/action/pasteinplaceaction.js"></script>
-<script src="gravit/action/pasteinsideaction.js"></script>
-<script src="gravit/action/pasteattributesaction.js"></script>
-<script src="gravit/action/redoaction.js"></script>
-<script src="gravit/action/saveaction.js"></script>
-<script src="gravit/action/saveallaction.js"></script>
-<script src="gravit/action/saveasaction.js"></script>
-<script src="gravit/action/showrulersaction.js"></script>
-<script src="gravit/action/selectallaction.js"></script>
-<script src="gravit/action/showallpagesaction.js"></script>
-<script src="gravit/action/showgridaction.js"></script>
-<script src="gravit/action/slicefromselection.js"></script>
-<script src="gravit/action/snapunitaction.js"></script>
-<script src="gravit/action/transformaction.js"></script>
-<script src="gravit/action/undoaction.js"></script>
-<script src="gravit/action/ungroupaction.js"></script>
-<script src="gravit/action/zoominaction.js"></script>
-<script src="gravit/action/zoomoutaction.js"></script>
-<!-- Colormatcher -->
-<script src="gravit/colormatcher/analogousmatcher.js"></script>
-<script src="gravit/colormatcher/complementarymatcher.js"></script>
+<script src="js/application/action/addlayeraction.js"></script>
+<script src="js/application/action/deletelayeraction.js"></script>
+<script src="js/application/action/alignaction.js"></script>
+<script src="js/application/action/cloneaction.js"></script>
+<script src="js/application/action/converttopathaction.js"></script>
+<script src="js/application/action/closeaction.js"></script>
+<script src="js/application/action/closeallaction.js"></script>
+<script src="js/application/action/copyaction.js"></script>
+<script src="js/application/action/cutaction.js"></script>
+<script src="js/application/action/deleteaction.js"></script>
+<script src="js/application/action/distributeaction.js"></script>
+<script src="js/application/action/duplicateaction.js"></script>
+<script src="js/application/action/fitallaction.js"></script>
+<script src="js/application/action/fitcurrentlayeraction.js"></script>
+<script src="js/application/action/fitselectionaction.js"></script>
+<script src="js/application/action/groupaction.js"></script>
+<script src="js/application/action/joinpathsaction.js"></script>
+<script src="js/application/action/placeimageaction.js"></script>
+<script src="js/application/action/invertselectionaction.js"></script>
+<script src="js/application/action/layertypeaction.js"></script>
+<script src="js/application/action/magnificationaction.js"></script>
+<script src="js/application/action/newprojectaction.js"></script>
+<script src="js/application/action/newwindowaction.js"></script>
+<script src="js/application/action/openprojectaction.js"></script>
+<script src="js/application/action/arrangeaction.js"></script>
+<script src="js/application/action/originalviewaction.js"></script>
+<script src="js/application/action/outlineaction.js"></script>
+<script src="js/application/action/offsetaction.js"></script>
+<script src="js/application/action/pixelpreviewaction.js"></script>
+<script src="js/application/action/paintmodeaction.js"></script>
+<script src="js/application/action/pasteaction.js"></script>
+<script src="js/application/action/pasteinplaceaction.js"></script>
+<script src="js/application/action/pasteinsideaction.js"></script>
+<script src="js/application/action/pastestyleaction.js"></script>
+<script src="js/application/action/redoaction.js"></script>
+<script src="js/application/action/reverseorderaction.js"></script>
+<script src="js/application/action/saveaction.js"></script>
+<script src="js/application/action/saveallaction.js"></script>
+<script src="js/application/action/saveasaction.js"></script>
+<script src="js/application/action/showrulersaction.js"></script>
+<script src="js/application/action/selectallaction.js"></script>
+<script src="js/application/action/showgridaction.js"></script>
+<script src="js/application/action/slicefromselection.js"></script>
+<script src="js/application/action/snapunitaction.js"></script>
+<script src="js/application/action/splitpathsaction.js"></script>
+<script src="js/application/action/togglesnapaction.js"></script>
+<script src="js/application/action/transformaction.js"></script>
+<script src="js/application/action/undoaction.js"></script>
+<script src="js/application/action/ungroupaction.js"></script>
+<script src="js/application/action/zoominaction.js"></script>
+<script src="js/application/action/zoomoutaction.js"></script>
+<!-- Dialog -->
+<script src="js/application/dialog/styledialog.js"></script>
 <!-- Exporter -->
-<script src="gravit/exporter/imagexporter.js"></script>
+<script src="js/application/exporter/imagexporter.js"></script>
 <!-- Palette -->
-<script src="gravit/palette/exportpalette.js"></script>
-<script src="gravit/palette/stylepalette.js"></script>
+<script src="js/application/palette/alignpalette.js"></script>
+<script src="js/application/palette/exportpalette.js"></script>
+<script src="js/application/palette/layerspalette.js"></script>
+<script src="js/application/palette/stylespalette.js"></script>
+<script src="js/application/palette/swatchespalette.js"></script>
+<script src="js/application/palette/transformpalette.js"></script>
 <!-- Panel -->
-<script src="gravit/panel/propertiespanel.js"></script>
-<script src="gravit/panel/transformpanel.js"></script>
+<script src="js/application/panel/propertiespanel.js"></script>
 <!-- Properties -->
-<script src="gravit/properties/documentproperties.js"></script>
-<script src="gravit/properties/polygonproperties.js"></script>
-<script src="gravit/properties/pathproperties.js"></script>
-<script src="gravit/properties/rectangleproperties.js"></script>
-<script src="gravit/properties/ellipseproperties.js"></script>
-<script src="gravit/properties/imageproperties.js"></script>
-<script src="gravit/properties/infoproperties.js"></script>
-<script src="gravit/properties/pageproperties.js"></script>
-<script src="gravit/properties/textproperties.js"></script>
-<script src="gravit/properties/sliceproperties.js"></script>
+<script src="js/application/properties/effectsproperties.js"></script>
+<script src="js/application/properties/polygonproperties.js"></script>
+<script src="js/application/properties/pathproperties.js"></script>
+<script src="js/application/properties/compoundpathproperties.js"></script>
+<script src="js/application/properties/rectangleproperties.js"></script>
+<script src="js/application/properties/ellipseproperties.js"></script>
+<script src="js/application/properties/imageproperties.js"></script>
+<script src="js/application/properties/infoproperties.js"></script>
+<script src="js/application/properties/pageproperties.js"></script>
+<script src="js/application/properties/textproperties.js"></script>
+<script src="js/application/properties/fillborderproperties.js"></script>
+<script src="js/application/properties/styleproperties.js"></script>
+<script src="js/application/properties/sliceproperties.js"></script>
 <!-- Sidebar -->
-<script src="gravit/sidebar/pageslayerssidebar.js"></script>
-<script src="gravit/sidebar/stylesswatchessidebar.js"></script>
-<!-- Style-Entry -->
-<script src="gravit/styleentry/patternpaintentry.js"></script>
-<script src="gravit/styleentry/areapaintentry.js"></script>
-<script src="gravit/styleentry/fillpaintentry.js"></script>
-<script src="gravit/styleentry/strokepaintentry.js"></script>
-<script src="gravit/styleentry/blurfilterentry.js"></script>
-<script src="gravit/styleentry/offsetveffectentry.js"></script>
-<script src="gravit/styleentry/shadoweffectentry.js"></script>
-<!-- Transformer -->
-<script src="gravit/transformer/aligntransformer.js"></script>
-<script src="gravit/transformer/adjusttransformer.js"></script>
-<!-- I18N -->
-<script src="gravit/i18n/i18n_en.js"></script>
-<script src="gravit/i18n/i18n_de.js"></script>
+<script src="js/application/sidebar/projectsidebar.js"></script>
+<!-- Host -->
+<script src="js/application/host/host.js"></script>
+<!-- GUI -->
+<script src="js/application/gui/header.js"></script>
+<script src="js/application/gui/palettes.js"></script>
+<script src="js/application/gui/panels.js"></script>
+<script src="js/application/gui/sidebars.js"></script>
+<script src="js/application/gui/toolbar.js"></script>
+<script src="js/application/gui/window.js"></script>
+<script src="js/application/gui/windows.js"></script>
+<!-- Util -->
+<script src="js/application/util/ciede2000.js"></script>
+<script src="js/application/util/image.js"></script>
+<script src="js/application/util/jqueryext.js"></script>
 <!-- Root -->
-<script src="gravit/gravit.js"></script>
-<!-- ############# -->
-<!-- END: GRAVIT-MODULE -->
-<!-- ############# -->
+<script src="js/application/bootstrap.js"></script>
+<script src="js/application/application.js"></script>
+<script src="js/application/project.js"></script>
+<script src="js/application/document.js"></script>
+<script src="js/application/gravit.js"></script>
+<!-- I18N -->
+<script src="js/application/i18n/i18n_en.js"></script>
+<script src="js/application/i18n/i18n_de.js"></script>
 <!-- endbuild -->
 
-<!-- Development stuff -->
+<!-- ############################################################## -->
+<!-- # Gravit Development ######################################### -->
+<!-- ############################################################## -->
+<script src="js/development/bootstrap.js"></script>
+<script src="js/development/testaction.js"></script>
+<script src="js/development/development.js"></script>
 
-<script src="development/bootstrap.js"></script>
-<!-- Tests -->
-<script src="development/test/clone_scene.js"></script>
-<script src="development/test/create_multiple_pages.js"></script>
-<script src="development/test/create_rect_grid_page.js"></script>
-<script src="development/test/serialize_scene.js"></script>
-<script src="development/test/deserialize_scene.js"></script>
-<!-- Root -->
-<script src="development/testaction.js"></script>
-<script src="development/development.js"></script>
-
-<!-- Include the proper shell for development -->
+<!-- Include the proper host for development -->
 <script type="text/javascript">
     if (this['process'] && this['require']) {
-        document.writeln("<script src=\"/shell/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/system/winstate.js\" type=\"text\/javascript\"><\/script>");
-        document.writeln("<script src=\"/shell/system/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/filestorage.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/winstate.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/system/systemhost.js\" type=\"text\/javascript\"><\/script>");
     } else {
-        document.writeln("<script src=\"/shell/browser/shell.js\" type=\"text\/javascript\"><\/script>");
+        document.writeln("<script src=\"js/application/host/browser/browserhost.js\" type=\"text\/javascript\"><\/script>");
     }
 </script>
 </body>

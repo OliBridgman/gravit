@@ -1,0 +1,84 @@
+@import '../variables';
+
+.g-gradient-editor {
+  padding: 0px 5px;
+
+  > .container {
+    > .editor {
+      width: 100%;
+
+      > .gradient {
+        display: block;
+        margin: 0px;
+      }
+
+      > .stops, > .opacities {
+        position: relative;
+        height: 16px;
+        margin: 0px;
+
+        &.stops > .stop {
+          margin-top: 6px;
+
+          > .stop-value::before {
+            border-color: transparent transparent white transparent;
+            top: -10px;
+          }
+        }
+
+        &.opacities > .stop {
+          margin-top: 2px;
+
+          > .stop-value::before {
+            border-color: white transparent transparent transparent;
+            top: 10px;
+          }
+        }
+
+        > .stop {
+          position: absolute;
+          z-index: 1;
+          margin-left: -4px;
+
+          > .stop-value {
+            background: $textColor;
+            border: 1px solid $borderColor;
+            width: 6px;
+            height: 6px;
+            padding: 0px;
+            margin: 0px;
+            box-shadow: 0px 0px 0px 1px rgb(255, 255, 255);
+
+            &::before {
+              border-style: solid;
+              border-width: 4px;
+              width: 0;
+              height: 0;
+              position: absolute;
+              left: 0px;
+              content: '';
+            }
+          }
+        }
+      }
+    }
+
+    > .toolbar {
+      margin-top: 7px;
+
+      > div {
+        display: inline-block;
+        margin-right: 10px;
+
+        &[data-section="type"] > span.g-button > span {
+          display: inline-block;
+          width: 12px;
+          height: 12px;
+          border: 1px solid $borderColor;
+          margin-bottom: 2px;
+        }
+      }
+    }
+  }
+
+}

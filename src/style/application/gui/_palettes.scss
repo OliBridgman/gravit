@@ -1,0 +1,106 @@
+@import "compass/css3/box-sizing";
+@import '../../variables';
+
+#palettes {
+  @include box-sizing(border-box);
+  position: absolute;
+  right: 0px;
+  width: 260px;
+  background: $baseColor;
+  border-left: 1px solid $borderColor;
+
+  .palette-group {
+    overflow: hidden;
+
+    &:not(:last-child) {
+      border-bottom: 3px solid $darkShadowColor;
+    }
+
+    > .palette-group-header {
+      height: 21px;
+      background: $darkColor;
+
+      > * {
+        display: table-cell;
+        height: 100%;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      button {
+        background: $darkColor;
+        border: none;
+        margin: 0px;
+        box-shadow: none;
+
+        &:active, &.g-active {
+          &, * {
+            color: $selectedColor;
+          }
+        }
+      }
+
+      > .palette-group-tabs {
+        width: 100%;
+
+        button {
+          background: $darkColor;
+          padding-left: 7px;
+          padding-right: 7px;
+          text-transform: uppercase;
+          border: none;
+          box-shadow: none;
+          margin: 0px;
+
+          > span.collapse-icon {
+            height: 14px;
+            line-height: 20px; // 14px-11px*2
+            width: 14px;
+            text-align: center;
+            display: none;
+
+            > span {
+              font-size: 11px;
+            }
+
+            > span:first-child {
+              bottom: 0px;
+            }
+
+            > span:last-child {
+              top: 0px;
+            }
+          }
+
+          &:active, &.g-active {
+            background: $baseColor;
+
+            &, * {
+              color: $textColor;
+            }
+          }
+
+          &.g-active {
+            padding-left: 0px;
+
+            > span.collapse-icon {
+              display: inline-block;
+            }
+          }
+        }
+      }
+
+      > :last-child {
+        padding-right: 5px;
+      }
+    }
+
+    &.collapsed-palette > .palette-group-header > .palette-group-controls {
+      visibility: hidden;
+    }
+
+    .palette-panel {
+      position: relative;
+    }
+  }
+}

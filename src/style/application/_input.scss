@@ -1,0 +1,262 @@
+@import "compass/css3/box-sizing";
+@import '../variables';
+
+button, .g-button, input, textArea, select, .g-input, .g-list, .g-grid {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  @include box-sizing(border-box);
+  margin: 0px;
+  padding: 0px 3px;
+  vertical-align: middle;
+  background: $baseColor;
+  color: $textColor;
+  height: $baseline;
+  line-height: $baseline - 2px;
+  display: inline-block;
+
+  &:not(:last-child) {
+    margin-right: 3px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+button, input[type=button], input[type=submit], .g-button {
+  border: 1px solid $inputBorderColor;
+  box-shadow: inset 1px 1px 1px $lightShadowColor;
+
+  &, * {
+    vertical-align: middle;
+    text-align: center;
+    color: $textColor;
+  }
+
+  svg {
+    fill: $textColor;
+    stroke: $textColor;
+  }
+
+  &:active, &.g-active {
+    box-shadow: inset 1px 1px 1px $darkShadowColor;
+    background: $inputColor;
+  }
+
+  &.g-flat {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+
+    &:active, &.g-active {
+      background: transparent;
+
+      &, * {
+        color: $selectedColor;
+      }
+
+      svg {
+        fill: $selectedColor;
+        stroke: $selectedColor;
+      }
+    }
+  }
+
+  span:not(:last-child) {
+    padding-right: 5px;
+  }
+}
+
+select, input:not([type=button]):not([type=submit]):not([type=checkbox]):not([type=radio]), textArea, .g-input, .g-list, .g-grid {
+  border-radius: 0px;
+  box-shadow: inset 1px 1px 1px $darkShadowColor;
+  background: $inputColor;
+  border: 1px solid $inputBorderColor;
+
+  &:focus {
+    outline: none;
+    border: 1px solid $selectedColor;
+  }
+}
+
+select {
+  text-indent: 0.01px;
+  text-overflow: '';
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScxNCcgaGVpZ2h0PSc1Jz4NCjxwb2x5Z29uIHBvaW50cz0iMCwwIDEwLDAgNSw1IiBmaWxsPSJyZ2IoMTk5LCAxOTksIDE5OSkiLz4NCjwvc3ZnPg==");
+  background-repeat: no-repeat;
+  background-position: right center;
+  padding-right: 20px;
+  box-shadow: inset 1px 1px 1px $lightShadowColor;
+}
+
+input[type="range"] {
+  padding: 2px;
+  height: auto !important;
+
+  &::-moz-range-track {
+    border: none;
+    background: none;
+  }
+
+  &::-moz-range-thumb {
+    background: $textColor;
+    border: 1px solid $borderColor;
+    width: 8px;
+    height: 8px;
+    border-radius: 100px;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    background: $textColor;
+    border: 1px solid $borderColor;
+    width: 9px;
+    height: 9px;
+    border-radius: 100px;
+    padding: 0px;
+    margin: 0px;
+  }
+}
+
+input[type=checkbox], input[type=radio] {
+  vertical-align: middle;
+  line-height: $baseline;
+
+  &:not(:last-child) {
+    margin-right: 0px;
+  }
+}
+
+input[type=checkbox] {
+  &:before {
+    text-align: right;
+    font-family: FontAwesome !important;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    content: "\f204";
+  }
+
+  &:checked {
+    &:before {
+      content: "\f205";
+    }
+  }
+}
+
+input[type=radio] {
+  height: $baseline;
+  width: $baseline;
+  padding: 0px;
+
+  &:before {
+    width: 12px;
+    height: 12px;
+    display: block;
+    border-radius: $baseline;
+    border: 1px solid $inputBorderColor;
+    box-shadow: inset 1px 1px 1px $darkShadowColor;
+    background: $inputColor;
+    margin-top: 3px;
+    content: ' ';
+  }
+
+  &:checked {
+    &:before {
+      background: $activeColor;
+    }
+  }
+}
+
+textArea {
+  height: auto;
+}
+
+.g-list, .g-grid {
+  height: auto;
+  padding: 0px;
+  overflow-y: auto;
+
+  &:not(:last-child) {
+    margin-right: 0px;
+  }
+}
+
+.g-grid {
+  > div {
+    position: relative;
+    width: 100%;
+    border-bottom: 1px solid $borderColor;
+
+    &, * {
+      line-height: 1 !important;
+    }
+
+    &.g-active {
+      background: $activeColor;
+
+      &, * {
+        color: $activeTextColor;
+      }
+    }
+
+    &.g-selected {
+      background: $selectedColor;
+
+      &, * {
+        color: $selectedTextColor;
+      }
+    }
+
+    &.g-drop {
+      background: $dragColor;
+
+      &, * {
+        color: $dragTextColor;
+      }
+    }
+
+    > div:not(.grid-drag-overlay) {
+      display: table-cell;
+      vertical-align: middle;
+      padding: 4px 0px;
+
+      &.grid-border {
+        border-right: 1px solid $borderColor;
+      }
+
+      &.grid-icon {
+        min-width: 21px;
+        max-width: 21px;
+        text-align: center;
+
+        &.grid-icon-default * {
+          opacity: 0.5;
+        }
+
+        &, * {
+          cursor: pointer;
+        }
+      }
+
+      &.grid-main {
+        width: 100%;
+        padding-left: 3px;
+      }
+    }
+
+    > .grid-drag-overlay {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+    }
+  }
+}

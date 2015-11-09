@@ -1,0 +1,34 @@
+@import '../../variables';
+
+.palette-export {
+  padding: 5px;
+
+  > .title {
+    padding-bottom: 5px;
+    text-align: center;
+  }
+
+  > .export-table {
+    display: block;
+    padding: 5px 5px 0px 5px;
+    height: 85px;
+
+    > .export-row {
+      padding: 0px 0px 5px 0px;
+
+      > .export-cell {
+        display: table-cell;
+        white-space: nowrap;
+
+        &:first-child {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  > .controls {
+    padding-top: 5px;
+    text-align: right;
+  }
+}

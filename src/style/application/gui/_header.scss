@@ -1,0 +1,58 @@
+@import '../../variables';
+
+#header {
+  position: absolute;
+  width: 100%;
+  height: 25px;
+  background: $baseColor;
+
+  > * {
+    height: 100%;
+    display: inline-block;
+
+    &, *:not(.fa) {
+      font: $menuFont;
+    }
+  }
+
+  > .windows {
+    > .tab {
+      display: table-cell;
+      padding: 0px 5px;
+      height: 25px;
+      vertical-align: middle;
+      border-left: 1px solid $borderColor;
+
+      &.g-active {
+        background: $activeColor;
+        color: $activeTextColor;
+      }
+
+      > .close {
+        font-size: 10px;
+        padding-left: 3px;
+
+        &:hover {
+          color: $selectedColor;
+        }
+      }
+    }
+  }
+
+  > .view {
+    float:right;
+    margin-right: 5px;
+
+    > * {
+      margin-top: 2px;
+    }
+  }
+
+  > .misc {
+    float:right;
+
+    > * {
+      margin-top: 2px;
+    }
+  }
+}

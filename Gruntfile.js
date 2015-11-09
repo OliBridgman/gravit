@@ -6,11 +6,38 @@ module.exports = function (grunt) {
     var pgk = grunt.file.readJSON('package.json');
 
     var cfg = {
-        build: 'build',
+        lib: 'lib',
+        app: 'app',
         dist: 'dist',
         tmp: 'tmp',
         macBundleId: 'com.quasado.gravit',
         macSignIdentity: '1269B5CE3B0DCC676DA70011A618EB6FA95F8F50'
+    };
+
+    // Take care of order!!
+    var modules = ['core', 'format', 'editor', 'component', 'application'];
+
+    var appJSFiles = [];
+    var appCSSFiles = [];
+
+    for (var i = 0; i < modules.length; ++i) {
+        appJSFiles.push('<%= cfg.lib %>/' + modules[i] + '/js/*.js');
+        appCSSFiles.push('<%= cfg.lib %>/' + modules[i] + '/style/*.css');
+    }
+
+    var getAppAssetFiles = function (dest) {
+        var result = [];
+
+        for (var i = 0; i < modules.length; ++i) {
+            result.push({
+                expand: true,
+                cwd: '<%= cfg.lib %>/' + modules[i] + '/assets',
+                dest: dest + '/assets/' + modules[i] + '/',
+                src: '**/*'
+            });
+        }
+
+        return result;
     };
 
     grunt.initConfig({
@@ -19,7 +46,7 @@ module.exports = function (grunt) {
 
         watch: {
             compass: {
-                files: ['style/{,*/}*.{scss,sass}'],
+                files: ['src/style/{,*/}*.{scss,sass}'],
                 tasks: ['compass']
             },
             livereload: {
@@ -28,9 +55,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     'src/*.html',
-                    '<%= cfg.tmp %>/{,*/}*.css',
-                    '{<%= cfg.tmp %>,src/{,*/}*.js,test/{,*/}*.js',
-                    'assets/image/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    'src/js/{,*/}*.js,test/{,*/}*.js',
+                    'src/assets/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -44,29 +70,24 @@ module.exports = function (grunt) {
                 options: {
                     open: true,
                     base: [
-                        '<%= cfg.tmp %>',
-                        'assets',
-                        'src',
-                        '.'
+                        'src'
                     ]
                 }
             },
             test: {
                 options: {
                     base: [
-                        '<%= cfg.tmp %>',
-                        'assets',
                         'test',
-                        'src',
-                        '.'
+                        'src'
                     ]
                 }
             }
         },
         clean: {
-            dev: '<%= cfg.tmp %>',
-            build: '<%= cfg.build %>',
-            dist: '<%= cfg.dist %>'
+            dev: ['<%= cfg.tmp %>'],
+            lib: ['<%= cfg.tmp %>', '<%= cfg.lib %>'],
+            app: ['<%= cfg.app %>'],
+            dist: ['<%= cfg.dist %>']
         },
         mocha: {
             all: {
@@ -78,214 +99,157 @@ module.exports = function (grunt) {
         },
         compass: {
             options: {
-                sassDir: 'style',
-                cssDir: '<%= cfg.tmp %>',
-                generatedImagesDir: '<%= cfg.tmp %>/image/generated',
-                imagesDir: 'assets/image/images',
-                javascriptsDir: 'src',
-                fontsDir: '<%= cfg.tmp %>/font',
+                sassDir: 'src/style',
+                cssDir: 'src/style',
+                javascriptsDir: 'src/js',
                 httpImagesPath: '/image',
                 httpGeneratedImagesPath: '/image/generated',
-                httpFontsPath: '/font',
-                relativeAssets: false
+                relativeAssets: false,
+                debugInfo: true
             },
             dev: {
                 options: {
                     debugInfo: true
                 }
             },
-            build: {
+            lib: {
                 options: {
-                    debugInfo: false,
-                    generatedImagesDir: '<%= cfg.build %>/source/image/generated'
+                    debugInfo: false
                 }
             }
         },
         concat: {
-            build: {
+            app: {
                 files: {
-                    '<%= cfg.build %>/browser/gravit-shell.js': ['shell/browser/*.js'],
-                    '<%= cfg.build %>/chrome/gravit-shell.js': ['shell/chrome/*.js', '!shell/chrome/background.js'],
-                    '<%= cfg.build %>/system/gravit-shell.js': ['shell/system/*.js']
+                    // Browser
+                    '<%= cfg.app %>/browser/js/app.js': appJSFiles.concat(
+                        'src/js/application/host/browser/*.js'
+                    ),
+                    '<%= cfg.app %>/browser/style/app.css': appCSSFiles,
+
+                    // Chrome
+                    '<%= cfg.app %>/chrome/js/app.js': appJSFiles.concat(
+                        'src/js/application/host/chrome/*.js'
+                    ),
+                    '<%= cfg.app %>/chrome/style/app.css': appCSSFiles,
+
+                    // System
+                    '<%= cfg.tmp %>/__app_system/js/app.js': appJSFiles.concat(
+                        'src/js/application/host/system/*.js'
+                    ),
+                    '<%= cfg.tmp %>/__app_system/style/app.css': appCSSFiles
                 }
             }
         },
         uglify: {
-            build: {
+            app: {
                 files: {
-                    '<%= cfg.build %>/browser/gravit-shell.js': ['<%= cfg.build %>/browser/gravit-shell.js'],
-                    '<%= cfg.build %>/chrome/gravit-shell.js': ['<%= cfg.build %>/chrome/gravit-shell.js'],
-                    '<%= cfg.build %>/system/gravit-shell.js': ['<%= cfg.build %>/system/gravit-shell.js']
+                    // Browser
+                    '<%= cfg.app %>/browser/js/app.js': ['<%= cfg.app %>/browser/js/app.js'],
+
+                    // Chrome
+                    '<%= cfg.app %>/chrome/js/app.js': ['<%= cfg.app %>/chrome/js/app.js'],
+
+                    // System
+                    '<%= cfg.tmp %>/__app_system/js/app.js': ['<%= cfg.tmp %>/__app_system/js/app.js']
                 }
             }
         },
         copy: {
-            dev: {
+            lib: {
                 files: [
                     {
                         expand: true,
-                        dot: true,
-                        cwd: 'bower_components/font-awesome/fonts',
-                        dest: '<%= cfg.tmp %>/font/',
-                        src: '{,*/}*.*'
+                        cwd: 'src/assets/application',
+                        dest: '<%= cfg.lib %>/application/assets',
+                        src: '**/*'
+                    },
+                    {
+                        expand: true,
+                        cwd: 'src/assets/editor',
+                        dest: '<%= cfg.lib %>/editor/assets',
+                        src: '**/*'
                     }
                 ]
             },
-            preBuild: {
-                files: [
-                    // Source Assets
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: 'bower_components/font-awesome/fonts',
-                        dest: '<%= cfg.build %>/source/font/',
-                        src: '{,*/}*.*'
-                    },
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: 'assets/cursor',
-                        dest: '<%= cfg.build %>/source/cursor/',
-                        src: '{,*/}*.*'
-                    },
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: 'assets/font',
-                        dest: '<%= cfg.build %>/source/font/',
-                        src: '{,*/}*.*'
-                    },
 
-                    // Chrome Assets
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: 'bower_components/jquery/dist/',
-                        dest: '<%= cfg.build %>/chrome/',
-                        src: 'jquery.min.js'
-                    },
-
-                    // System assets
-                    {
-                        expand: true,
-                        dot: true,
-                        cwd: 'bower_components/jquery/dist/',
-                        dest: '<%= cfg.build %>/system/',
-                        src: 'jquery.min.js'
-                    }
-                ]
-            },
-            postBuild: {
-                files: [
-                    // Copy some files for mac binary
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/system/',
-                        dest: '<%= cfg.build %>/system-binaries/Gravit/osx/Gravit.app/Contents/',
-                        src: ['Info.plist']
-                    },
-                    {
-                        expand: true,
-                        cwd: 'shell/system/',
-                        dest: '<%= cfg.build %>/system-binaries/Gravit/osx/Gravit.app/Contents/Resources/',
-                        src: ['doc.icns']
-                    }
-                ]
-            },
-            build: {
+            app: {
                 files: [
                     // Browser
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/browser/',
-                        src: '{,*/}*.*'
-                    },
-                    {
-                        expand: true,
-                        cwd: 'assets/icon/',
-                        dest: '<%= cfg.build %>/browser/icon',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: 'shell/browser/',
-                        dest: '<%= cfg.build %>/browser/',
+                        cwd: 'src/package/browser',
+                        dest: '<%= cfg.app %>/browser/',
                         src: ['index.html']
-                    },
-
-                    // Infinity
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/infinity/',
-                        src: ['cursor/*.*', 'infinity-**.js']
                     },
 
                     // Chrome
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/chrome/',
-                        dest: '<%= cfg.build %>/chrome/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/chrome/',
-                        src: ['**']
-                    },
-                    {
-                        expand: true,
-                        cwd: 'shell/chrome/',
-                        dest: '<%= cfg.build %>/chrome/',
+                        cwd: 'src/package/chrome',
+                        dest: '<%= cfg.app %>/chrome/',
                         src: ['index.html', 'manifest.json', 'background.js']
                     },
                     {
                         expand: true,
-                        cwd: 'assets/icon/',
-                        dest: '<%= cfg.build %>/chrome/icon',
-                        src: ['**']
+                        dot: true,
+                        cwd: 'src/bower_components/jquery/dist/',
+                        dest: '<%= cfg.app %>/chrome/js/',
+                        src: 'jquery.min.js'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/css',
+                        dest: '<%= cfg.app %>/chrome/font-awesome/css/',
+                        src: 'font-awesome.min.css'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/fonts',
+                        dest: '<%= cfg.app %>/chrome/font-awesome/fonts/',
+                        src: '{,*/}*.*'
                     },
 
                     // System
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/source/',
-                        dest: '<%= cfg.build %>/system/',
-                        src: ['**']
+                        cwd: 'src/package/system',
+                        dest: '<%= cfg.tmp %>/__app_system/',
+                        src: ['index.html', 'Info.plist', 'package.json']
                     },
                     {
                         expand: true,
-                        cwd: 'shell/system/',
-                        dest: '<%= cfg.build %>/system/',
-                        src: ['index.html', 'package.json', 'Info.plist']
-                    }
-                ]
-            },
-            dist: {
-                files: [
-                    // Browser
-                    {
-                        expand: true,
-                        cwd: '<%= cfg.build %>/browser/',
-                        dest: '<%= cfg.dist %>/browser/',
-                        src: ['**']
+                        dot: true,
+                        cwd: 'src/bower_components/jquery/dist/',
+                        dest: '<%= cfg.tmp %>/__app_system/js/',
+                        src: 'jquery.min.js'
                     },
-
-                    // Infinity
                     {
                         expand: true,
-                        cwd: '<%= cfg.build %>/infinity/',
-                        dest: '<%= cfg.dist %>/infinity/',
-                        src: ['**']
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/css',
+                        dest: '<%= cfg.tmp %>/__app_system/font-awesome/css/',
+                        src: 'font-awesome.min.css'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: 'src/bower_components/font-awesome/fonts',
+                        dest: '<%= cfg.tmp %>/__app_system/font-awesome/fonts/',
+                        src: '{,*/}*.*'
                     }
-                ]
+                ].concat(
+                    getAppAssetFiles('<%= cfg.app %>/browser'),
+                    getAppAssetFiles('<%= cfg.app %>/chrome'),
+                    getAppAssetFiles('<%= cfg.app %>/system')
+                )
             }
         },
         replace: {
-            build: {
-                src: ['<%= cfg.build %>/system/package.json', '<%= cfg.build %>/system/Info.plist', '<%= cfg.build %>/chrome/manifest.json'],
+            app: {
+                src: ['<%= cfg.tmp %>/__app_system/package.json', '<%= cfg.tmp %>/__app_system/Info.plist', '<%= cfg.app %>/chrome/manifest.json'],
                 overwrite: true,
                 replacements: [
                     {
@@ -309,28 +273,24 @@ module.exports = function (grunt) {
         },
         useminPrepare: {
             options: {
-                dest: '<%= cfg.build %>/source'
+                dest: '<%= cfg.lib %>'
             },
             html: 'src/index.html'
         },
-        usemin: {
-            options: {
-                dirs: ['<%= cfg.build %>/source']
-            },
-            html: ['<%= cfg.build %>/source/{,*/}*.html'],
-            css: ['<%= cfg.build %>/source/{,*/}*.css']
-        },
         nodewebkit: {
             options: {
-                version: '0.10.1',
+                version: '0.11.1',
                 platforms: ['win', 'osx', 'linux64'],
                 cacheDir: './node-webkit',
-                buildDir: '<%= cfg.build %>/system-binaries',
-                macIcns: 'shell/system/appicon.icns',
+                buildDir: '<%= cfg.app %>',
+                buildType: function () {
+                    return 'system';
+                },
+                macIcns: 'src/package/system/appicon.icns',
                 macZip: false,
-                winIco: 'shell/system/appicon.ico'
+                winIco: 'src/package/system/appicon.ico'
             },
-            src: '<%= cfg.build %>/system/**/*'
+            src: '<%= cfg.tmp %>/__app_system/**/*'
         }
     });
 
@@ -338,25 +298,25 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_osx', function () {
         var done = this.async();
 
-        var gravitAppDir = cfg.build + '/system-binaries/Gravit/osx/Gravit.app';
+        var gravitAppDir = cfg.app + '/system/osx/Gravit.app';
 
         var commands = [
             // sign
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
-            'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+                'codesign --deep -f -v -s ' + cfg.macSignIdentity + ' -i ' + cfg.macBundleId + ' "' + gravitAppDir + '"',
 
             // verify
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
-            'spctl --assess -vvvv "' + gravitAppDir + '"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper EH.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '/Contents/Frameworks/node-webkit Helper NP.app"',
+                'spctl --assess -vvvv "' + gravitAppDir + '"',
 
             // package
             'test -f ./dist/gravit-osx.dmg && rm ./dist/gravit-osx.dmg',
             'mkdir ./dist',
-            './node_modules/appdmg/bin/appdmg ./shell/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
+                './node_modules/appdmg/bin/appdmg ./src/package/system/package/osx/dmg.json ' + cfg.dist + '/gravit-osx.dmg'
         ];
 
         console.log('Sign & Package for OS-X');
@@ -386,7 +346,7 @@ module.exports = function (grunt) {
         // TODO : Build installer
         var done = this.async();
 
-        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.build + '/system-binaries/Gravit/win'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../' + cfg.dist + '/gravit-windows.zip *', {cwd: cfg.app + '/system/win'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -399,7 +359,7 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_linux', function () {
         var done = this.async();
 
-        exec('zip -r -X ../../../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.build + '/system-binaries/Gravit/linux64'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../../' + cfg.dist + '/gravit-linux64.zip *', {cwd: cfg.app + '/system/linux64'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -412,7 +372,7 @@ module.exports = function (grunt) {
     grunt.registerTask('_dist_chrome', function () {
         var done = this.async();
 
-        exec('zip -r -X ../../' + cfg.dist + '/gravit-chrome.zip *', {cwd: cfg.build + '/chrome'}, function (error, stdout, stderr) {
+        exec('zip -r -X ../../' + cfg.dist + '/gravit-chrome.zip *', {cwd: cfg.app + '/chrome'}, function (error, stdout, stderr) {
             if (stdout) console.log(stdout);
             if (stderr) console.log(stderr);
             if (error !== null) {
@@ -427,7 +387,6 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:dev',
             'compass:dev',
-            'copy:dev',
             'connect:livereload',
             'watch'
         ]);
@@ -437,35 +396,40 @@ module.exports = function (grunt) {
         grunt.task.run([
             'clean:dev',
             'compass:dev',
-            'copy:dev',
             'connect:test',
             'mocha'
         ]);
     });
 
-    grunt.registerTask('build', function (target) {
+    grunt.registerTask('lib', function (target) {
         grunt.task.run([
-            'clean:build',
+            'clean:lib',
             'useminPrepare',
-            'compass:build',
-            'concat',
-            'cssmin',
-            'uglify',
-            'usemin',
-            'copy:preBuild',
-            'copy:build',
-            'replace:build',
-            'nodewebkit',
-            'copy:postBuild'
+            'compass:lib',
+            'concat:generated',
+            'cssmin:generated',
+            'uglify:generated',
+            'copy:lib'
+        ]);
+    });
+
+    grunt.registerTask('app', function (target) {
+        grunt.task.run([
+            'lib',
+            'clean:app',
+            'concat:app',
+            'uglify:app',
+            'copy:app',
+            'replace:app',
+            'nodewebkit'
         ]);
     });
 
     grunt.registerTask('dist', function (target) {
         grunt.task.run([
             'test',
-            'build',
+            'app',
             'clean:dist',
-            'copy:dist',
             '_dist_osx',
             '_dist_linux',
             '_dist_win',

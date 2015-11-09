@@ -1,0 +1,85 @@
+@import '../../variables';
+
+.palette-layers {
+  padding: 2px;
+
+  .layers {
+    display: block;
+    min-height: 184px;
+    height: 100%;
+
+    div.jqtree-element {
+      padding: 0px;
+      border-bottom: 1px solid $borderColor;
+
+      &.g-active {
+        background: $activeColor;
+
+        &, * {
+          color: $activeTextColor;
+        }
+      }
+
+      &.g-selected {
+        background: $selectedColor;
+
+        &, * {
+          color: $selectedTextColor;
+        }
+      }
+
+      > *:not(.jqtree-border) {
+        display: table-cell;
+        vertical-align: middle;
+        padding: 4px 0px;
+
+        &.layer-visibility, &.layer-lock, &.layer-outline {
+          border-right: 1px solid $borderColor;
+          min-width: 21px;
+          max-width: 21px;
+          text-align: center;
+
+          &.layer-default {
+            opacity: 0.5;
+          }
+
+          &, * {
+            cursor: pointer;
+          }
+        }
+
+        &.layer-icon {
+          padding-left: 5px;
+        }
+
+        &.layer-color {
+          min-width: 8px;
+          max-width: 8px;
+        }
+
+        &.jqtree-toggler, &.layer-spacer {
+          min-width: 8px;
+          max-width: 8px;
+          padding-left: 5px;
+        }
+
+        &.jqtree-title {
+          width: 100%;
+          padding-left: 5px;
+        }
+      }
+
+      &[data-layer-type='D'] .jqtree-title {
+        font-style: italic;
+      }
+
+      &[data-layer-type='G'] .jqtree-title {
+        text-decoration: underline;
+      }
+    }
+
+    ul.jqtree_common {
+      margin-left: 0px;
+    }
+  }
+}

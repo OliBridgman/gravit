@@ -1,0 +1,95 @@
+@import "compass/css3/user-interface";
+@import '../variables';
+
+body, html {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  /** Prevent double-tap = zoom on windows mobile */
+  -ms-content-zooming: none;
+
+  &, * {
+    font: $font;
+    line-height: $baseline;
+    vertical-align: middle;
+  }
+
+  *.fa {
+    font-size: 14px;
+  }
+
+  button, input {
+    // Removes inner padding and border in FF3+
+    // www.sitepen.com/blog/2008/05/14/the-devils-in-the-details-fixing-dojos-toolbar-buttons/
+    &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+    }
+  }
+
+  * {
+    /* Disable long-press callouts. */
+    -webkit-touch-callout: none;
+    /* Disable highlighting of links. */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    /* Prevent auto-resizing. */
+    -webkit-text-size-adjust: none;
+  }
+
+  /** No focus and selection outline except for input fields */
+  :focus {
+    outline: none;
+  }
+
+  /**No selection except for input fields */
+  :not(input):not(select):not(textArea) {
+    @include user-select(none);
+    cursor: default;
+  }
+
+  // Give dividers some base styling
+  hr {
+    height: 1px;
+    padding: 0px;
+    border: none;
+    margin: 5px 0px;
+    border-bottom: 1px solid $borderColor;
+  }
+
+  // Add special header divider
+  h1.g-divider {
+    text-align: center;
+    line-height: 0 !important;
+    border-bottom: 1px dotted $borderColor;
+    margin: 10px 0px 5px 0px;
+    color: $borderColor;
+    text-transform: uppercase;
+    text-shadow: 0px 1px 0px $lightShadowColor;
+
+    &:first-line {
+      background-color: $baseColor;
+    }
+    &:before {
+      content: "\a0\a0";
+    }
+    &:after {
+      content: "\a0\a0";
+    }
+  }
+
+  // Disabled stuff
+  .g-disabled {
+    position: relative;
+    opacity: 0.5;
+
+    > .g-disabled-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0px;
+      left: 0px;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+$baseline: 20px !default;
+$font: 12px 'Source Sans Pro', sans-serif !default;
+$menuFont: 12px 'Open Sans', sans-serif !default;
+
+$baseColor: rgb(77, 80, 82) !default;
+$darkColor: shade($baseColor, 30%) !default;
+$borderColor: shade($baseColor, 30%) !default;
+
+$lightShadowColor: tint($baseColor, 10%) !default;
+$darkShadowColor: shade($baseColor, 15%) !default;
+
+$inputColor: shade($baseColor, 10%) !default;
+$inputBorderColor: shade($baseColor, 25%) !default;
+
+$textColor: rgb(199, 199, 199) !default;
+
+$selectedColor: rgb(31, 141, 214) !default;
+$selectedTextColor: white !default;
+
+$activeColor: rgb(90, 102, 118) !default;
+$activeTextColor: white !default;
+
+$dragColor: maroon !default;
+$dragTextColor: white !default;

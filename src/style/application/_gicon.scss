@@ -1,0 +1,81 @@
+
+@font-face {
+  font-family: 'gicon';
+  src:url('../assets/application/font/gicon.eot?e5i664');
+  src:url('../assets/application/font/gicon.eot?#iefixe5i664') format('embedded-opentype'),
+  url('../assets/application/font/gicon.woff?e5i664') format('woff'),
+  url('../assets/application/font/gicon.ttf?e5i664') format('truetype'),
+  url('../assets/application/font/gicon.svg?e5i664#gicon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="gicon-"], [class*=" gicon-"] {
+  font-family: 'gicon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: 16px;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.gicon-stroke:before {
+  content: "\e60e";
+}
+.gicon-fill:before {
+  content: "\e60f";
+}
+.gicon-expand:before {
+  content: "\e610";
+}
+.gicon-shadow:before {
+  content: "\e611";
+}
+.gicon-corner-bevel:before {
+  content: "\e600";
+}
+.gicon-corner-fancy:before {
+  content: "\e601";
+}
+.gicon-corner-inset:before {
+  content: "\e602";
+}
+.gicon-corner-rounded:before {
+  content: "\e603";
+}
+.gicon-corner-inverse-rounded:before {
+  content: "\e604";
+}
+.gicon-line-cap-butt:before {
+  content: "\e605";
+}
+.gicon-line-cap-round:before {
+  content: "\e606";
+}
+.gicon-line-cap-square:before {
+  content: "\e607";
+}
+.gicon-line-join-bevel:before {
+  content: "\e608";
+}
+.gicon-line-join-miter:before {
+  content: "\e609";
+}
+.gicon-line-join-round:before {
+  content: "\e60a";
+}
+.gicon-stroke-center:before {
+  content: "\e60b";
+}
+.gicon-stroke-inside:before {
+  content: "\e60c";
+}
+.gicon-stroke-outside:before {
+  content: "\e60d";
+}

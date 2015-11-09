@@ -1,14 +1,16 @@
 {
-    "name": "Gravit",
-    "main": "http://127.0.0.1:8999/",
+    "name": "gravit-dev",
+    "description": "gravit-dev",
+    "version": "0.0.0",
+    "main": "app://gravit/index.html",
     "window": {
-        "toolbar": true,
+        "toolbar": false,
         "resizable": true,
         "show_in_taskbar": true,
         "frame": true,
         "width": 1024,
         "height": 786,
-        "show": false
+        "show": true
     },
-    "node-remote": "*"
+    "development": true
 }

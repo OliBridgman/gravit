@@ -1,0 +1,85 @@
+@import "compass/css3/box-sizing";
+@import '../../variables';
+
+#panels {
+  @include box-sizing(border-box);
+  position: absolute;
+  bottom: 1px;
+  height: 146px;
+  padding: 0px;
+  border-top: 1px solid $borderColor;
+  border-left: 2px solid $darkColor;
+  border-right: 2px solid $darkColor;
+  background: $baseColor;
+
+  &.collapse-half {
+    height: 78px;
+  }
+
+  &.collapse-full {
+    height: 22px;
+  }
+
+  .panels-tabs {
+    height: 21px;
+    background: $darkColor;
+
+    > button {
+      background: $darkColor;
+      padding-left: 7px;
+      padding-right: 7px;
+      text-transform: uppercase;
+      border: none;
+      box-shadow: none;
+      margin: 0px;
+
+      > span.collapse-icon {
+        height: 14px;
+        line-height: 20px; // 14px-11px*2
+        width: 14px;
+        text-align: center;
+        display: none;
+
+        > span {
+          font-size: 11px;
+        }
+
+        > span:first-child {
+          bottom: 0px;
+        }
+
+        > span:last-child {
+          top: 0px;
+        }
+      }
+
+      &:active, &.g-active {
+        background: $baseColor;
+
+        &, * {
+          color: $textColor;
+        }
+      }
+
+      &.g-active {
+        padding-left: 0px;
+
+        > span.collapse-icon {
+          display: inline-block;
+        }
+      }
+    }
+  }
+
+  .panels-frame {
+    width: 100%;
+    height: 125px;
+    background: $baseColor;
+
+    .panel-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+  }
+}
